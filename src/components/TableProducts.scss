@@ -1,0 +1,55 @@
+@import "../index.scss";
+
+
+.placeorder__tableproducts {
+    grid-column: 4/9;
+    grid-row: 1/10;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        display: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .placeorder__tableproductsCardList {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+
+
+        .placeorder__tableproductsCard {
+            border: 1px solid lightgray;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            width: 150px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: $font-color;
+            font-weight: bold;
+            font-size: 1rem;
+            text-align: center;
+
+            &:hover {
+                background-color: $light;
+            }
+
+            &:active {
+                transform: scale(0.95);
+            }
+        }
+    }
+
+}

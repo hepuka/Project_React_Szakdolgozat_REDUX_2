@@ -1,0 +1,24 @@
+@import "../../index.scss";
+
+.admin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 90%;
+
+    img {
+        height: 100%;
+    }
+
+    h1 {
+        font-size: 5rem;
+        color: $font-color;
+    }
+
+    h2 {
+        font-size: 3rem;
+        color: $font-color;
+    }
+
+}

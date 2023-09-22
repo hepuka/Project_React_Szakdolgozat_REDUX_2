@@ -1,0 +1,118 @@
+@import "../../index.scss";
+
+.orderDetails {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    width: 100%;
+
+    .orderDetails__card {
+        border: 1px solid $borderColor;
+        border-radius: 10px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        width: 900px;
+        height: fit-content;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-direction: column;
+        color: $font-color;
+        font-size: 1.5rem;
+        text-align: center;
+        padding: 15px;
+        font-size: 1.5rem;
+        margin-top: 60px;
+
+        .orderDetails__rows {
+            display: flex;
+            width: 55%;
+            justify-content: flex-start;
+            gap: 10px;
+
+            p {
+                font-weight: 500;
+            }
+        }
+
+        .orderDetails__details {
+            margin-top: 20px;
+            width: 100%;
+
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 1.4rem;
+                margin-top: 10px;
+
+                thead {
+                    border-top: 2px solid $font-color;
+                    border-bottom: 2px solid $font-color;
+                }
+
+                th,
+                td {
+                    vertical-align: top;
+                    text-align: left;
+                    padding: 8px;
+                    color: $font-color;
+
+                    &.icons {
+                        >* {
+                            margin-right: 5px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+
+                p {
+                    padding-bottom: 10px;
+                }
+
+                img {
+                    width: 100%;
+                    border-radius: 3px;
+                    border: 1px solid $font-color;
+                }
+
+                tr {
+                    border-bottom: 1px solid $font-color;
+                    cursor: pointer;
+                }
+            }
+
+
+        }
+
+        .orderDetails__buttons {
+
+            width: 100%;
+
+            #update {
+                background: $buttonBackground;
+                border-radius: 2px;
+                width: 107.39px;
+                height: 30px;
+                border: 1px solid;
+                margin-top: 10px;
+                border-color: $borderColor;
+                cursor: pointer;
+                border-radius: 4px;
+                text-align: center;
+
+                &:active {
+                    transform: scale(0.95);
+                }
+            }
+
+
+        }
+
+
+
+    }
+
+
+}

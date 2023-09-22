@@ -1,0 +1,91 @@
+@import "../../index.scss";
+
+.orders {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    width: 100%;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        display: none;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .orders__title {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    h1 {
+        margin-bottom: 60px;
+
+    }
+
+    h2 {
+        color: $font-color;
+    }
+
+    .orders__cardlist {
+        margin-top: 50px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        table {
+            border-collapse: collapse;
+            width: 90%;
+            font-size: 1.4rem;
+            margin-top: 10px;
+
+            thead {
+                border-top: 2px solid $font-color;
+                border-bottom: 2px solid $font-color;
+            }
+
+            th,
+            td {
+                vertical-align: top;
+                text-align: left;
+                padding: 8px;
+                color: $font-color;
+
+                &.icons {
+                    >* {
+                        margin-right: 5px;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            p {
+                padding-bottom: 10px;
+            }
+
+            img {
+                width: 100%;
+                border-radius: 3px;
+                border: 1px solid $font-color;
+            }
+
+            tr {
+                border-bottom: 1px solid $font-color;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: $buttonBackground
+                }
+            }
+        }
+
+
+    }
+
+
+}

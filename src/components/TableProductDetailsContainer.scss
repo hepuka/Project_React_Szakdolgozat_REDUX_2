@@ -1,0 +1,90 @@
+@import "../index.scss";
+
+.placeorder__tableproductdetailsContainer {
+    grid-column: 4/10;
+    grid-row: 10/13;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+
+    .placeorder__tableproductdetails {
+        display: flex;
+        align-self: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        height: 100%;
+
+
+        .placeorder__tableproductdetailsdata {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 10px;
+
+        }
+
+        .placeorder__tableproductdetailssettings {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100px;
+
+            .placeorder__amountsettings {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1.5rem;
+                font-weight: bold;
+                gap: 20px;
+                height: 100%;
+
+
+                .placeorder__set {
+                    border: 1px solid $font-color;
+                    padding: 3px 15px;
+                    cursor: pointer;
+                    border-radius: 4px;
+
+                    &:active {
+                        transform: scale(0.95);
+                        background-color: $buttonBackground;
+                    }
+
+                }
+
+            }
+
+            button {
+                background: $buttonBackground;
+                border: 1px solid;
+                border-color: $borderColor;
+                cursor: pointer;
+                border-radius: 4px;
+                text-align: center;
+                width: 130px;
+                padding: 10px 10px;
+                margin-top: 10px;
+
+
+
+                &:active {
+                    transform: scale(0.95);
+
+                }
+
+            }
+
+
+        }
+
+    }
+
+}

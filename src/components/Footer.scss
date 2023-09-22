@@ -1,0 +1,13 @@
+@import "../index.scss";
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    h2 {
+        font-size: 1.5rem;
+        color: $font-color;
+    }
+}

@@ -1,0 +1,228 @@
+.layout {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    height: 100vh;
+    padding: 20px;
+    gap: 20px;
+}
+
+.layout__content {
+    grid-column: 1 / 11;
+    grid-row: 1 / 12;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+
+.footer {
+    grid-column: 1 / 11;
+    grid-row: 12 / 13;
+}
+
+.sidebar {
+    grid-column: 11 / 13;
+    grid-row: 1 / 12;
+
+}
+
+@media only screen and (max-width: 1280px) {
+
+    .sidebar {
+        grid-column: 1 / 13;
+        grid-row: 1 / 2;
+
+
+        .sidebar__container {
+            flex-direction: row;
+            gap: 50px;
+
+            .sidebar__title {
+                h1 {
+                    font-size: 1.5rem;
+                    font-weight: 800;
+                }
+            }
+
+
+            .sidebar__buttons {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 20px;
+                overflow: auto;
+
+                &::-webkit-scrollbar {
+                    display: none;
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+
+                .sidebar__button {
+                    font-size: 1.2rem;
+                    min-width: 140px;
+                }
+
+
+            }
+        }
+    }
+
+    .layout__content {
+        grid-column: 1 / 13;
+        grid-row: 2 / 12;
+
+        .placeorder__tableproducts {
+
+            .placeorder__tableproductsCardList {
+                justify-content: center;
+
+            }
+        }
+
+        .placeorder__tableproductdetailsContainer {
+
+            .placeorder__tableproductdetails {
+
+                .placeorder__tableproductdetailsdata {
+                    gap: 5px
+                }
+
+
+            }
+        }
+
+        .placeorder__tableorders {
+            overflow: scroll;
+
+            &::-webkit-scrollbar {
+                display: none;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .placeorder__tableordersdetails {
+                .placeorder__tableordersdetailsimg {
+                    display: none;
+                }
+
+                .placeorder__tableordersdetailstitle {
+                    margin: 10px 0;
+                }
+            }
+
+        }
+
+        .placeorder__tablepayment {
+            .placeorder__tablepaymentdetails {
+                padding: 20px 20px 10px 20px;
+
+                h2 {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        .addProduct {
+            form {
+                gap: 0;
+
+                .addProduct__row {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 20px;
+                    gap: 50px;
+                    width: 100%;
+                }
+            }
+        }
+
+        .contact {
+
+            .contact__form {
+                form {
+                    height: 100%;
+
+                    input {
+                        height: 20px;
+                    }
+
+                    textarea {
+                        height: 25%;
+                    }
+                }
+            }
+        }
+
+        .users {
+            .users__cardList {
+                justify-content: flex-start;
+                margin-top: 30px;
+            }
+        }
+
+    }
+
+    .footer {
+        grid-column: 1 / 13;
+        grid-row: 12 / 13;
+    }
+
+    .placeorder__tableproducts {
+        grid-column: 4/9;
+        grid-row: 1/10;
+    }
+
+
+
+}
+
+@media only screen and (max-width: 940px) {
+
+    .layout__content {
+
+        .placeorder__tableproducts {
+            grid-column: 4/7;
+            grid-row: 1/8;
+        }
+
+        .placeorder__tableorders {
+            grid-column: 7/13;
+            grid-row: 1/8;
+        }
+
+        .placeorder__tableproductdetailsContainer {
+            grid-column: 4/13;
+            grid-row: 8/9;
+        }
+
+        .placeorder__tablepayment {
+            grid-column: 4/13;
+            grid-row: 9/13;
+
+            .placeorder__tablepayment__button {
+                form {
+
+                    input {
+                        width: 30%;
+                    }
+
+                    button {
+                        width: 30%;
+                    }
+                }
+            }
+        }
+
+        .placeorder__tablenumber {
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+    }
+
+
+}

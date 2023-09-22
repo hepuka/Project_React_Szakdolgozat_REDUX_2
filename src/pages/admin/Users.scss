@@ -1,0 +1,100 @@
+@import "../../index.scss";
+
+.users {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-top: 40px;
+    width: 100%;
+
+    h1 {
+        width: 100%;
+        text-align: center;
+    }
+
+
+    .users__cardList {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 60px;
+        gap: 30px;
+        width: 100%;
+        padding: 0 30px;
+
+
+        .users__card {
+            border: 1px solid $borderColor;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            width: 322px;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            flex-direction: column;
+            color: $font-color;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 0 10px;
+
+
+            .users__rows {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+
+                p {
+                    font-weight: 500;
+                }
+
+                .active {
+                    color: $activeStatus;
+                    font-weight: 600;
+                }
+
+                .inactive {
+                    color: $deleteBackground;
+                    font-weight: 600;
+                }
+            }
+
+            .users__buttons {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                gap: 40px;
+                margin-top: 20px;
+
+                #update {
+                    background: $buttonBackground;
+                    border-radius: 2px;
+                    width: 107.39px;
+                    height: 30px;
+                    border: 1px solid;
+                    margin-top: 10px;
+                    border-color: $borderColor;
+                    cursor: pointer;
+                    border-radius: 4px;
+                }
+
+                #delete {
+                    width: 30%;
+                    height: 30px;
+                    border: 1px solid;
+                    margin-top: 10px;
+                    border-color: $borderColor;
+                    cursor: pointer;
+                    border-radius: 4px;
+                    background-color: $deleteBackground;
+                    color: $deleteColor;
+                }
+
+            }
+        }
+    }
+}

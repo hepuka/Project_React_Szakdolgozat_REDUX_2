@@ -1,0 +1,21 @@
+@import "../../index.scss";
+
+.placeorder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    gap: 20px;
+
+
+
+
+    .placeorder__card {
+        border: 1px solid lightgray;
+        border-radius: 10px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+
+}
