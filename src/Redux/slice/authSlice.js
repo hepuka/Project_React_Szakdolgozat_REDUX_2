@@ -6,7 +6,6 @@ const initialState = {
   username: "",
   userRole: "",
   userPin: "",
-  loggedUsers: [],
 };
 
 const authSlice = createSlice({
