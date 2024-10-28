@@ -24,7 +24,7 @@ function App() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const parts = user.displayName.split("|");
-        console.log(user);
+
         dispatch(
           SET_ACTIVE_USER({
             email: user.email,
