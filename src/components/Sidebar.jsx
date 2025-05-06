@@ -32,10 +32,10 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar__container">
-        <div className="sidebar__title">
+        <div className="sidebar__title flex-item">
           <h1>Bejelentkezve: {currentUser}</h1>
         </div>
-        <div className="sidebar__buttons">
+        <div className="sidebar__buttons flex-item">
           <OnlyAdmin>
             <NavLink to="/users" className={activeLink}>
               Felhasználók

@@ -1,81 +1,77 @@
 @import "../index.scss";
 
 .sidebar {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    height: 100%;
-
-
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100%;
 }
 
 .sidebar__container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+  padding-top: 15px;
+  border-radius: 10px;
+
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .flex-item:nth-of-type(1) {
+    flex-grow: 1;
+  }
+  .flex-item:nth-of-type(2) {
+    flex-grow: 2;
+  }
+
+  .sidebar__buttons {
     display: flex;
+    flex-grow: 1;
     align-items: center;
-    justify-content: flex-start;
     flex-direction: column;
+    flex-wrap: nowrap;
     row-gap: 30px;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    height: 100%;
-    width: 100%;
-    overflow: auto;
 
-    &::-webkit-scrollbar {
-        display: none;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    .sidebar__button {
+      width: 100%;
+      height: 50px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: $font-color;
+      font-weight: bold;
+      font-size: 1.5rem;
+      text-align: center;
+
+      &:hover {
+        background-color: $light;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
     }
-
-
-    h1 {
-        font-size: 1.5rem;
-        text-align: center;
-
-    }
-
-    .sidebar__buttons {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        flex-wrap: nowrap;
-        row-gap: 30px;
-
-
-        .sidebar__button {
-            border: 1px solid lightgray;
-            border-radius: 10px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            width: 150px;
-            height: 50px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: $font-color;
-            font-weight: bold;
-            font-size: 1.5rem;
-            text-align: center;
-
-            &:hover {
-                background-color: $light;
-            }
-
-            &:active {
-                transform: scale(0.95);
-            }
-
-        }
-
-    }
+  }
 }
 
 .sidebar__button_active {
-    background-color: $buttonBackground;
-    color: $font-color;
-
+  background-color: $buttonBackground;
+  color: $font-color;
 }
