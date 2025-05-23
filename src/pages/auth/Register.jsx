@@ -126,7 +126,10 @@ const Register = () => {
             "Felhasználó adatainak módosítása"
           )}
         </h1>
-        <form onSubmit={detectForm(id, registerUser, editUser)}>
+        <form
+          autoComplete="off"
+          onSubmit={detectForm(id, registerUser, editUser)}
+        >
           <div className="register__row">
             <div className="register__box">
               <label>Felhasználó neve</label>
@@ -159,6 +162,7 @@ const Register = () => {
               <input
                 type="email"
                 name="email"
+                autoComplete="new-password"
                 value={user.email || ""}
                 required
                 onChange={(e) => handleInputChange(e)}
