@@ -39,15 +39,11 @@ const Register = () => {
   };
   const userEdit = useFetchDocument("users", id);
 
-  console.log(userEdit);
-
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(initialSate);
 
   useEffect(() => {
-    setUser(id !== "ADD" ? userEdit : {});
-  }, []);
-
-  console.log(user);
+    setUser(id !== "ADD" && userEdit ? userEdit : { ...initialSate });
+  }, [id, userEdit]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -138,7 +134,7 @@ const Register = () => {
                 type="text"
                 required
                 name="name"
-                value={user.name}
+                value={user.name || ""}
                 onChange={(e) => handleInputChange(e)}
               />
               <label>Születési idő</label>
@@ -146,7 +142,7 @@ const Register = () => {
                 type="date"
                 required
                 name="bdate"
-                value={user.bdate}
+                value={user.bdate || ""}
                 onChange={(e) => handleInputChange(e)}
               />
               <label>Születési hely</label>
@@ -154,7 +150,7 @@ const Register = () => {
                 type="text"
                 required
                 name="bplace"
-                value={user.bplace}
+                value={user.bplace || ""}
                 onChange={(e) => handleInputChange(e)}
               />
             </div>
@@ -163,7 +159,7 @@ const Register = () => {
               <input
                 type="email"
                 name="email"
-                value={user.email}
+                value={user.email || ""}
                 required
                 onChange={(e) => handleInputChange(e)}
               />
@@ -173,7 +169,7 @@ const Register = () => {
                 type="password"
                 name="password"
                 minLength={8}
-                value={user.password}
+                value={user.password || ""}
                 required
                 onChange={(e) => handleInputChange(e)}
               />
@@ -182,7 +178,7 @@ const Register = () => {
               <input
                 type="password"
                 name="passwordConfirm"
-                value={user.passwordConfirm}
+                value={user.passwordConfirm || ""}
                 required
                 minLength={8}
                 onChange={(e) => handleInputChange(e)}
@@ -193,7 +189,7 @@ const Register = () => {
               <select
                 required
                 name="role"
-                value={user.role}
+                value={user.role || ""}
                 onChange={(e) => handleInputChange(e)}
               >
                 <option value="" disabled>
@@ -215,7 +211,7 @@ const Register = () => {
                 minLength={8}
                 maxLength={8}
                 name="tax"
-                value={user.tax}
+                value={user.tax || ""}
                 onChange={(e) => handleInputChange(e)}
               />
               <label>PIN kód</label>
@@ -225,7 +221,7 @@ const Register = () => {
                 minLength={4}
                 maxLength={4}
                 name="pin"
-                value={user.pin}
+                value={user.pin || ""}
                 onChange={(e) => handleInputChange(e)}
               />
             </div>
