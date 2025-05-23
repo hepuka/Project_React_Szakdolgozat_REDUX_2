@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import "./Contact.scss";
 import Layout from "../../components/Layout";
 import { FaPhoneAlt, FaEnvelope, FaTwitter } from "react-icons/fa";
@@ -21,7 +21,7 @@ const Contact = () => {
         "_geOTjcVpuDwzlJcL"
       )
       .then(
-        (result) => {
+        () => {
           Notiflix.Notify.success("Üzenet elküldve!");
         },
         (error) => {
