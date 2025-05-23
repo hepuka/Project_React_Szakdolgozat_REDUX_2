@@ -7,6 +7,7 @@ import rootReducer from "./store";
 const persistConfig = {
   key: "root",
   storage,
+
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -9,8 +9,7 @@ const Admin = () => {
           src="https://freesvg.org/img/1667812423coffee-shop-logo-concept.png"
           alt="coffe_logo"
         />
-        <h1>Üdvözöljük</h1>
-        <h2>KunPao's Coffee Management</h2>
+        <h1>KunPao's Coffee Management</h1>
       </div>
     </Layout>
   );

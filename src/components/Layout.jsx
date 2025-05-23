@@ -1,4 +1,3 @@
-import React from "react";
 import "./Layout.scss";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";

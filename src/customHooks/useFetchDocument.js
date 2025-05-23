@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase/config";
 
 const useFetchDocument = (collectionName, documentID) => {
-  const [document, setDocument] = useState(null);
+  const [selectedDocument, setDocument] = useState(null);
 
   const getDocument = async () => {
     const docRef = doc(db, collectionName, documentID);
@@ -15,6 +15,7 @@ const useFetchDocument = (collectionName, documentID) => {
         id: documentID,
         ...docSnap.data(),
       };
+
       setDocument(obj);
     } else {
       console.log("Nem található dokumentum");
@@ -25,7 +26,7 @@ const useFetchDocument = (collectionName, documentID) => {
     getDocument();
   }, []);
 
-  return { document };
+  return selectedDocument;
 };
 
 export default useFetchDocument;

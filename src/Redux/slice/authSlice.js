@@ -3,9 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isLoggedIn: false,
   email: "",
-  username: "",
-  userRole: "",
-  userPin: "",
+  name: "",
+  role: "",
+  pin: "",
+  id:""
 };
 
 const authSlice = createSlice({
@@ -13,19 +14,21 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     SET_ACTIVE_USER: (state, action) => {
-      const { email, userName, userRole, userPin } = action.payload;
+      const { email, name, role, pin, id } = action.payload;
       state.isLoggedIn = true;
       state.email = email;
-      state.username = userName;
-      state.userRole = userRole;
-      state.userPin = userPin;
+      state.name = name;
+      state.role = role;
+      state.pin = pin;
+      state.id = id
     },
     REMOVE_ACTIVE_USER: (state) => {
       state.isLoggedIn = false;
       state.email = null;
-      state.username = null;
-      state.userRole = null;
-      state.userPin = null;
+      state.name = null;
+      state.role = null;
+      state.pin = null;
+      state.id = null
     },
   },
 });
@@ -34,8 +37,8 @@ export const { SET_ACTIVE_USER, REMOVE_ACTIVE_USER } = authSlice.actions;
 
 export const selectIsLoggedIn = (state) => state.auth.isLoggedIn;
 export const selectEmail = (state) => state.auth.email;
-export const selectUserName = (state) => state.auth.username;
-export const selectUserRole = (state) => state.auth.userRole;
-export const selectUserPin = (state) => state.auth.userPin;
+export const selectUserName = (state) => state.auth.name;
+export const selectUserRole = (state) => state.auth.role;
+export const selectUserPin = (state) => state.auth.pin;
 
 export default authSlice.reducer;

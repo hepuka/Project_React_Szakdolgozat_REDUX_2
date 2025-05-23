@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import "./Register.scss";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,8 +7,8 @@ import { auth } from "../../firebase/config";
 import Notiflix from "notiflix";
 import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import { useSelector } from "react-redux";
-import { selectUsers } from "../../Redux/slice/userSlice";
+import useFetchDocument from "../../customHooks/useFetchDocument.js";
+import { use } from "react";
 
 const categories = [
   { id: 1, name: "Admin" },
@@ -28,8 +28,6 @@ const initialSate = {
 
 const Register = () => {
   const { id } = useParams();
-  const users = useSelector(selectUsers);
-  const userEdit = users.find((item) => item.id === id);
   const navigate = useNavigate();
 
   const detectForm = (id, f1, f2) => {
@@ -39,11 +37,17 @@ const Register = () => {
       return f2;
     }
   };
+  const userEdit = useFetchDocument("users", id);
 
-  const [user, setUser] = useState(() => {
-    const newState = detectForm(id, { ...initialSate }, userEdit);
-    return newState;
-  });
+  console.log(userEdit);
+
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    setUser(id !== "ADD" ? userEdit : {});
+  }, []);
+
+  console.log(user);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -81,6 +85,7 @@ const Register = () => {
       });
 
       setUser({ ...initialSate });
+      console.log(user);
 
       Notiflix.Notify.success("Sikeres felhasználó rögzítés!");
       navigate("/users");

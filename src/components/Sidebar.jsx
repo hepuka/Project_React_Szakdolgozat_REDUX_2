@@ -7,14 +7,19 @@ import { selectUserName } from "../Redux/slice/authSlice";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { OnlyAdmin, OnlyEmployee } from "./OnlyAdmin";
+import { useDispatch } from "react-redux";
+import { REMOVE_ACTIVE_USER } from "../Redux/slice/authSlice";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const currentUser = useSelector(selectUserName);
+  const dispatch = useDispatch();
 
   const logoutUser = () => {
     signOut(auth)
       .then(() => {
+        dispatch(REMOVE_ACTIVE_USER());
+
         Notiflix.Notify.success("Sikeres kijelentkezés!");
         navigate("/");
       })

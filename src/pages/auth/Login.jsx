@@ -1,28 +1,37 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import Notiflix from "notiflix";
 import "./Auth.scss";
 import useFetchCollection from "../../customHooks/useFetchCollection";
+import { useDispatch } from "react-redux";
+import { SET_ACTIVE_USER } from "../../Redux/slice/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const users = useFetchCollection("users");
-  const currentUser = users.find((item) => item.email === email);
+  const dispatch = useDispatch();
+  const users = useFetchCollection("users"); 
 
   const signIn = (e) => {
     e.preventDefault();
+    const currentUser = users.find((item) => item.email === email);
+
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         //const user = userCredential.user;
 
-        updateProfile(auth.currentUser, {
-          displayName:
-            currentUser.name + "|" + currentUser.role + "|" + currentUser.pin,
-        });
+       dispatch(
+          SET_ACTIVE_USER({
+            email: currentUser.email,
+            name: currentUser.name,
+            role: currentUser.role, 
+            pin: currentUser.pin,
+            id:currentUser.id
+          })
+        ); 
 
         Notiflix.Notify.success("Sikeres bejelentkezés!");
 
@@ -39,7 +48,7 @@ const Login = () => {
     <div className="login">
       <div className="left">
         <h1>KunPao's Coffee Management</h1>
-        <form>
+        <form onSubmit={signIn}>
           <label>E-mail</label>
           <input
             type="email"
@@ -56,7 +65,6 @@ const Login = () => {
 
           <button
             type="submit"
-            onClick={signIn}
             className="login__signInButton"
           >
             Belépés
