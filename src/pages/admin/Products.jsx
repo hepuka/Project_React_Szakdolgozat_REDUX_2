@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import "./Products.scss";
 import Layout from "../../components/Layout";
 import useFetchCollection from "../../customHooks/useFetchCollection";
@@ -9,21 +9,21 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import { db, storage } from "../../firebase/config";
 import { OnlyAdmin } from "../../components/OnlyAdmin";
-import { useDispatch } from "react-redux";
-import { STORE_PRODUCTS } from "../../Redux/slice/productSlice";
+//import { useDispatch } from "react-redux";
+//import { STORE_PRODUCTS } from "../../Redux/slice/productSlice";
 
 const Products = () => {
   const data = useFetchCollection("kunpaosproducts");
   const [search, setSearch] = useState("");
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
 
-  useEffect(() => {
+  /*   useEffect(() => {
     dispatch(
       STORE_PRODUCTS({
         products: data,
       })
     );
-  });
+  }); */
 
   const filteredProducts = data.filter(
     (item) =>
@@ -71,7 +71,6 @@ const Products = () => {
     <Layout>
       <div className="products">
         <div className="products__title">
-          <h1>Termékek</h1>
           <div className="products__search">
             <h2>
               <span>{data.length}</span> darab termék a listában

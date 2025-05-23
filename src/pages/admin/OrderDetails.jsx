@@ -2,13 +2,11 @@ import Layout from "../../components/Layout";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./OrderDetails.scss";
-import { useSelector } from "react-redux";
-import { selectOrderHistory } from "../../Redux/slice/orderSlice";
+import useFetchDocument from "../../customHooks/useFetchDocument.js";
 
 const OrderDetails = () => {
   const { id } = useParams();
-  const orders = useSelector(selectOrderHistory);
-  const order = orders.find((item) => item.id === id);
+  const order = useFetchDocument("kunpaosorders", id);
 
   return (
     <Layout>
@@ -17,13 +15,13 @@ const OrderDetails = () => {
 
         <div className="orderDetails__card">
           <div className="orderDetails__rows">
-            <p>Megrendelés azonosító:</p> <span>{order.id}</span>
+            <p>Megrendelés azonosító:</p> <span>{order?.id}</span>
           </div>
           <div className="orderDetails__rows">
-            <p>Rendelés összege:</p> <span>{order.orderAmount} Ft</span>
+            <p>Rendelés összege:</p> <span>{order?.orderAmount} Ft</span>
           </div>
           <div className="orderDetails__rows">
-            <p>Rendelés állapota:</p> <span>{order.orderStatus}</span>
+            <p>Rendelés állapota:</p> <span>{order?.orderStatus}</span>
           </div>
 
           <div className="orderDetails__details">
@@ -38,20 +36,20 @@ const OrderDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {order.cartItems.map((cart, index) => {
+                {order?.cartItems.map((cart, index) => {
                   const { id, name, price, amount } = cart;
                   return (
-                    <tr key={id}>
+                    <tr key={id || ""}>
                       <td>
                         <b>{index + 1}</b>
                       </td>
                       <td>
                         <p>
-                          <b>{name}</b>
+                          <b>{name || ""}</b>
                         </p>
                       </td>
-                      <td>{price}</td>
-                      <td>{amount}</td>
+                      <td>{price || ""}</td>
+                      <td>{amount || ""}</td>
                       <td>{price * amount}.00</td>
                     </tr>
                   );

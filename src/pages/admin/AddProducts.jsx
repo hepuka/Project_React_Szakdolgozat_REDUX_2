@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import "./AddProducts.scss";
 import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,8 +11,8 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import Layout from "../../components/Layout";
-import { useSelector } from "react-redux";
-import { selectProducts } from "../../Redux/slice/productSlice";
+import detectForm from "../../services/detectForm";
+import useFetchDocument from "../../customHooks/useFetchDocument.js";
 
 const categories = [
   { id: 1, name: "Kávé" },
@@ -34,23 +34,14 @@ const initialSate = {
 
 const AddProducts = () => {
   const { id } = useParams();
-  const products = useSelector(selectProducts);
-  const productEdit = products.find((item) => item.id === id);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
+  const productEdit = useFetchDocument("kunpaosproducts", id);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [product, setProduct] = useState(initialSate);
 
-  const detectForm = (id, f1, f2) => {
-    if (id === "ADD") {
-      return f1;
-    } else {
-      return f2;
-    }
-  };
-
-  const [product, setProduct] = useState(() => {
-    const newState = detectForm(id, { ...initialSate }, productEdit);
-    return newState;
-  });
+  useEffect(() => {
+    setProduct(id !== "ADD" && productEdit ? productEdit : { ...initialSate });
+  }, [id, productEdit]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -151,7 +142,7 @@ const AddProducts = () => {
                 type="text"
                 required
                 name="name"
-                value={product.name}
+                value={product.name || ""}
                 onChange={(e) => handleInputChange(e)}
               />
 
@@ -179,7 +170,7 @@ const AddProducts = () => {
                 <input
                   type="text"
                   name="imageURL"
-                  value={product.imageURL}
+                  value={product.imageURL || ""}
                   required
                   disabled
                 />
@@ -191,14 +182,14 @@ const AddProducts = () => {
                 type="text"
                 required
                 name="price"
-                value={product.price}
+                value={product.price || ""}
                 onChange={(e) => handleInputChange(e)}
               />
               <label>Kategória</label>
               <select
                 required
                 name="category"
-                value={product.category}
+                value={product.category || ""}
                 onChange={(e) => handleInputChange(e)}
               >
                 <option value="" disabled>
@@ -220,13 +211,13 @@ const AddProducts = () => {
                 type="text"
                 required
                 name="packaging"
-                value={product.packaging}
+                value={product.packaging || ""}
                 onChange={(e) => handleInputChange(e)}
               />
               <label>Termék leírása</label>
               <textarea
                 name="desc"
-                value={product.desc}
+                value={product.desc || ""}
                 required
                 onChange={(e) => handleInputChange(e)}
                 cols="30"

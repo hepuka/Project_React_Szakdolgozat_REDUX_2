@@ -8,7 +8,7 @@ import Notiflix from "notiflix";
 import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import useFetchDocument from "../../customHooks/useFetchDocument.js";
-import { use } from "react";
+import detectForm from "../../services/detectForm.js";
 
 const categories = [
   { id: 1, name: "Admin" },
@@ -29,16 +29,7 @@ const initialSate = {
 const Register = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const detectForm = (id, f1, f2) => {
-    if (id === "ADD") {
-      return f1;
-    } else {
-      return f2;
-    }
-  };
   const userEdit = useFetchDocument("users", id);
-
   const [user, setUser] = useState(initialSate);
 
   useEffect(() => {

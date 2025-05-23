@@ -1,23 +1,11 @@
-import React, { useEffect } from "react";
 import "./Orders.scss";
 import Layout from "../../components/Layout";
 import useFetchCollection from "../../customHooks/useFetchCollection";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { STORE_ORDERS } from "../../Redux/slice/orderSlice";
 
 const Orders = () => {
   const data = useFetchCollection("kunpaosorders");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(
-      STORE_ORDERS({
-        orderHistory: data,
-      })
-    );
-  });
 
   const handleClick = (id) => {
     navigate(`/order-details/${id}`);
@@ -27,7 +15,6 @@ const Orders = () => {
     <Layout>
       <div className="orders">
         <div className="orders__title">
-          <h1>Összes megrendelés</h1>
           <h2>Válassz egy rendelést a részletek megtekintésére</h2>
         </div>
 
