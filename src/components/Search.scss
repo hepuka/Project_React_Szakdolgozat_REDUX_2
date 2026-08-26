@@ -1,16 +1,104 @@
 @import "../index.scss";
 
 .search {
-    input {
-        height: 30px;
-        margin-bottom: 10px;
-        width: 220px;
-        border: none;
-        border: 1px solid $dark;
-        outline: none;
-        border-radius: 4px;
-        padding: 0 5px;
-        background-color: $buttonBackground;
-        color: $font-color
-    }
+  position: relative;
+
+  width: min(100%, 380px);
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  background: #fffdf9;
+
+  border: 1px solid #e7ded6;
+  border-radius: 12px;
+
+  box-shadow: 0 5px 16px rgba(54, 35, 25, 0.05);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: #765238;
+
+    box-shadow:
+      0 0 0 4px rgba(118, 82, 56, 0.09),
+      0 5px 16px rgba(54, 35, 25, 0.05);
+  }
+}
+
+.search__icon {
+  width: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #8b7b72;
+
+  font-size: 1.8rem;
+}
+
+.search input {
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+
+  padding: 0 38px 0 0;
+
+  box-sizing: border-box;
+
+  background: transparent;
+  color: #2c1e1a;
+
+  border: none;
+  outline: none;
+
+  font-family: inherit;
+  font-size: 1.2rem;
+
+  &::placeholder {
+    color: #a99e97;
+  }
+}
+
+.search__clear {
+  position: absolute;
+  right: 8px;
+
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #f3e8de;
+  color: #765238;
+
+  font-family: inherit;
+  font-size: 1.7rem;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background: #765238;
+    color: #fff;
+  }
+}
+
+@media (max-width: 800px) {
+  .search {
+    width: 100%;
+  }
 }
