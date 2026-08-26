@@ -1,96 +1,122 @@
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Notiflix from "notiflix";
-import "./Sidebar.scss";
-import { useSelector } from "react-redux";
-import { selectUserName } from "../Redux/slice/authSlice";
 import { signOut } from "firebase/auth";
+
+import "./Sidebar.scss";
 import { auth } from "../firebase/config";
+import { selectUserName, REMOVE_ACTIVE_USER } from "../Redux/slice/authSlice";
 import { OnlyAdmin, OnlyEmployee } from "./OnlyAdmin";
-import { useDispatch } from "react-redux";
-import { REMOVE_ACTIVE_USER } from "../Redux/slice/authSlice";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const currentUser = useSelector(selectUserName);
   const dispatch = useDispatch();
+  const currentUser = useSelector(selectUserName);
 
-  const logoutUser = () => {
-    signOut(auth)
-      .then(() => {
-        dispatch(REMOVE_ACTIVE_USER());
+  const logoutUser = async () => {
+    try {
+      await signOut(auth);
+      dispatch(REMOVE_ACTIVE_USER());
 
-        Notiflix.Notify.success("Sikeres kijelentkezés!");
-        navigate("/");
-      })
-      .catch((error) => {
-        Notiflix.Notify.failure(error.message);
-      });
+      Notiflix.Notify.success("Sikeres kijelentkezés!");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      Notiflix.Notify.failure("Nem sikerült kijelentkezni.");
+    }
   };
 
-  const activeLink = ({ isActive }) => {
-    return isActive
-      ? "sidebar__button sidebar__button_active"
-      : "sidebar__button";
-  };
+  const activeLink = ({ isActive }) =>
+    isActive ? "sidebar__button sidebar__button_active" : "sidebar__button";
 
   return (
-    <div className="sidebar">
+    <aside className="sidebar">
       <div className="sidebar__container">
-        <div className="sidebar__title flex-item">
-          <h1>Bejelentkezve: {currentUser}</h1>
+        <div className="sidebar__header">
+          <div className="sidebar__brand">
+            <div className="sidebar__brandLogo">☕</div>
+
+            <div>
+              <div className="sidebar__brandName">KunPao's Coffee</div>
+              <div className="sidebar__brandSubtitle">Management</div>
+            </div>
+          </div>
+
+          <div className="sidebar__user">
+            <div className="sidebar__avatar">
+              {currentUser?.charAt(0)?.toUpperCase() || "U"}
+            </div>
+
+            <div className="sidebar__userInfo">
+              <span>Bejelentkezve</span>
+              <strong>{currentUser || "Felhasználó"}</strong>
+            </div>
+          </div>
         </div>
-        <div className="sidebar__buttons flex-item">
+
+        <nav className="sidebar__buttons" aria-label="Főmenü">
           <OnlyAdmin>
             <NavLink to="/users" className={activeLink}>
-              Felhasználók
+              <span className="sidebar__icon">👥</span>
+              <span>Felhasználók</span>
             </NavLink>
 
             <NavLink to="/register/ADD" className={activeLink}>
-              Új felhasználó regisztrálása
+              <span className="sidebar__icon">＋</span>
+              <span>Új felhasználó</span>
             </NavLink>
           </OnlyAdmin>
 
           <NavLink to="/products" className={activeLink}>
-            Termékek
+            <span className="sidebar__icon">☕</span>
+            <span>Termékek</span>
           </NavLink>
 
           <OnlyAdmin>
             <NavLink to="/add-product/ADD" className={activeLink}>
-              Új termék hozzáadása
+              <span className="sidebar__icon">＋</span>
+              <span>Új termék</span>
             </NavLink>
           </OnlyAdmin>
 
           <NavLink to="/orders" className={activeLink}>
-            Összes rendelés
+            <span className="sidebar__icon">🧾</span>
+            <span>Összes rendelés</span>
           </NavLink>
 
           <OnlyAdmin>
             <NavLink to="/business" className={activeLink}>
-              Üzleti összesítő
+              <span className="sidebar__icon">📊</span>
+              <span>Üzleti összesítő</span>
             </NavLink>
 
             <NavLink to="/contact" className={activeLink}>
-              Hibabejelentés
+              <span className="sidebar__icon">💬</span>
+              <span>Hibabejelentés</span>
             </NavLink>
           </OnlyAdmin>
 
           <OnlyEmployee>
             <NavLink to="/tables" className={activeLink}>
-              Rendelés / Fizetés
+              <span className="sidebar__icon">🛎️</span>
+              <span>Rendelés / Fizetés</span>
             </NavLink>
           </OnlyEmployee>
+
           <OnlyAdmin>
-            <NavLink to="/main" className="sidebar__button">
-              Főoldal
+            <NavLink to="/main" className={activeLink}>
+              <span className="sidebar__icon">⌂</span>
+              <span>Főoldal</span>
             </NavLink>
           </OnlyAdmin>
-          <div onClick={logoutUser} className="sidebar__button">
-            Kilépés
-          </div>
-        </div>
+        </nav>
+
+        <button type="button" onClick={logoutUser} className="sidebar__logout">
+          <span className="sidebar__icon">↪</span>
+          <span>Kilépés</span>
+        </button>
       </div>
-    </div>
+    </aside>
   );
 };
 

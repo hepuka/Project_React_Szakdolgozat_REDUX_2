@@ -1,13 +1,36 @@
 @import "../index.scss";
 
 .footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+  flex-shrink: 0;
 
-    h2 {
-        font-size: 1.5rem;
-        color: $font-color;
-    }
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  padding: 10px 8px;
+
+  color: #9a8c83;
+
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.footer__separator {
+  color: #c1b3aa;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    min-height: 38px;
+
+    font-size: 0.95rem;
+  }
+
+  .footer__separator {
+    display: none;
+  }
 }

@@ -4,13 +4,14 @@ import Sidebar from "../components/Sidebar";
 
 const Layout = ({ children }) => {
   return (
-    <>
-      <div className="layout">
+    <div className="layout">
+      <main className="layout__main">
         <div className="layout__content">{children}</div>
-        <Sidebar />
         <Footer />
-      </div>
-    </>
+      </main>
+
+      <Sidebar />
+    </div>
   );
 };
 

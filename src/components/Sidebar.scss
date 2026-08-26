@@ -1,74 +1,401 @@
 @import "../index.scss";
 
 .sidebar {
+  flex: 0 0 300px;
+  min-width: 260px;
+  height: calc(100vh - 40px);
+
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  flex-wrap: wrap;
-  height: 100%;
+
+  box-sizing: border-box;
 }
 
 .sidebar__container {
+  width: 100%;
+  height: 100%;
+
   display: flex;
   flex-direction: column;
-  row-gap: 30px;
-  padding-top: 15px;
-  border-radius: 10px;
 
-  height: 100%;
-  width: 100%;
-  overflow: auto;
+  padding: 22px 16px 16px;
+  box-sizing: border-box;
+
+  background: #2c1e1a;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+
+  box-shadow:
+    0 20px 50px rgba(44, 30, 26, 0.18),
+    0 4px 12px rgba(44, 30, 26, 0.08);
+
+  overflow: hidden;
+}
+
+.sidebar__header {
+  flex-shrink: 0;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 4px 8px 22px;
+}
+
+.sidebar__brandLogo {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f0dfc7;
+  color: #2c1e1a;
+
+  border-radius: 12px;
+
+  font-size: 2rem;
+}
+
+.sidebar__brandName {
+  color: #fffdf9;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sidebar__brandSubtitle {
+  margin-top: 2px;
+
+  color: #bca99c;
+
+  font-size: 1rem;
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin: 0 4px 20px;
+  padding: 12px;
+
+  background: rgba(255, 255, 255, 0.06);
+
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+}
+
+.sidebar__avatar {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #765238;
+  color: #fff;
+
+  border-radius: 50%;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sidebar__userInfo {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar__userInfo span {
+  color: #a9978c;
+
+  font-size: 1rem;
+}
+
+.sidebar__userInfo strong {
+  max-width: 190px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #fffdf9;
+
+  font-size: 1.25rem;
+}
+
+.sidebar__buttons {
+  min-height: 0;
+
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  overflow-y: auto;
+
+  padding: 2px 2px 10px;
+
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  }
+}
+
+.sidebar__button {
+  width: 100%;
+  min-height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  color: #d8cbc2;
+
+  background: transparent;
+
+  border: 1px solid transparent;
+  border-radius: 12px;
+
+  font-size: 1.25rem;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fffdf9;
   }
 
-  h1 {
-    font-size: 1.5rem;
-    text-align: center;
-  }
-
-  .flex-item:nth-of-type(1) {
-    flex-grow: 1;
-  }
-  .flex-item:nth-of-type(2) {
-    flex-grow: 2;
-  }
-
-  .sidebar__buttons {
-    display: flex;
-    flex-grow: 1;
-    align-items: center;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    row-gap: 30px;
-
-    .sidebar__button {
-      width: 100%;
-      height: 100px;
-      padding: 0 10px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      color: $font-color;
-      font-weight: bold;
-      font-size: 1.5rem;
-      text-align: center;
-      border: 1px solid $dark;
-      border-radius: 0.3rem;
-
-      &:active {
-        transform: scale(0.95);
-      }
-    }
+  &:active {
+    transform: scale(0.98);
   }
 }
 
 .sidebar__button_active {
-  background-color: $buttonBackground;
+  background: #f0c14b;
+  color: #2c1e1a;
+
+  border-color: rgba(255, 255, 255, 0.12);
+
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+
+  &:hover {
+    background: #f4ca61;
+    color: #2c1e1a;
+  }
+}
+
+.sidebar__icon {
+  width: 25px;
+  flex: 0 0 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.45rem;
+  text-align: center;
+}
+
+.sidebar__logout {
+  width: 100%;
+  min-height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 8px;
+  padding: 0 12px;
+
+  color: #f1d7cb;
+  background: rgba(180, 82, 82, 0.14);
+
+  border: 1px solid rgba(220, 120, 120, 0.15);
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: rgba(190, 82, 82, 0.28);
+    color: #fff;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@media only screen and (max-width: 1280px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    flex: none;
+  }
+
+  .sidebar__container {
+    height: auto;
+
+    padding: 12px 14px;
+
+    border-radius: 18px;
+  }
+
+  .sidebar__header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .sidebar__brand {
+    padding: 0;
+  }
+
+  .sidebar__brandLogo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .sidebar__user {
+    margin: 0;
+    margin-left: auto;
+
+    padding: 8px 10px;
+  }
+
+  .sidebar__buttons {
+    flex-direction: row;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 10px 0 2px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .sidebar__button {
+    width: auto;
+    min-width: max-content;
+    min-height: 42px;
+
+    padding: 0 14px;
+
+    font-size: 1.15rem;
+  }
+
+  .sidebar__logout {
+    position: absolute;
+    top: 20px;
+    right: 32px;
+
+    width: auto;
+    min-height: 38px;
+
+    margin: 0;
+    padding: 0 12px;
+
+    background: rgba(180, 82, 82, 0.14);
+
+    font-size: 1.1rem;
+  }
+
+  .sidebar__logout .sidebar__icon {
+    width: auto;
+    flex: none;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .sidebar__container {
+    padding: 10px;
+  }
+
+  .sidebar__brandSubtitle {
+    display: none;
+  }
+
+  .sidebar__brandName {
+    font-size: 1.2rem;
+  }
+
+  .sidebar__userInfo {
+    display: none;
+  }
+
+  .sidebar__user {
+    padding: 6px;
+    background: transparent;
+    border: none;
+  }
+
+  .sidebar__logout {
+    position: static;
+
+    min-width: 42px;
+    width: 42px;
+
+    justify-content: center;
+
+    padding: 0;
+  }
+
+  .sidebar__logout span:last-child {
+    display: none;
+  }
+
+  .sidebar__buttons {
+    padding-top: 8px;
+  }
+
+  .sidebar__button {
+    min-height: 40px;
+    padding: 0 12px;
+  }
+
+  .sidebar__button .sidebar__icon {
+    display: none;
+  }
 }
