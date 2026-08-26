@@ -1,84 +1,518 @@
 @import "../../index.scss";
 
 .register {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-top: 40px;
+  width: 100%;
+  min-height: 100%;
+
+  padding: 28px 30px 40px;
+
+  box-sizing: border-box;
+
+  color: #2c1e1a;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d5c8be transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d5c8be;
+    border-radius: 20px;
+  }
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.register__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  margin-bottom: 24px;
+}
+
+.register__eyebrow {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #765238;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.register__header h1 {
+  margin: 0;
+
+  color: #2c1e1a;
+
+  font-size: clamp(2.5rem, 4vw, 3.8rem);
+  line-height: 1.1;
+  font-weight: 750;
+
+  letter-spacing: -0.045em;
+}
+
+.register__header p {
+  margin: 9px 0 0;
+
+  color: #8b7b72;
+
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
+.register__backButton {
+  min-height: 44px;
+
+  flex-shrink: 0;
+
+  padding: 0 16px;
+
+  background: #fffdf9;
+  color: #765238;
+
+  border: 1px solid #dfd4cb;
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: #f3e8de;
+    color: #4f3625;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.register__form {
+  width: 100%;
+}
+
+.register__grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+
+  width: 100%;
+}
+
+/* =========================================================
+   BOX
+   ========================================================= */
+
+.register__box {
+  min-width: 0;
+
+  padding: 22px;
+
+  background: rgba(255, 253, 249, 0.97);
+
+  border: 1px solid #e7ded6;
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 28px rgba(54, 35, 25, 0.06),
+    0 2px 8px rgba(54, 35, 25, 0.03);
+}
+
+.register__boxHeader {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+
+  border-bottom: 1px solid #eee7e1;
+}
+
+.register__boxIcon {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 11px;
+
+  font-size: 1.65rem;
+}
+
+.register__boxHeader h2 {
+  margin: 0;
+
+  color: #2c1e1a;
+
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.register__boxHeader p {
+  margin: 3px 0 0;
+
+  color: #9a8c83;
+
+  font-size: 1.05rem;
+}
+
+/* =========================================================
+   FIELDS
+   ========================================================= */
+
+.register__field {
+  margin-bottom: 17px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #3c302b;
+
+    font-size: 1.2rem;
+    font-weight: 650;
+  }
+
+  input,
+  select {
     width: 100%;
+    height: 46px;
 
-    overflow: auto;
+    box-sizing: border-box;
 
-    &::-webkit-scrollbar {
-        display: none;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    padding: 0 13px;
+
+    background: #faf8f5;
+    color: #2c1e1a;
+
+    border: 1px solid #ded6d0;
+    border-radius: 11px;
+
+    outline: none;
+
+    font-family: inherit;
+    font-size: 1.3rem;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+
+    &:focus {
+      background: #fff;
+
+      border-color: #765238;
+
+      box-shadow: 0 0 0 4px rgba(118, 82, 56, 0.1);
     }
 
-    form {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        flex-wrap: wrap;
-        gap: 30px;
-        margin-top: 20px;
-        padding: 0 10px;
-        width: 100%;
-
-
-        .register__row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 60px;
-            gap: 80px;
-
-            .register__box {
-                width: 300px;
-                padding: 20px;
-                border: 1px solid $borderColor;
-                border-radius: 10px;
-                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            }
-        }
-
-        label {
-            display: block;
-            font-size: 1.5rem;
-            padding-bottom: 3px;
-            font-weight: bold;
-            color: $font-color;
-
-        }
-
-        input,
-        select {
-            height: 30px;
-            margin-bottom: 30px;
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid $dark;
-            outline: none;
-            border-radius: 4px;
-            padding: 0 5px;
-            color: $font-color;
-
-        }
-
-        .login__signInButton {
-            background: $buttonBackground;
-            border-radius: 2px;
-            width: 20%;
-            height: 30px;
-            border: 1px solid;
-            margin-top: 30px;
-            border-color: $borderColor;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
     }
+
+    &::placeholder {
+      color: #b0a39b;
+    }
+  }
+
+  select {
+    cursor: pointer;
+  }
+}
+
+.register__passwordWrapper {
+  position: relative;
+
+  input {
+    padding-right: 45px;
+  }
+}
+
+.register__passwordToggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 43px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  color: #806e63;
+
+  font-size: 1.6rem;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    color: #4f3625;
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+/* =========================================================
+   EDIT INFO
+   ========================================================= */
+
+.register__editInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  margin-top: 7px;
+  padding: 13px;
+
+  background: #f5eee8;
+
+  border: 1px solid #e9ddd4;
+  border-radius: 11px;
+
+  span {
+    flex: 0 0 auto;
+    font-size: 1.3rem;
+  }
+
+  p {
+    margin: 0;
+
+    color: #75675f;
+
+    font-size: 1.05rem;
+    line-height: 1.5;
+  }
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.register__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.register__cancelButton,
+.register__submitButton {
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 20px;
+
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.register__cancelButton {
+  background: #fffdf9;
+  color: #765238;
+
+  border: 1px solid #dfd4cb;
+
+  &:hover:not(:disabled) {
+    background: #f3e8de;
+  }
+}
+
+.register__submitButton {
+  min-width: 180px;
+
+  background: #2c1e1a;
+  color: #fff;
+
+  border: 1px solid #2c1e1a;
+
+  box-shadow: 0 8px 20px rgba(44, 30, 26, 0.15);
+
+  &:hover:not(:disabled) {
+    background: #765238;
+
+    border-color: #765238;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 11px 24px rgba(44, 30, 26, 0.2);
+  }
+}
+
+.register__spinner {
+  width: 16px;
+  height: 16px;
+
+  flex: 0 0 16px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+
+  border-radius: 50%;
+
+  animation: registerSpinner 0.7s linear infinite;
+}
+
+@keyframes registerSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .register__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .register__box:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 800px) {
+  .register {
+    padding: 22px 12px 30px;
+  }
+
+  .register__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .register__backButton {
+    width: 100%;
+  }
+
+  .register__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .register__box:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .register {
+    padding: 18px 6px 25px;
+  }
+
+  .register__header h1 {
+    font-size: 2.7rem;
+  }
+
+  .register__header p {
+    font-size: 1.2rem;
+  }
+
+  .register__box {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .register__actions {
+    flex-direction: column-reverse;
+  }
+
+  .register__cancelButton,
+  .register__submitButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .register__backButton,
+  .register__passwordToggle,
+  .register__submitButton,
+  .register__cancelButton,
+  .register__spinner {
+    animation: none;
+    transition: none;
+  }
 }
