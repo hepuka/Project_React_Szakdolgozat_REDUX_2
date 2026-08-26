@@ -11,73 +11,169 @@ import { SET_ACTIVE_USER } from "../../Redux/slice/authSlice";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const users = useFetchCollection("users"); 
+  const users = useFetchCollection("users");
 
-  const signIn = (e) => {
+  const signIn = async (e) => {
     e.preventDefault();
-    const currentUser = users.find((item) => item.email === email);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        //const user = userCredential.user;
+    if (loading) return;
 
-       dispatch(
-          SET_ACTIVE_USER({
-            email: currentUser.email,
-            name: currentUser.name,
-            role: currentUser.role, 
-            pin: currentUser.pin,
-            id:currentUser.id
-          })
-        ); 
+    const normalizedEmail = email.trim().toLowerCase();
 
-        Notiflix.Notify.success("Sikeres bejelentkezés!");
+    if (!normalizedEmail || !password) {
+      Notiflix.Notify.warning("Add meg az e-mail címedet és a jelszavadat!");
+      return;
+    }
 
-        currentUser.role === "Admin" || currentUser.role === "Manager"
-          ? navigate("/main")
-          : navigate("/tables");
-      })
-      .catch((error) => {
-        Notiflix.Notify.failure(error.message);
-      });
+    setLoading(true);
+
+    try {
+      const currentUser = users.find(
+        (item) =>
+          item.email && item.email.trim().toLowerCase() === normalizedEmail,
+      );
+
+      if (!currentUser) {
+        Notiflix.Notify.failure("A felhasználó nem található.");
+        return;
+      }
+
+      await signInWithEmailAndPassword(auth, normalizedEmail, password);
+
+      dispatch(
+        SET_ACTIVE_USER({
+          email: currentUser.email,
+          name: currentUser.name,
+          role: currentUser.role,
+          pin: currentUser.pin,
+          id: currentUser.id,
+        }),
+      );
+
+      Notiflix.Notify.success("Sikeres bejelentkezés!");
+
+      if (currentUser.role === "Admin" || currentUser.role === "Manager") {
+        navigate("/main");
+      } else {
+        navigate("/tables");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+
+      Notiflix.Notify.failure("Hibás e-mail cím vagy jelszó.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="login">
-      <div className="left">
-        <h1>KunPao's Coffee Management</h1>
-        <form onSubmit={signIn}>
-          <label>E-mail</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <main className="login">
+      <div className="login__overlay" />
 
-          <label>Jelszó</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+      <section className="login__card">
+        <div className="login__brand">
+          <div className="login__logo" aria-hidden="true">
+            ☕
+          </div>
+
+          <div>
+            <p className="login__brandName">KunPao's Coffee</p>
+            <p className="login__brandSubtitle">Management</p>
+          </div>
+        </div>
+
+        <div className="login__header">
+          <h1>Bejelentkezés</h1>
+          <p>Jelentkezzen be a folytatáshoz.</p>
+        </div>
+
+        <form onSubmit={signIn} className="login__form">
+          <div className="login__field">
+            <label htmlFor="email">E-mail cím</label>
+
+            <div className="login__inputWrapper">
+              <span className="login__inputIcon" aria-hidden="true">
+                ✉
+              </span>
+
+              <input
+                id="email"
+                type="email"
+                value={email}
+                placeholder="email@example.com"
+                autoComplete="email"
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          <div className="login__field">
+            <div className="login__passwordLabel">
+              <label htmlFor="password">Jelszó</label>
+
+              <Link to="/reset" className="login__forgot">
+                Elfelejtett jelszó
+              </Link>
+            </div>
+
+            <div className="login__inputWrapper">
+              <span className="login__inputIcon" aria-hidden="true">
+                🔒
+              </span>
+
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                placeholder="Add meg a jelszavad"
+                autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+              />
+
+              <button
+                type="button"
+                className="login__passwordToggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={
+                  showPassword ? "Jelszó elrejtése" : "Jelszó megjelenítése"
+                }
+                disabled={loading}
+              >
+                {showPassword ? "◉" : "◌"}
+              </button>
+            </div>
+          </div>
 
           <button
             type="submit"
             className="login__signInButton"
+            disabled={loading}
           >
-            Belépés
+            {loading ? (
+              <>
+                <span className="login__spinner" aria-hidden="true" />
+                Bejelentkezés...
+              </>
+            ) : (
+              "Bejelentkezés"
+            )}
           </button>
-          <div className="login__resetSection">
-            <Link to="/reset">
-              <button>Elfelejtett jelszó</button>
-            </Link>
-          </div>
         </form>
-      </div>
-      <div className="right"></div>
-    </div>
+
+        <div className="login__footer">
+          <span />
+          <p>KunPao's Coffee Management</p>
+          <span />
+        </div>
+      </section>
+    </main>
   );
 };
 
