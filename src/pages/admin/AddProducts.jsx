@@ -30,6 +30,8 @@ const initialState = {
   category: "",
   packaging: "",
   desc: "",
+  stock: 0,
+  minStock: 5,
 };
 
 const AddProducts = () => {
@@ -143,6 +145,10 @@ const AddProducts = () => {
         category: product.category,
         packaging: product.packaging.trim(),
         desc: product.desc.trim(),
+
+        stock: Number(product.stock),
+        minStock: Number(product.minStock),
+
         createdAt: Timestamp.now().toDate(),
       });
 
@@ -174,11 +180,15 @@ const AddProducts = () => {
         doc(db, "kunpaosproducts", id),
         {
           name: product.name.trim(),
-          imageURL: newImageURL,
+          imageURL: product.imageURL,
           price: Number(product.price),
           category: product.category,
           packaging: product.packaging.trim(),
           desc: product.desc.trim(),
+
+          stock: Number(product.stock),
+          minStock: Number(product.minStock),
+
           createdAt: productEdit.createdAt,
           editedAt: Timestamp.now().toDate(),
         },
@@ -320,6 +330,37 @@ const AddProducts = () => {
                   name="packaging"
                   value={product.packaging || ""}
                   placeholder="Pl. 3 dl"
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+              <div className="addProduct__field">
+                <label htmlFor="stock">Aktuális készlet (db)</label>
+
+                <input
+                  id="stock"
+                  type="number"
+                  name="stock"
+                  min="0"
+                  step="1"
+                  required
+                  value={product.stock ?? 0}
+                  onChange={handleInputChange}
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="addProduct__field">
+                <label htmlFor="minStock">Minimum készlet (db)</label>
+
+                <input
+                  id="minStock"
+                  type="number"
+                  name="minStock"
+                  min="0"
+                  step="1"
+                  required
+                  value={product.minStock ?? 5}
                   onChange={handleInputChange}
                   disabled={loading}
                 />

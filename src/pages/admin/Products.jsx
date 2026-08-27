@@ -44,38 +44,61 @@ const getProductImage = (product) => {
   return FALLBACK_IMAGES.coffee;
 };
 
+const getStockStatus = (stock, minStock) => {
+  const currentStock = Number(stock || 0);
+  const minimumStock = Number(minStock || 0);
+
+  if (currentStock <= 0) {
+    return {
+      label: "Elfogyott",
+      className: "products__stock--empty",
+      icon: "🔴",
+    };
+  }
+
+  if (currentStock <= minimumStock) {
+    return {
+      label: "Alacsony készlet",
+      className: "products__stock--low",
+      icon: "🟡",
+    };
+  }
+
+  return {
+    label: "Készleten",
+    className: "products__stock--available",
+    icon: "🟢",
+  };
+};
+
 const Products = () => {
   const data = useFetchCollection("kunpaosproducts");
+
   const [search, setSearch] = useState("");
-  const categories = useMemo(() => {
-    const uniqueCategories = new Set();
-
-    data.forEach((item) => {
-      uniqueCategories.add(item.category);
-    });
-
-    return Array.from(uniqueCategories);
-  }, [data]);
+  const [selectedCategory, setSelectedCategory] = useState("Összes");
 
   const filteredProducts = useMemo(() => {
     const searchValue = search.trim().toLowerCase();
 
-    if (!searchValue) {
-      return data;
-    }
-
     return data.filter((item) => {
-      const name = item.name?.toLowerCase() || "";
-      const category = item.category?.toLowerCase() || "";
-      const description = item.desc?.toLowerCase() || "";
+      const name = item?.name?.toLowerCase() || "";
+      const category = item?.category?.toLowerCase() || "";
+      const description = item?.desc?.toLowerCase() || "";
 
-      return (
+      const matchesSearch =
+        !searchValue ||
         name.includes(searchValue) ||
         category.includes(searchValue) ||
-        description.includes(searchValue)
-      );
+        description.includes(searchValue);
+
+      const itemCategory = item?.category?.trim() || "";
+
+      const matchesCategory =
+        selectedCategory === "Összes" || itemCategory === selectedCategory;
+
+      return matchesSearch && matchesCategory;
     });
-  }, [data, search]);
+  }, [data, search, selectedCategory]);
 
   const confirmDelete = (id, imageURL) => {
     Notiflix.Confirm.show(
@@ -99,23 +122,18 @@ const Products = () => {
     try {
       await deleteDoc(doc(db, "kunpaosproducts", id));
 
-      // Csak akkor próbáljuk törölni a Storage fájlt,
-      // ha az URL valóban Firebase Storage URL.
       if (imageURL && imageURL.includes("firebasestorage.googleapis.com")) {
         try {
-          const storageRef = ref(storage, imageURL);
-          await deleteObject(storageRef);
+          await deleteObject(ref(storage, imageURL));
         } catch (storageError) {
-          console.warn(
-            "A Firestore dokumentum törölve, de a Storage kép nem volt törölhető:",
-            storageError,
-          );
+          console.warn("A Storage kép nem volt törölhető:", storageError);
         }
       }
 
       Notiflix.Notify.success("Sikeres termék törlés!");
     } catch (error) {
       console.error("Delete product error:", error);
+
       Notiflix.Notify.failure("Nem sikerült törölni a terméket.");
     }
   };
@@ -131,6 +149,11 @@ const Products = () => {
     }
   };
 
+  const clearFilters = () => {
+    setSearch("");
+    setSelectedCategory("Összes");
+  };
+
   return (
     <Layout>
       <section className="products">
@@ -140,7 +163,7 @@ const Products = () => {
 
             <h1>Termékek</h1>
 
-            <p>A kávézóban elérhető termékek kezelése.</p>
+            <p>A kávézóban elérhető termékek és készletek kezelése.</p>
           </div>
 
           <OnlyAdmin>
@@ -156,20 +179,68 @@ const Products = () => {
             <div className="products__countIcon">☕</div>
 
             <div>
-              <strong>{data.length}</strong>
-              <span>termék a kínálatban</span>
+              <strong>{filteredProducts.length}</strong>
+
+              <span>
+                {selectedCategory === "Összes"
+                  ? "termék"
+                  : `${selectedCategory} termék`}
+              </span>
             </div>
           </div>
 
-          {/*           {categories.map((item) => (
-            <div key={item} className="products__count">
-              <div>
-                <strong>{item}</strong>
-              </div>
-            </div>
-          ))} */}
-
           <Search value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+
+        <div className="products__categoryBar">
+          <button
+            type="button"
+            className={`products__categoryButton ${
+              selectedCategory === "Összes"
+                ? "products__categoryButton--active"
+                : ""
+            }`}
+            onClick={() => setSelectedCategory("Összes")}
+            aria-pressed={selectedCategory === "Összes"}
+          >
+            <div className="products__categoryIcon">☕</div>
+
+            <span>Összes</span>
+          </button>
+
+          {data.map((item, index) => {
+            const category = item?.category?.trim();
+
+            if (!category) {
+              return null;
+            }
+
+            const firstIndex = data.findIndex(
+              (product) => product?.category?.trim() === category,
+            );
+
+            if (firstIndex !== index) {
+              return null;
+            }
+
+            return (
+              <button
+                key={category}
+                type="button"
+                className={`products__categoryButton ${
+                  selectedCategory === category
+                    ? "products__categoryButton--active"
+                    : ""
+                }`}
+                onClick={() => setSelectedCategory(category)}
+                aria-pressed={selectedCategory === category}
+              >
+                <div className="products__categoryIcon">☕</div>
+
+                <span>{category}</span>
+              </button>
+            );
+          })}
         </div>
 
         {filteredProducts.length === 0 ? (
@@ -181,13 +252,25 @@ const Products = () => {
             <p>
               {search
                 ? `A(z) „${search}” keresésre nincs találat.`
-                : "Még nincs termék rögzítve a rendszerben."}
+                : `A(z) „${selectedCategory}” kategóriában nincs termék.`}
             </p>
+
+            {(search || selectedCategory !== "Összes") && (
+              <button
+                type="button"
+                className="products__resetButton"
+                onClick={clearFilters}
+              >
+                Szűrők törlése
+              </button>
+            )}
           </div>
         ) : (
           <div className="products__cardlist">
             {filteredProducts.map((item) => {
               const image = getProductImage(item);
+
+              const stockStatus = getStockStatus(item.stock, item.minStock);
 
               return (
                 <article key={item.id} className="products__card">
@@ -210,14 +293,39 @@ const Products = () => {
                     <div className="products__titleRow">
                       <h2>{item.name || "Névtelen termék"}</h2>
 
-                      <span className="products__price">{item.price} Ft</span>
+                      <span className="products__price">
+                        {Number(item.price || 0).toLocaleString("hu-HU")} Ft
+                      </span>
                     </div>
 
                     <div className="products__meta">
                       <span>
                         <small>Kiszerelés</small>
+
                         {item.packaging || "—"}
                       </span>
+                    </div>
+
+                    <div className="products__stock">
+                      <div
+                        className={`products__stockStatus ${stockStatus.className}`}
+                      >
+                        <span>{stockStatus.icon}</span>
+
+                        <strong>{stockStatus.label}</strong>
+                      </div>
+
+                      <div className="products__stockInfo">
+                        <span>Készlet</span>
+
+                        <strong>{Number(item.stock || 0)} db</strong>
+                      </div>
+
+                      <div className="products__stockInfo">
+                        <span>Minimum</span>
+
+                        <strong>{Number(item.minStock || 0)} db</strong>
+                      </div>
                     </div>
 
                     {item.desc && (
