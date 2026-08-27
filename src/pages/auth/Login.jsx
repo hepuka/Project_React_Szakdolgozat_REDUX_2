@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { doc, updateDoc, Timestamp } from "firebase/firestore";
+
+import { auth, db } from "../../firebase/config";
+
 import Notiflix from "notiflix";
 import "./Auth.scss";
+
 import useFetchCollection from "../../customHooks/useFetchCollection";
+
 import { useDispatch } from "react-redux";
 import { SET_ACTIVE_USER } from "../../Redux/slice/authSlice";
 
@@ -16,17 +21,21 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const users = useFetchCollection("users");
 
   const signIn = async (e) => {
     e.preventDefault();
 
-    if (loading) return;
+    if (loading) {
+      return;
+    }
 
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail || !password) {
       Notiflix.Notify.warning("Add meg az e-mail címedet és a jelszavadat!");
+
       return;
     }
 
@@ -40,10 +49,27 @@ const Login = () => {
 
       if (!currentUser) {
         Notiflix.Notify.failure("A felhasználó nem található.");
+
         return;
       }
 
+      // =====================================================
+      // FIREBASE AUTHENTICATION
+      // =====================================================
+
       await signInWithEmailAndPassword(auth, normalizedEmail, password);
+
+      try {
+        await updateDoc(doc(db, "users", currentUser.id), {
+          last_login: Timestamp.now().toDate(),
+        });
+      } catch (error) {
+        console.error("last_login update error:", error);
+      }
+
+      // =====================================================
+      // REDUX
+      // =====================================================
 
       dispatch(
         SET_ACTIVE_USER({
@@ -56,6 +82,10 @@ const Login = () => {
       );
 
       Notiflix.Notify.success("Sikeres bejelentkezés!");
+
+      // =====================================================
+      // NAVIGÁCIÓ
+      // =====================================================
 
       if (
         currentUser.role === "Admin" ||
@@ -87,12 +117,14 @@ const Login = () => {
 
           <div>
             <p className="login__brandName">KunPao's Coffee</p>
+
             <p className="login__brandSubtitle">Management</p>
           </div>
         </div>
 
         <div className="login__header">
           <h1>Bejelentkezés</h1>
+
           <p>Jelentkezzen be a folytatáshoz.</p>
         </div>
 

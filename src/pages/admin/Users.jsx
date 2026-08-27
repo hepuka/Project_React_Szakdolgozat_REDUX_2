@@ -5,6 +5,41 @@ import { Link } from "react-router-dom";
 import { confirmDelete } from "../../services/confirmDelete.js";
 import { OnlyAdmin } from "../../components/OnlyAdmin.js";
 
+const formatLastLogin = (value) => {
+  if (!value) {
+    return "Még nem jelentkezett be";
+  }
+
+  let date;
+
+  // Firestore Timestamp
+  if (typeof value?.toDate === "function") {
+    date = value.toDate();
+  }
+
+  // JavaScript Date
+  else if (value instanceof Date) {
+    date = value;
+  }
+
+  // String / egyéb dátumformátum
+  else {
+    date = new Date(value);
+  }
+
+  if (Number.isNaN(date.getTime())) {
+    return "Érvénytelen dátum";
+  }
+
+  return date.toLocaleString("hu-HU", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 const Users = () => {
   const data = useFetchCollection("users");
 
@@ -66,8 +101,11 @@ const Users = () => {
                   </div>
 
                   <div className="users__row">
-                    <span className="users__label">Adószám</span>
-                    <span className="users__value">{item.tax || "—"}</span>
+                    <span className="users__label">Utolsó bejelentkezés</span>
+
+                    <span className="users__value">
+                      {formatLastLogin(item.last_login)}
+                    </span>
                   </div>
                 </div>
                 <OnlyAdmin>
