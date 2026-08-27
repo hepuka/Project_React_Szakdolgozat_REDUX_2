@@ -16,12 +16,10 @@ const formatLastLogin = (value) => {
   if (typeof value?.toDate === "function") {
     date = value.toDate();
   }
-
   // JavaScript Date
   else if (value instanceof Date) {
     date = value;
   }
-
   // String / egyéb dátumformátum
   else {
     date = new Date(value);
@@ -49,7 +47,9 @@ const Users = () => {
         <header className="users__header">
           <div>
             <span className="users__eyebrow">Adminisztráció</span>
+
             <h1>Regisztrált felhasználók</h1>
+
             <p>Felhasználói fiókok és jogosultságok kezelése.</p>
           </div>
 
@@ -61,8 +61,10 @@ const Users = () => {
 
         <div className="users__summary">
           <div className="users__summaryIcon">👥</div>
+
           <div>
             <strong>{data.length}</strong>
+
             <span>regisztrált felhasználó</span>
           </div>
         </div>
@@ -78,23 +80,38 @@ const Users = () => {
 
                   <div className="users__identity">
                     <h2>{item.name || "Névtelen felhasználó"}</h2>
+
                     <span>{item.role || "Nincs megadva"}</span>
                   </div>
 
-                  <span
-                    className={`users__role ${
-                      item.role === "Admin"
-                        ? "users__role--admin"
-                        : "users__role--default"
-                    }`}
-                  >
-                    {item.role || "Felhasználó"}
-                  </span>
+                  <div className="users__badges">
+                    <span
+                      className={`users__role ${
+                        item.role === "Admin"
+                          ? "users__role--admin"
+                          : item.role === "Manager"
+                            ? "users__role--manager"
+                            : item.role === "Leader"
+                              ? "users__role--leader"
+                              : "users__role--default"
+                      }`}
+                    >
+                      {item.role || "Felhasználó"}
+                    </span>
+
+                    {item.online === true && (
+                      <span className="users__online">
+                        <span className="users__onlineDot" />
+                        Online
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="users__details">
                   <div className="users__row">
                     <span className="users__label">E-mail</span>
+
                     <span className="users__value users__value--email">
                       {item.email || "—"}
                     </span>
@@ -108,6 +125,7 @@ const Users = () => {
                     </span>
                   </div>
                 </div>
+
                 <OnlyAdmin>
                   <div className="users__buttons">
                     <Link
@@ -134,7 +152,9 @@ const Users = () => {
         ) : (
           <div className="users__empty">
             <div className="users__emptyIcon">👥</div>
+
             <h2>Még nincs felhasználó</h2>
+
             <p>Hozd létre az első felhasználói fiókot a rendszerben.</p>
 
             <Link to="/register/ADD" className="users__addButton">

@@ -2,26 +2,37 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Notiflix from "notiflix";
 import { signOut } from "firebase/auth";
-
 import "./Sidebar.scss";
 import { auth } from "../firebase/config";
 import { selectUserName, REMOVE_ACTIVE_USER } from "../Redux/slice/authSlice";
 import { OnlyAdmin, OnlyEmployee, OnlyManager, OnlyLeader } from "./OnlyAdmin";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentUser = useSelector(selectUserName);
+  const currentUserId = useSelector((state) => state.auth.id);
 
   const logoutUser = async () => {
     try {
+      if (currentUserId) {
+        await updateDoc(doc(db, "users", currentUserId), {
+          online: false,
+        });
+      }
+
       await signOut(auth);
+
       dispatch(REMOVE_ACTIVE_USER());
 
       Notiflix.Notify.success("Sikeres kijelentkezés!");
+
       navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
+
       Notiflix.Notify.failure("Nem sikerült kijelentkezni.");
     }
   };

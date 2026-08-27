@@ -59,13 +59,10 @@ const Login = () => {
 
       await signInWithEmailAndPassword(auth, normalizedEmail, password);
 
-      try {
-        await updateDoc(doc(db, "users", currentUser.id), {
-          last_login: Timestamp.now().toDate(),
-        });
-      } catch (error) {
-        console.error("last_login update error:", error);
-      }
+      await updateDoc(doc(db, "users", currentUser.id), {
+        last_login: Timestamp.now().toDate(),
+        online: true,
+      });
 
       // =====================================================
       // REDUX

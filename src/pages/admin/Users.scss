@@ -554,3 +554,73 @@
     transition: none;
   }
 }
+
+.users__badges {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-left: auto;
+}
+
+.users__online {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 5px 9px;
+
+  background: #e7f5ea;
+
+  color: #2f7a3d;
+
+  border: 1px solid #c9e6ce;
+
+  border-radius: 20px;
+
+  font-size: 0.9rem;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.users__onlineDot {
+  width: 7px;
+  height: 7px;
+
+  display: block;
+
+  background: #3fa650;
+
+  border-radius: 50%;
+
+  box-shadow: 0 0 0 3px rgba(63, 166, 80, 0.12);
+
+  animation: usersOnlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes usersOnlinePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (max-width: 600px) {
+  .users__badges {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+}
