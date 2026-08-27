@@ -6,7 +6,7 @@ const initialState = {
   name: "",
   role: "",
   pin: "",
-  id:""
+  id: "",
 };
 
 const authSlice = createSlice({
@@ -20,7 +20,7 @@ const authSlice = createSlice({
       state.name = name;
       state.role = role;
       state.pin = pin;
-      state.id = id
+      state.id = id;
     },
     REMOVE_ACTIVE_USER: (state) => {
       state.isLoggedIn = false;
@@ -28,7 +28,7 @@ const authSlice = createSlice({
       state.name = null;
       state.role = null;
       state.pin = null;
-      state.id = null
+      state.id = null;
     },
   },
 });
@@ -40,5 +40,6 @@ export const selectEmail = (state) => state.auth.email;
 export const selectUserName = (state) => state.auth.name;
 export const selectUserRole = (state) => state.auth.role;
 export const selectUserPin = (state) => state.auth.pin;
+export const selectCurrentUserId = (state) => state.auth.id;
 
 export default authSlice.reducer;
