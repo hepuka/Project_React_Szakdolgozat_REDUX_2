@@ -6,7 +6,7 @@ import { signOut } from "firebase/auth";
 import "./Sidebar.scss";
 import { auth } from "../firebase/config";
 import { selectUserName, REMOVE_ACTIVE_USER } from "../Redux/slice/authSlice";
-import { OnlyAdmin, OnlyEmployee } from "./OnlyAdmin";
+import { OnlyAdmin, OnlyEmployee, OnlyManager, OnlyLeader } from "./OnlyAdmin";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -56,6 +56,10 @@ const Sidebar = () => {
 
         <nav className="sidebar__buttons" aria-label="Főmenü">
           <OnlyAdmin>
+            <NavLink to="/main" className={activeLink}>
+              <span className="sidebar__icon">⌂</span>
+              <span>Főoldal</span>
+            </NavLink>
             <NavLink to="/users" className={activeLink}>
               <span className="sidebar__icon">👥</span>
               <span>Felhasználók</span>
@@ -65,36 +69,65 @@ const Sidebar = () => {
               <span className="sidebar__icon">＋</span>
               <span>Új felhasználó</span>
             </NavLink>
-          </OnlyAdmin>
-
-          <NavLink to="/products" className={activeLink}>
-            <span className="sidebar__icon">☕</span>
-            <span>Termékek</span>
-          </NavLink>
-
-          <OnlyAdmin>
-            <NavLink to="/add-product/ADD" className={activeLink}>
-              <span className="sidebar__icon">＋</span>
-              <span>Új termék</span>
-            </NavLink>
-          </OnlyAdmin>
-
-          <NavLink to="/orders" className={activeLink}>
-            <span className="sidebar__icon">🧾</span>
-            <span>Összes rendelés</span>
-          </NavLink>
-
-          <OnlyAdmin>
-            <NavLink to="/business" className={activeLink}>
-              <span className="sidebar__icon">📊</span>
-              <span>Üzleti összesítő</span>
-            </NavLink>
-
             <NavLink to="/contact" className={activeLink}>
               <span className="sidebar__icon">💬</span>
               <span>Hibabejelentés</span>
             </NavLink>
           </OnlyAdmin>
+
+          <OnlyManager>
+            <NavLink to="/main" className={activeLink}>
+              <span className="sidebar__icon">⌂</span>
+              <span>Főoldal</span>
+            </NavLink>
+            <NavLink to="/users" className={activeLink}>
+              <span className="sidebar__icon">👥</span>
+              <span>Felhasználók</span>
+            </NavLink>
+            <NavLink to="/products" className={activeLink}>
+              <span className="sidebar__icon">☕</span>
+              <span>Termékek</span>
+            </NavLink>
+            <NavLink to="/add-product/ADD" className={activeLink}>
+              <span className="sidebar__icon">＋</span>
+              <span>Új termék</span>
+            </NavLink>
+            <NavLink to="/orders" className={activeLink}>
+              <span className="sidebar__icon">🧾</span>
+              <span>Összes rendelés</span>
+            </NavLink>
+            <NavLink to="/contact" className={activeLink}>
+              <span className="sidebar__icon">💬</span>
+              <span>Hibabejelentés</span>
+            </NavLink>
+          </OnlyManager>
+
+          <OnlyLeader>
+            <NavLink to="/main" className={activeLink}>
+              <span className="sidebar__icon">⌂</span>
+              <span>Főoldal</span>
+            </NavLink>
+            <NavLink to="/users" className={activeLink}>
+              <span className="sidebar__icon">👥</span>
+              <span>Felhasználók</span>
+            </NavLink>
+            <NavLink to="/products" className={activeLink}>
+              <span className="sidebar__icon">☕</span>
+              <span>Termékek</span>
+            </NavLink>
+            <NavLink to="/orders" className={activeLink}>
+              <span className="sidebar__icon">🧾</span>
+              <span>Összes rendelés</span>
+            </NavLink>
+            <NavLink to="/business" className={activeLink}>
+              <span className="sidebar__icon">📊</span>
+              <span>Üzleti összesítő</span>
+            </NavLink>
+            <NavLink to="/contact" className={activeLink}>
+              <span className="sidebar__icon">💬</span>
+              <span>Hibabejelentés</span>
+            </NavLink>
+          </OnlyLeader>
 
           <OnlyEmployee>
             <NavLink to="/tables" className={activeLink}>
@@ -102,13 +135,6 @@ const Sidebar = () => {
               <span>Rendelés / Fizetés</span>
             </NavLink>
           </OnlyEmployee>
-
-          <OnlyAdmin>
-            <NavLink to="/main" className={activeLink}>
-              <span className="sidebar__icon">⌂</span>
-              <span>Főoldal</span>
-            </NavLink>
-          </OnlyAdmin>
         </nav>
 
         <button type="button" onClick={logoutUser} className="sidebar__logout">

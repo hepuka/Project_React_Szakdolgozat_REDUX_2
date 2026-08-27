@@ -3,6 +3,7 @@ import "./Users.scss";
 import useFetchCollection from "../../customHooks/useFetchCollection";
 import { Link } from "react-router-dom";
 import { confirmDelete } from "../../services/confirmDelete.js";
+import { OnlyAdmin } from "../../components/OnlyAdmin.js";
 
 const Users = () => {
   const data = useFetchCollection("users");
@@ -69,25 +70,26 @@ const Users = () => {
                     <span className="users__value">{item.tax || "—"}</span>
                   </div>
                 </div>
+                <OnlyAdmin>
+                  <div className="users__buttons">
+                    <Link
+                      to={`/register/${item.id}`}
+                      className="users__editButton"
+                    >
+                      <span aria-hidden="true">✎</span>
+                      Módosít
+                    </Link>
 
-                <div className="users__buttons">
-                  <Link
-                    to={`/register/${item.id}`}
-                    className="users__editButton"
-                  >
-                    <span aria-hidden="true">✎</span>
-                    Módosít
-                  </Link>
-
-                  <button
-                    type="button"
-                    className="users__deleteButton"
-                    onClick={() => confirmDelete(item.id)}
-                  >
-                    <span aria-hidden="true">⌫</span>
-                    Töröl
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="users__deleteButton"
+                      onClick={() => confirmDelete(item.id)}
+                    >
+                      <span aria-hidden="true">⌫</span>
+                      Töröl
+                    </button>
+                  </div>
+                </OnlyAdmin>
               </article>
             ))}
           </div>

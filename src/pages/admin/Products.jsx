@@ -8,7 +8,7 @@ import Notiflix from "notiflix";
 import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import { db, storage } from "../../firebase/config";
-import { OnlyAdmin } from "../../components/OnlyAdmin";
+import { OnlyManager } from "../../components/OnlyAdmin";
 
 const FALLBACK_IMAGES = {
   espresso:
@@ -166,12 +166,12 @@ const Products = () => {
             <p>A kávézóban elérhető termékek és készletek kezelése.</p>
           </div>
 
-          <OnlyAdmin>
+          <OnlyManager>
             <Link to="/add-product/ADD" className="products__addButton">
               <span aria-hidden="true">＋</span>
               Új termék
             </Link>
-          </OnlyAdmin>
+          </OnlyManager>
         </header>
 
         <div className="products__toolbar">
@@ -333,7 +333,7 @@ const Products = () => {
                     )}
                   </div>
 
-                  <OnlyAdmin>
+                  <OnlyManager>
                     <div className="products__buttons">
                       <Link
                         to={`/add-product/${item.id}`}
@@ -352,7 +352,7 @@ const Products = () => {
                         Töröl
                       </button>
                     </div>
-                  </OnlyAdmin>
+                  </OnlyManager>
                 </article>
               );
             })}

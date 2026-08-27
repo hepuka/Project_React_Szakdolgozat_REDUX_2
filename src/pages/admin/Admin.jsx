@@ -229,10 +229,15 @@ const Admin = () => {
             <span className="admin__eyebrow">Coffee Management Dashboard</span>
 
             <h1>Jó reggelt, {firstName}</h1>
+
+            <p className="admin__date">{dateLabel}</p>
           </div>
 
           <div className="admin__headerLogo">
-            <p className="admin__date">{dateLabel}</p>
+            <img
+              src="https://freesvg.org/img/1667812423coffee-shop-logo-concept.png"
+              alt="KunPao's Coffee"
+            />
           </div>
         </header>
 

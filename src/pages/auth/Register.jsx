@@ -14,6 +14,7 @@ const categories = [
   { id: 1, name: "Admin" },
   { id: 2, name: "Manager" },
   { id: 3, name: "Alap" },
+  { id: 4, name: "Leader" },
 ];
 
 const initialState = {

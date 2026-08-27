@@ -13,7 +13,6 @@ import Business from "./pages/admin/Business";
 import Placeorder from "./pages/employees/Placeorder";
 
 function App() {
-
   return (
     <div>
       <BrowserRouter>

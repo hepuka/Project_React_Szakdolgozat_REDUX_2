@@ -57,7 +57,11 @@ const Login = () => {
 
       Notiflix.Notify.success("Sikeres bejelentkezés!");
 
-      if (currentUser.role === "Admin" || currentUser.role === "Manager") {
+      if (
+        currentUser.role === "Admin" ||
+        currentUser.role === "Manager" ||
+        currentUser.role === "Leader"
+      ) {
         navigate("/main");
       } else {
         navigate("/tables");
