@@ -1,50 +1,617 @@
 @import "../../index.scss";
 
 .business {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(12, 1fr);
+  width: 100%;
+  min-height: 100%;
 
+  padding: 28px 30px 40px;
 
-    h1 {
-        grid-column: 7/9;
-        grid-row: 2/3;
+  box-sizing: border-box;
 
-    }
+  color: #2c1e1a;
 
-    h2 {
-        font-size: 1.5rem;
-    }
+  overflow-y: auto;
 
-    .business__card {
-        border: 1px solid $borderColor;
-        border-radius: 10px;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-        flex-direction: column;
-        color: $font-color;
-        font-size: 1.5rem;
-        text-align: center;
-        padding: 20px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #d5c8be transparent;
 
-    }
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
-    .business__card1 {
-        grid-column: 3/7;
-        grid-row: 3/6;
-    }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-    .business__card2 {
-        grid-column: 8/12;
-        grid-row: 3/6;
-    }
+  &::-webkit-scrollbar-thumb {
+    background: #d5c8be;
+    border-radius: 20px;
+  }
+}
 
-    .business__card3 {
-        grid-column: 3/7;
-        grid-row: 7/10;
-    }
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.business__header {
+  margin-bottom: 24px;
+}
+
+.business__eyebrow {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #765238;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.business__header h1 {
+  margin: 0;
+
+  color: #2c1e1a;
+
+  font-size: clamp(2.8rem, 4vw, 4rem);
+
+  line-height: 1.1;
+
+  font-weight: 750;
+
+  letter-spacing: -0.045em;
+}
+
+.business__header p {
+  margin: 9px 0 0;
+
+  color: #8b7b72;
+
+  font-size: 1.3rem;
+
+  line-height: 1.5;
+}
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.business__stats {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+.business__card {
+  min-width: 0;
+
+  min-height: 270px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 253, 249, 0.97);
+
+  border: 1px solid #e7ded6;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 10px 28px rgba(54, 35, 25, 0.06),
+    0 2px 8px rgba(54, 35, 25, 0.03);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    border-color: #d8c8bc;
+
+    box-shadow:
+      0 16px 34px rgba(54, 35, 25, 0.09),
+      0 3px 10px rgba(54, 35, 25, 0.04);
+  }
+}
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
+.business__cardHeader {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  margin-bottom: 20px;
+}
+
+.business__icon {
+  width: 46px;
+  height: 46px;
+
+  flex: 0 0 46px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 13px;
+
+  font-size: 1.8rem;
+}
+
+.business__cardHeader > div:last-child {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.business__label {
+  color: #9a8c83;
+
+  font-size: 1.05rem;
+}
+
+.business__value {
+  color: #2c1e1a;
+
+  font-size: 2.2rem;
+
+  line-height: 1.1;
+
+  font-weight: 750;
+}
+
+.business__value small {
+  color: #8b7b72;
+
+  font-size: 1.15rem;
+
+  font-weight: 600;
+}
+
+/* =========================================================
+   COMMON CHART HEADER
+   ========================================================= */
+
+.business__chartHeader {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 12px;
+
+  color: #9a8c83;
+
+  font-size: 0.95rem;
+}
+
+.business__chartHeader strong {
+  color: #765238;
+
+  font-size: 0.95rem;
+}
+
+/* =========================================================
+   REVENUE BAR CHART
+   ========================================================= */
+
+.business__chart--revenue {
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: flex-end;
+}
+
+.business__bars {
+  height: 125px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding: 0 4px;
+
+  border-bottom: 1px solid #e8ded6;
+}
+
+.business__barColumn {
+  height: 100%;
+
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.business__bar {
+  width: 100%;
+
+  max-width: 30px;
+
+  min-height: 2px;
+
+  background: #765238;
+
+  border-radius: 7px 7px 2px 2px;
+
+  transition:
+    height 0.35s ease,
+    opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.business__barColumn span {
+  color: #a1938a;
+
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   CATEGORY CHART
+   ========================================================= */
+
+.business__categoryChart {
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 13px;
+}
+
+.business__categoryRow {
+  width: 100%;
+}
+
+.business__categoryInfo {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 5px;
+
+  color: #75675f;
+
+  font-size: 1rem;
+}
+
+.business__categoryInfo span {
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.business__categoryInfo strong {
+  flex-shrink: 0;
+
+  color: #765238;
+}
+
+.business__categoryTrack {
+  width: 100%;
+
+  height: 7px;
+
+  overflow: hidden;
+
+  background: #eee7e1;
+
+  border-radius: 20px;
+}
+
+.business__categoryBar {
+  height: 100%;
+
+  min-width: 3px;
+
+  background: #765238;
+
+  border-radius: inherit;
+
+  transition: width 0.4s ease;
+}
+
+.business__chartEmpty {
+  min-height: 100px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #9a8c83;
+
+  font-size: 1.1rem;
+}
+
+/* =========================================================
+   ORDERS MINI CHART
+   ========================================================= */
+
+.business__ordersChart {
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: flex-end;
+}
+
+.business__miniBars {
+  height: 125px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding: 0 4px;
+
+  border-bottom: 1px solid #e8ded6;
+}
+
+.business__miniBarColumn {
+  height: 100%;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 6px;
+}
+
+.business__miniBar {
+  width: 100%;
+
+  max-width: 26px;
+
+  min-height: 2px;
+
+  background: #d4a24c;
+
+  border-radius: 7px 7px 2px 2px;
+
+  transition:
+    height 0.35s ease,
+    opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.business__miniBarColumn span {
+  color: #a1938a;
+
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   BOTTOM SUMMARY
+   ========================================================= */
+
+.business__bottom {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+
+  margin-top: 18px;
+}
+
+.business__bottomCard {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 17px 18px;
+
+  background: #fffdf9;
+
+  border: 1px solid #e7ded6;
+
+  border-radius: 15px;
+
+  box-shadow: 0 5px 16px rgba(54, 35, 25, 0.04);
+}
+
+.business__bottomIcon {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 11px;
+
+  font-size: 1.45rem;
+}
+
+.business__bottomCard > div:last-child {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.business__bottomCard span {
+  color: #9a8c83;
+
+  font-size: 1rem;
+}
+
+.business__bottomCard strong {
+  overflow: hidden;
+
+  color: #2c1e1a;
+
+  font-size: 1.25rem;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .business__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .business__card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .business__bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .business {
+    padding: 22px 12px 30px;
+  }
+
+  .business__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .business__card:last-child {
+    grid-column: auto;
+  }
+
+  .business__header h1 {
+    font-size: 2.8rem;
+  }
+
+  .business__header p {
+    font-size: 1.2rem;
+  }
+
+  .business__card {
+    min-height: 250px;
+
+    padding: 18px;
+
+    border-radius: 16px;
+  }
+
+  .business__bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .business {
+    padding: 18px 6px 25px;
+  }
+
+  .business__value {
+    font-size: 2rem;
+  }
+
+  .business__bars,
+  .business__miniBars {
+    height: 110px;
+  }
+
+  .business__chartHeader {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .business__card,
+  .business__bar,
+  .business__miniBar,
+  .business__categoryBar {
+    transition: none;
+  }
 }
