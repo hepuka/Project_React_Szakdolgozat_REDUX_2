@@ -103,12 +103,12 @@ const Sidebar = () => {
             </NavLink>
           </OnlyEmployee>
 
-          {/*           <OnlyAdmin>
+          <OnlyAdmin>
             <NavLink to="/main" className={activeLink}>
               <span className="sidebar__icon">⌂</span>
               <span>Főoldal</span>
             </NavLink>
-          </OnlyAdmin> */}
+          </OnlyAdmin>
         </nav>
 
         <button type="button" onClick={logoutUser} className="sidebar__logout">
