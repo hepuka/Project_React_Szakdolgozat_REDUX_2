@@ -1,16 +1,13 @@
 @import "../../index.scss";
 
-/* =========================================================
-   PLACEORDER PAGE
-   ========================================================= */
-
 .placeorder {
   width: 100%;
   height: 100%;
 
+  min-width: 0;
   min-height: 0;
 
-  padding: 26px 28px 28px;
+  padding: 24px 28px 20px;
 
   box-sizing: border-box;
 
@@ -23,7 +20,7 @@
 }
 
 /* =========================================================
-   PAGE HEADER
+   HEADER
    ========================================================= */
 
 .placeorder__header {
@@ -35,17 +32,17 @@
 
   gap: 20px;
 
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .placeorder__eyebrow {
   display: block;
 
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 
   color: var(--primary-light);
 
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 750;
 
   text-transform: uppercase;
@@ -57,7 +54,7 @@
 
   color: var(--text);
 
-  font-size: clamp(2.7rem, 4vw, 4rem);
+  font-size: clamp(2.6rem, 3.4vw, 3.8rem);
 
   line-height: 1.05;
 
@@ -67,13 +64,13 @@
 }
 
 .placeorder__header p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
 
   color: var(--text-muted);
 
-  font-size: 1.2rem;
+  font-size: 1.15rem;
 
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 /* =========================================================
@@ -86,15 +83,15 @@
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
-  padding: 11px 15px;
+  padding: 10px 14px;
 
   background: var(--surface);
 
   border: 1px solid var(--border);
 
-  border-radius: var(--radius-md);
+  border-radius: 13px;
 
   box-shadow: var(--shadow-sm);
 }
@@ -115,60 +112,60 @@
 .placeorder__headerStatus div {
   display: flex;
   flex-direction: column;
-
-  gap: 2px;
-}
-
-.placeorder__headerStatus small {
-  color: var(--text-muted);
-
-  font-size: 0.85rem;
+  gap: 1px;
 }
 
 .placeorder__headerStatus strong {
   color: var(--text);
 
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 /* =========================================================
-   MAIN WORKSPACE
+   WORKSPACE
    ========================================================= */
 
 .placeorder__workspace {
   /*
-   * A fejléc után fennmaradó helyet teljesen
-   * kihasználjuk.
+   * A header után maradó teljes magasságot használjuk.
    */
 
   flex: 1 1 auto;
 
+  width: 100%;
+
   min-width: 0;
   min-height: 0;
-
-  width: 100%;
 
   display: grid;
 
   grid-template-columns:
     minmax(220px, 0.72fr)
-    minmax(500px, 1.5fr)
+    minmax(460px, 1.5fr)
     minmax(300px, 0.9fr);
 
   /*
-   * A második sor tartalomhoz igazodik.
-   * Így a Fizetés kártya nem fog levágódni.
+   * FONTOS:
+   *
+   * Az alsó sor nem "auto".
+   * Ez megakadályozza, hogy egy belső komponens
+   * miatt a teljes grid magasabbra nőjön.
+   *
+   * A két sor mindig a workspace teljes magasságán
+   * belül marad.
    */
 
   grid-template-rows:
     minmax(0, 1fr)
-    minmax(215px, auto);
+    minmax(180px, 220px);
 
   grid-template-areas:
     "tables products orders"
     "payment products orders";
 
   gap: 16px;
+
+  overflow: hidden;
 }
 
 /* =========================================================
@@ -178,6 +175,9 @@
 .placeorder__card {
   min-width: 0;
   min-height: 0;
+
+  width: 100%;
+  height: 100%;
 
   background: var(--surface);
 
@@ -190,11 +190,6 @@
   box-sizing: border-box;
 
   overflow: hidden;
-
-  transition:
-    background-color var(--transition),
-    border-color var(--transition),
-    box-shadow var(--transition);
 }
 
 /* =========================================================
@@ -205,11 +200,10 @@
   grid-column: 1 !important;
   grid-row: 1 !important;
 
-  width: 100%;
-  height: 100%;
-
   min-width: 0;
   min-height: 0;
+
+  height: 100%;
 }
 
 /* =========================================================
@@ -220,11 +214,10 @@
   grid-column: 2 !important;
   grid-row: 1 / 3 !important;
 
-  width: 100%;
-  height: 100%;
-
   min-width: 0;
   min-height: 0;
+
+  height: 100%;
 }
 
 /* =========================================================
@@ -235,11 +228,10 @@
   grid-column: 3 !important;
   grid-row: 1 / 3 !important;
 
-  width: 100%;
-  height: 100%;
-
   min-width: 0;
   min-height: 0;
+
+  height: 100%;
 }
 
 /* =========================================================
@@ -250,31 +242,10 @@
   grid-column: 1 !important;
   grid-row: 2 !important;
 
-  width: 100%;
-
-  /*
-   * Nem erőltetünk fix magasságot.
-   */
-
-  height: auto;
-
   min-width: 0;
-  min-height: 215px;
+  min-height: 0;
 
-  align-self: stretch;
-}
-
-/* =========================================================
-   RÉGI GRID POZÍCIÓK NULLÁZÁSA
-   ========================================================= */
-
-.placeorder__workspace > .placeorder__tablenumber,
-.placeorder__workspace > .tableProductSelector,
-.placeorder__workspace > .placeorder__tableorders,
-.placeorder__workspace > .placeorder__tablepayment {
-  margin: 0;
-
-  box-sizing: border-box;
+  height: 100%;
 }
 
 /* =========================================================
@@ -283,7 +254,7 @@
 
 @media (max-width: 1180px) {
   .placeorder {
-    padding: 22px 18px 26px;
+    padding: 20px 18px 18px;
   }
 
   .placeorder__workspace {
@@ -292,59 +263,9 @@
       minmax(0, 1.28fr);
 
     grid-template-rows:
-      minmax(360px, 1fr)
-      minmax(280px, auto)
-      minmax(190px, auto);
-
-    grid-template-areas:
-      "tables products"
-      "tables products"
-      "orders orders";
-
-    overflow-y: auto;
-  }
-
-  .placeorder__workspace > .placeorder__tablenumber {
-    grid-column: 1 !important;
-    grid-row: 1 / 3 !important;
-  }
-
-  .placeorder__workspace > .tableProductSelector {
-    grid-column: 2 !important;
-    grid-row: 1 / 3 !important;
-  }
-
-  .placeorder__workspace > .placeorder__tableorders {
-    grid-column: 1 / 3 !important;
-    grid-row: 3 !important;
-
-    height: auto;
-
-    min-height: 300px;
-  }
-
-  .placeorder__workspace > .placeorder__tablepayment {
-    grid-column: 1 / 3 !important;
-    grid-row: 4 !important;
-
-    min-height: 190px;
-  }
-}
-
-/* =========================================================
-   SMALL TABLET
-   ========================================================= */
-
-@media (max-width: 900px) {
-  .placeorder__workspace {
-    grid-template-columns:
-      minmax(190px, 0.65fr)
-      minmax(0, 1.35fr);
-
-    grid-template-rows:
-      minmax(340px, auto)
       minmax(340px, auto)
       minmax(300px, auto)
+      minmax(190px, auto)
       minmax(190px, auto);
 
     grid-template-areas:
@@ -352,26 +273,36 @@
       "tables products"
       "orders orders"
       "payment payment";
+
+    overflow-y: auto;
   }
 
   .placeorder__workspace > .placeorder__tablenumber {
     grid-column: 1 !important;
     grid-row: 1 / 3 !important;
+
+    height: auto;
   }
 
   .placeorder__workspace > .tableProductSelector {
     grid-column: 2 !important;
     grid-row: 1 / 3 !important;
+
+    height: auto;
   }
 
   .placeorder__workspace > .placeorder__tableorders {
     grid-column: 1 / 3 !important;
     grid-row: 3 !important;
+
+    height: 320px;
   }
 
   .placeorder__workspace > .placeorder__tablepayment {
     grid-column: 1 / 3 !important;
     grid-row: 4 !important;
+
+    height: 190px;
   }
 }
 
@@ -384,7 +315,7 @@
     height: auto;
     min-height: 100%;
 
-    padding: 20px 12px 28px;
+    padding: 18px 12px 24px;
 
     overflow-y: auto;
   }
@@ -394,23 +325,17 @@
 
     flex-direction: column;
 
-    gap: 14px;
+    gap: 12px;
 
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .placeorder__header h1 {
-    font-size: 2.7rem;
-  }
-
-  .placeorder__header p {
-    font-size: 1.1rem;
+    font-size: 2.6rem;
   }
 
   .placeorder__headerStatus {
     width: 100%;
-
-    box-sizing: border-box;
   }
 
   .placeorder__workspace {
@@ -437,81 +362,17 @@
 
     min-width: 0;
     min-height: 0;
-
-    align-self: auto;
   }
 
-  .placeorder__tablenumber {
-    min-height: 380px;
-  }
-
-  .tableProductSelector {
-    min-height: 0;
-  }
-
-  .placeorder__tableorders {
-    min-height: 320px;
-  }
-
-  .placeorder__tablepayment {
-    min-height: 210px;
-  }
-}
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 500px) {
-  .placeorder {
-    padding: 18px 8px 24px;
-  }
-
-  .placeorder__header h1 {
-    font-size: 2.5rem;
-  }
-
-  .placeorder__headerStatus {
-    padding: 10px 12px;
-  }
-
-  .placeorder__workspace {
-    gap: 10px;
-  }
-
-  .placeorder__card {
-    border-radius: 15px;
-  }
-
-  .placeorder__tablenumber {
+  .placeorder__workspace > .placeorder__tablenumber {
     min-height: 360px;
   }
 
-  .placeorder__tableorders {
+  .placeorder__workspace > .placeorder__tableorders {
     min-height: 300px;
   }
-}
 
-/* =========================================================
-   VERY SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 380px) {
-  .placeorder {
-    padding: 14px 6px 20px;
-  }
-
-  .placeorder__header h1 {
-    font-size: 2.3rem;
-  }
-}
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .placeorder__card {
-    transition: none;
+  .placeorder__workspace > .placeorder__tablepayment {
+    min-height: 210px;
   }
 }

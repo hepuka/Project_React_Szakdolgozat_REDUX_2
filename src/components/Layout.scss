@@ -9,7 +9,10 @@
   --layout-coffee: #765238;
 
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+
+  min-width: 0;
+  min-height: 0;
 
   display: flex;
 
@@ -40,10 +43,11 @@
   min-width: 0;
   min-height: 0;
 
+  height: calc(100vh - 40px);
+
   flex: 1;
 
   display: flex;
-
   flex-direction: column;
 
   overflow: hidden;
@@ -57,22 +61,24 @@
   min-width: 0;
   min-height: 0;
 
-  flex: 1;
+  /*
+   * A footer számára szükséges helyet nem foglalja el
+   * a Placeorder.
+   */
+
+  flex: 1 1 auto;
 
   display: flex;
-
   flex-direction: column;
 
   align-items: stretch;
-
   justify-content: flex-start;
 
   padding: 4px;
 
-  overflow: auto;
+  overflow: hidden;
 
   scrollbar-width: thin;
-
   scrollbar-color: #d5c8be transparent;
 
   &::-webkit-scrollbar {
@@ -86,29 +92,8 @@
 
   &::-webkit-scrollbar-thumb {
     background: #d5c8be;
-
     border-radius: 20px;
   }
-}
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-.layout__main > .footer {
-  flex: 0 0 auto;
-
-  width: 100%;
-
-  min-height: 42px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding-top: 8px;
 }
 
 /* =========================================================
@@ -119,10 +104,25 @@
   flex: 0 0 300px;
 
   min-width: 260px;
-
   min-height: 0;
 
   height: calc(100vh - 40px);
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.layout__main > .footer {
+  flex: 0 0 36px;
+
+  min-height: 36px;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* =========================================================
@@ -137,21 +137,27 @@
 
     padding: 14px;
 
+    height: 100vh;
+
     overflow: auto;
   }
 
   .layout__main {
     order: 2;
 
+    width: 100%;
+
+    height: auto;
+
     min-height: calc(100vh - 110px);
 
-    width: 100%;
+    overflow: hidden;
   }
 
   .layout__content {
     padding: 0;
 
-    overflow: auto;
+    overflow: hidden;
   }
 
   .layout > .sidebar {
@@ -165,12 +171,6 @@
 
     flex: none;
   }
-
-  .layout__main > .footer {
-    min-height: 38px;
-
-    padding-top: 6px;
-  }
 }
 
 /* =========================================================
@@ -182,24 +182,15 @@
     gap: 10px;
 
     padding: 10px;
-
-    min-height: 100vh;
   }
 
   .layout__main {
     min-height: calc(100vh - 86px);
   }
 
-  .layout__content {
-    padding: 0;
-
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
   .layout__main > .footer {
-    min-height: 34px;
+    flex-basis: 32px;
 
-    padding-top: 4px;
+    min-height: 32px;
   }
 }

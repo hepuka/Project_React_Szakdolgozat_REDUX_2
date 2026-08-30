@@ -40,7 +40,13 @@ const TableDetails = ({ sendTableId }) => {
         <div>
           <span>Asztalok</span>
 
-          <h2>Aktív asztal {selTable ? `#${selTable}` : "—"}</h2>
+          {selTable ? (
+            <h2>Aktív asztal #{selTable}</h2>
+          ) : (
+            <h2 className="tableDetails__noActiveTable">
+              Nincs aktív asztal kiválasztva
+            </h2>
+          )}
         </div>
 
         <div className="tableDetails__clock">

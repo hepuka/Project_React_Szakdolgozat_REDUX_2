@@ -63,17 +63,26 @@
 
 .tableDetails__clock {
   display: flex;
+
   flex-direction: column;
 
   align-items: flex-end;
 
+  justify-content: center;
+
   gap: 2px;
+
+  min-width: max-content;
 }
 
 .tableDetails__clock strong {
   color: #765238;
 
   font-size: 1.1rem;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
 }
 
 .tableDetails__legend {
@@ -257,6 +266,11 @@
   background: rgba(255, 255, 255, 0.45);
 
   color: #4f3625;
+}
+
+.tableDetails__noActiveTable {
+  color: var(--danger) !important;
+  font-size: 1.25rem !important;
 }
 
 @media (max-width: 500px) {
