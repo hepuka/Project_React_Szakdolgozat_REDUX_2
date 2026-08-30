@@ -1,18 +1,22 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import "./AddProducts.scss";
+
 import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
+
 import { useNavigate, useParams } from "react-router-dom";
-import { db, storage } from "../../firebase/config";
+
+import { db } from "../../firebase/config";
+
 import Notiflix from "notiflix";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+
 import Layout from "../../components/Layout";
+
 import detectForm from "../../services/detectForm";
+
 import useFetchDocument from "../../customHooks/useFetchDocument.js";
+
+import CloudinaryUpload from "../../components/CloudinaryUpload";
 
 const categories = [
   { id: 1, name: "Kávé" },
@@ -26,7 +30,8 @@ const categories = [
 const initialState = {
   name: "",
   imageURL: "",
-  price: "",
+  imagePublicId: "",
+  price: 0,
   category: "",
   packaging: "",
   desc: "",
@@ -36,23 +41,74 @@ const initialState = {
 
 const AddProducts = () => {
   const { id } = useParams();
+
   const navigate = useNavigate();
+
   const productEdit = useFetchDocument("kunpaosproducts", id);
+
   const isEditMode = id !== "ADD";
 
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [product, setProduct] = useState(initialState);
+  /*
+   * Megakadályozza, hogy ugyanazt a Firebase dokumentumot
+   * minden rendernél újra betöltsük az űrlapba.
+   */
+  const initializedIdRef = useRef(null);
+
+  const [product, setProduct] = useState({ ...initialState });
+
   const [loading, setLoading] = useState(false);
 
+  const [imageUploaded, setImageUploaded] = useState(false);
+
+  // =========================================================
+  // FORM INICIALIZÁLÁSA
+  // =========================================================
+
   useEffect(() => {
-    if (isEditMode && productEdit) {
-      setProduct({ ...initialState, ...productEdit });
-    } else if (!isEditMode) {
-      setProduct({ ...initialState });
+    /*
+     * ÚJ TERMÉK
+     */
+
+    if (!isEditMode) {
+      if (initializedIdRef.current !== "ADD") {
+        setProduct({
+          ...initialState,
+        });
+
+        setImageUploaded(false);
+
+        initializedIdRef.current = "ADD";
+      }
+
+      return;
     }
 
-    setUploadProgress(0);
-  }, [id, productEdit, isEditMode]);
+    /*
+     * SZERKESZTÉS
+     *
+     * Csak akkor töltjük be a Firebase adatot,
+     * amikor valóban másik dokumentumot nyitottunk meg.
+     */
+
+    if (
+      isEditMode &&
+      productEdit?.id &&
+      initializedIdRef.current !== productEdit.id
+    ) {
+      setProduct({
+        ...initialState,
+        ...productEdit,
+      });
+
+      setImageUploaded(Boolean(productEdit.imageURL));
+
+      initializedIdRef.current = productEdit.id;
+    }
+  }, [id, isEditMode, productEdit?.id]);
+
+  // =========================================================
+  // INPUT KEZELÉS
+  // =========================================================
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,75 +119,52 @@ const AddProducts = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files?.[0];
+  // =========================================================
+  // CLOUDINARY FELTÖLTÉS
+  // =========================================================
 
-    if (!file) return;
+  const handleCloudinaryUpload = useCallback((imageData) => {
+    if (!imageData?.url) {
+      Notiflix.Notify.failure(
+        "A Cloudinary nem adott vissza érvényes kép URL-t.",
+      );
 
-    if (!file.type.startsWith("image/")) {
-      Notiflix.Notify.failure("Csak képfájl tölthető fel.");
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      Notiflix.Notify.failure("A kép mérete legfeljebb 5 MB lehet.");
-      e.target.value = "";
-      return;
-    }
+    setProduct((prev) => ({
+      ...prev,
 
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const storageRef = ref(
-      storage,
-      `kunpaosCoffee/${Date.now()}_${safeFileName}`,
-    );
+      imageURL: imageData.url,
 
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    setUploadProgress(0);
+      imagePublicId: imageData.publicId || "",
+    }));
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(Math.round(progress));
-      },
-      (error) => {
-        console.error("Image upload error:", error);
-        setUploadProgress(0);
-        Notiflix.Notify.failure("Nem sikerült feltölteni a képet.");
-      },
-      async () => {
-        try {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+    setImageUploaded(true);
+  }, []);
 
-          setProduct((prev) => ({
-            ...prev,
-            imageURL: downloadURL,
-          }));
-
-          setUploadProgress(100);
-          Notiflix.Notify.success("Sikeres képfeltöltés!");
-        } catch (error) {
-          console.error("Get download URL error:", error);
-          setUploadProgress(0);
-          Notiflix.Notify.failure(
-            "Nem sikerült lekérni a feltöltött kép címét.",
-          );
-        }
-      },
-    );
-  };
+  // =========================================================
+  // ÚJ TERMÉK
+  // =========================================================
 
   const addProduct = async (e) => {
     e.preventDefault();
 
-    if (uploadProgress > 0 && uploadProgress < 100) {
-      Notiflix.Notify.warning("Várd meg a kép feltöltésének befejezését!");
+    if (!product.name.trim()) {
+      Notiflix.Notify.warning("Add meg a termék nevét!");
+
+      return;
+    }
+
+    if (!product.category) {
+      Notiflix.Notify.warning("Válassz kategóriát!");
+
       return;
     }
 
     if (!product.imageURL) {
       Notiflix.Notify.warning("Adj hozzá egy képet a termékhez!");
+
       return;
     }
 
@@ -140,89 +173,125 @@ const AddProducts = () => {
     try {
       await addDoc(collection(db, "kunpaosproducts"), {
         name: product.name.trim(),
+
         imageURL: product.imageURL,
+
+        imagePublicId: product.imagePublicId || "",
+
         price: Number(product.price),
+
         category: product.category,
+
         packaging: product.packaging.trim(),
+
         desc: product.desc.trim(),
 
         stock: Number(product.stock),
+
         minStock: Number(product.minStock),
 
         createdAt: Timestamp.now().toDate(),
       });
 
       Notiflix.Notify.success("Sikeres termék feltöltés!");
+
       navigate("/products");
     } catch (error) {
       console.error("Add product error:", error);
+
       Notiflix.Notify.failure("Nem sikerült létrehozni a terméket.");
     } finally {
       setLoading(false);
     }
   };
 
+  // =========================================================
+  // TERMÉK MÓDOSÍTÁSA
+  // =========================================================
+
   const editProduct = async (e) => {
     e.preventDefault();
 
-    if (uploadProgress > 0 && uploadProgress < 100) {
-      Notiflix.Notify.warning("Várd meg a kép feltöltésének befejezését!");
+    if (!product.name.trim()) {
+      Notiflix.Notify.warning("Add meg a termék nevét!");
+
+      return;
+    }
+
+    if (!product.category) {
+      Notiflix.Notify.warning("Válassz kategóriát!");
+
+      return;
+    }
+
+    if (!product.imageURL) {
+      Notiflix.Notify.warning("A termékhez nincs kép megadva.");
+
       return;
     }
 
     setLoading(true);
 
     try {
-      const oldImageURL = productEdit?.imageURL;
-      const newImageURL = product.imageURL;
-
       await setDoc(
         doc(db, "kunpaosproducts", id),
         {
           name: product.name.trim(),
+
           imageURL: product.imageURL,
+
+          imagePublicId: product.imagePublicId || "",
+
           price: Number(product.price),
+
           category: product.category,
+
           packaging: product.packaging.trim(),
+
           desc: product.desc.trim(),
 
           stock: Number(product.stock),
+
           minStock: Number(product.minStock),
 
-          createdAt: productEdit.createdAt,
+          createdAt: productEdit?.createdAt || Timestamp.now().toDate(),
+
           editedAt: Timestamp.now().toDate(),
         },
-        { merge: true },
+        {
+          merge: true,
+        },
       );
 
-      if (
-        oldImageURL &&
-        newImageURL &&
-        oldImageURL !== newImageURL &&
-        oldImageURL.includes("firebasestorage.googleapis.com")
-      ) {
-        try {
-          await deleteObject(ref(storage, oldImageURL));
-        } catch (storageError) {
-          console.warn("A régi kép nem volt törölhető:", storageError);
-        }
-      }
-
       Notiflix.Notify.success("Termék adatai módosítva!");
+
       navigate("/products");
     } catch (error) {
       console.error("Edit product error:", error);
+
       Notiflix.Notify.failure("Nem sikerült módosítani a terméket.");
     } finally {
       setLoading(false);
     }
   };
 
+  // =========================================================
+  // FORM SUBMIT
+  // =========================================================
+
   const handleSubmit = detectForm(id, addProduct, editProduct);
+
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
     <Layout>
       <section className="addProduct">
+        {/* ===================================================
+            HEADER
+           =================================================== */}
+
         <header className="addProduct__header">
           <div>
             <span className="addProduct__eyebrow">
@@ -254,37 +323,53 @@ const AddProducts = () => {
           </button>
         </header>
 
+        {/* ===================================================
+            FORM
+           =================================================== */}
+
         <form
           onSubmit={handleSubmit}
           className="addProduct__form"
           autoComplete="off"
         >
           <div className="addProduct__grid">
+            {/* =================================================
+                TERMÉK ADATAI
+               ================================================= */}
+
             <div className="addProduct__box">
               <div className="addProduct__boxHeader">
                 <div className="addProduct__boxIcon">☕</div>
+
                 <div>
                   <h2>Termék adatai</h2>
+
                   <p>Az alapvető termékinformációk</p>
                 </div>
               </div>
 
+              {/* TERMÉK NEVE */}
+
               <div className="addProduct__field">
                 <label htmlFor="name">Termék neve</label>
+
                 <input
                   id="name"
                   type="text"
                   required
                   name="name"
-                  value={product.name || ""}
+                  value={product.name ?? ""}
                   placeholder="Pl. Cappuccino"
                   onChange={handleInputChange}
                   disabled={loading}
                 />
               </div>
 
+              {/* ÁR */}
+
               <div className="addProduct__field">
                 <label htmlFor="price">Egységár (Ft)</label>
+
                 <input
                   id="price"
                   type="number"
@@ -299,13 +384,16 @@ const AddProducts = () => {
                 />
               </div>
 
+              {/* KATEGÓRIA */}
+
               <div className="addProduct__field">
                 <label htmlFor="category">Kategória</label>
+
                 <select
                   id="category"
                   required
                   name="category"
-                  value={product.category || ""}
+                  value={product.category ?? ""}
                   onChange={handleInputChange}
                   disabled={loading}
                 >
@@ -321,34 +409,42 @@ const AddProducts = () => {
                 </select>
               </div>
 
+              {/* KISZERELÉS */}
+
               <div className="addProduct__field">
                 <label htmlFor="packaging">Mennyiség / kiszerelés</label>
+
                 <input
                   id="packaging"
                   type="text"
                   required
                   name="packaging"
-                  value={product.packaging || ""}
+                  value={product.packaging ?? ""}
                   placeholder="Pl. 3 dl"
                   onChange={handleInputChange}
                   disabled={loading}
                 />
               </div>
+
+              {/* STOCK */}
+
               <div className="addProduct__field">
                 <label htmlFor="stock">Aktuális készlet (db)</label>
 
                 <input
                   id="stock"
                   type="number"
-                  name="stock"
                   min="0"
                   step="1"
                   required
+                  name="stock"
                   value={product.stock ?? 0}
                   onChange={handleInputChange}
                   disabled={loading}
                 />
               </div>
+
+              {/* MIN STOCK */}
 
               <div className="addProduct__field">
                 <label htmlFor="minStock">Minimum készlet (db)</label>
@@ -356,10 +452,10 @@ const AddProducts = () => {
                 <input
                   id="minStock"
                   type="number"
-                  name="minStock"
                   min="0"
                   step="1"
                   required
+                  name="minStock"
                   value={product.minStock ?? 5}
                   onChange={handleInputChange}
                   disabled={loading}
@@ -367,11 +463,17 @@ const AddProducts = () => {
               </div>
             </div>
 
+            {/* =================================================
+                LEÍRÁS
+               ================================================= */}
+
             <div className="addProduct__box addProduct__box--description">
               <div className="addProduct__boxHeader">
                 <div className="addProduct__boxIcon">📝</div>
+
                 <div>
                   <h2>Leírás</h2>
+
                   <p>Rövid ismertető a termékről</p>
                 </div>
               </div>
@@ -380,7 +482,7 @@ const AddProducts = () => {
                 <textarea
                   id="desc"
                   name="desc"
-                  value={product.desc || ""}
+                  value={product.desc ?? ""}
                   required
                   placeholder="Írj néhány mondatot a termékről..."
                   onChange={handleInputChange}
@@ -389,14 +491,22 @@ const AddProducts = () => {
               </div>
             </div>
 
+            {/* =================================================
+                TERMÉKKÉP
+               ================================================= */}
+
             <div className="addProduct__box">
               <div className="addProduct__boxHeader">
                 <div className="addProduct__boxIcon">🖼️</div>
+
                 <div>
                   <h2>Termékkép</h2>
+
                   <p>Tölts fel jó minőségű képet</p>
                 </div>
               </div>
+
+              {/* KÉP ELŐNÉZET */}
 
               <div className="addProduct__imagePreview">
                 {product.imageURL ? (
@@ -407,47 +517,34 @@ const AddProducts = () => {
                 ) : (
                   <div className="addProduct__imagePlaceholder">
                     <span>☕</span>
+
                     <p>Még nincs kiválasztott kép</p>
                   </div>
                 )}
               </div>
 
-              {uploadProgress > 0 && (
-                <div className="addProduct__progress">
-                  <div className="addProduct__progressTop">
-                    <span>Képfeltöltés</span>
-                    <strong>{uploadProgress}%</strong>
-                  </div>
+              {/* CLOUDINARY */}
 
-                  <div className="addProduct__progressTrack">
-                    <div
-                      className="addProduct__progressBar"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
+              <CloudinaryUpload onUpload={handleCloudinaryUpload} />
+
+              {imageUploaded && (
+                <div className="addProduct__imageUploaded">
+                  <span>✓</span>
+                  Kép sikeresen feltöltve
                 </div>
               )}
 
-              <label htmlFor="image" className="addProduct__uploadButton">
-                <span aria-hidden="true">↑</span>
-                Kép kiválasztása
-              </label>
-
-              <input
-                id="image"
-                className="addProduct__fileInput"
-                type="file"
-                accept="image/*"
-                name="image"
-                onChange={handleImageChange}
-                disabled={loading}
-              />
-
               <p className="addProduct__imageHint">
-                JPG, PNG vagy WebP • maximum 5 MB
+                JPG, PNG vagy WebP
+                <br />
+                Maximum 2 MB
               </p>
             </div>
           </div>
+
+          {/* ===================================================
+              ACTION BUTTONS
+             =================================================== */}
 
           <div className="addProduct__actions">
             <button
@@ -462,7 +559,7 @@ const AddProducts = () => {
             <button
               type="submit"
               className="addProduct__submitButton"
-              disabled={loading || (uploadProgress > 0 && uploadProgress < 100)}
+              disabled={loading || !product.imageURL}
             >
               {loading ? (
                 <>
@@ -472,6 +569,7 @@ const AddProducts = () => {
               ) : (
                 <>
                   <span aria-hidden="true">{isEditMode ? "✓" : "＋"}</span>
+
                   {detectForm(id, "Hozzáad", "Módosít")}
                 </>
               )}
