@@ -59,7 +59,7 @@ const getStockStatus = (stock, minStock) => {
 
   if (currentStock <= minimumStock) {
     return {
-      label: "Alacsony készlet",
+      label: "Kritikus készlethiány",
       className: "products__stock--low",
       icon: "🟡",
     };
