@@ -16,13 +16,24 @@ import { db } from "../../firebase/config";
 import "./Admin.scss";
 
 // =========================================================
-// SEGÉDFÜGGVÉNYEK
+// ALAPÉRTELMEZETT KEZDŐTŐKE
 // =========================================================
 
 const INITIAL_CAPITAL = 1000000;
 
+// =========================================================
+// PÉNZÜGYI INDULÁSI IDŐSZAK
+// =========================================================
+
+const FINANCE_START_PERIOD = "2026-08";
+
+// =========================================================
+// SEGÉDFÜGGVÉNYEK
+// =========================================================
+
 const getPeriodId = (date = new Date()) => {
   const year = date.getFullYear();
+
   const month = String(date.getMonth() + 1).padStart(2, "0");
 
   return `${year}-${month}`;
@@ -34,6 +45,22 @@ const getPreviousPeriod = (period) => {
   const date = new Date(Number(year), Number(month) - 2, 1);
 
   return getPeriodId(date);
+};
+
+const formatPeriod = (period) => {
+  if (!period) {
+    return "";
+  }
+
+  const [year, month] = period.split("-");
+
+  return new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(
+    "hu-HU",
+    {
+      year: "numeric",
+      month: "long",
+    },
+  );
 };
 
 const formatCurrency = (value) => {
@@ -56,12 +83,6 @@ const getDocumentDate = (value) => {
   const date = new Date(value);
 
   return Number.isNaN(date.getTime()) ? null : date;
-};
-
-const getStatusKey = (status) => {
-  return String(status || "Ismeretlen")
-    .trim()
-    .toLowerCase();
 };
 
 const isToday = (value) => {
@@ -109,7 +130,14 @@ const formatTime = (value) => {
 
 const Admin = () => {
   const currentUser = useSelector(selectUserName);
+
   const currentUserRole = useSelector(selectUserRole);
+
+  // =======================================================
+  // FIRESTORE
+  // =======================================================
+
+  const users = useFetchCollection("users");
 
   const orders = useFetchCollection("kunpaosorders");
 
@@ -123,9 +151,17 @@ const Admin = () => {
 
   const financeSettings = useFetchDocument("finance", "settings");
 
-  // =========================================================
-  // ÁLLAPOTOK
-  // =========================================================
+  // =======================================================
+  // ÁLLAPOT
+  // =======================================================
+
+  const today = new Date();
+
+  const currentPeriod = getPeriodId(today);
+
+  const [selectedPeriod, setSelectedPeriod] = useState(currentPeriod);
+
+  const [chartMode, setChartMode] = useState("revenue");
 
   const [tables, setTables] = useState(
     Array.from({ length: 10 }, (_, index) => ({
@@ -134,19 +170,25 @@ const Admin = () => {
     })),
   );
 
-  const [chartMode, setChartMode] = useState("revenue");
-
-  // =========================================================
-  // DÁTUM
-  // =========================================================
-
-  const today = new Date();
-
-  const currentPeriod = getPeriodId(today);
+  // =======================================================
+  // FELHASZNÁLÓNÉV
+  // =======================================================
 
   const firstName = currentUser
     ? currentUser.trim().split(/\s+/)[0]
     : "Felhasználó";
+
+  // =======================================================
+  // KEZDŐTŐKE
+  // =======================================================
+
+  const initialCapital = Number(
+    financeSettings?.initialCapital ?? INITIAL_CAPITAL,
+  );
+
+  // =======================================================
+  // DÁTUM
+  // =======================================================
 
   const dateLabel = today.toLocaleDateString("hu-HU", {
     year: "numeric",
@@ -154,17 +196,179 @@ const Admin = () => {
     day: "numeric",
   });
 
-  // =========================================================
-  // FINANCE SETTINGS
-  // =========================================================
+  // =======================================================
+  // IDŐSZAKOK
+  // =======================================================
 
-  const initialCapital = Number(
-    financeSettings?.initialCapital ?? INITIAL_CAPITAL,
+  const availablePeriods = useMemo(() => {
+    const periods = new Set();
+
+    financePeriods.forEach((item) => {
+      if (item?.period) {
+        periods.add(item.period);
+      }
+    });
+
+    expenses.forEach((item) => {
+      if (item?.period) {
+        periods.add(item.period);
+      }
+    });
+
+    orders.forEach((item) => {
+      const date = getDocumentDate(item?.createdAt);
+
+      if (date) {
+        const period = getPeriodId(date);
+
+        if (period >= FINANCE_START_PERIOD) {
+          periods.add(period);
+        }
+      }
+    });
+
+    stockPurchases.forEach((item) => {
+      const date = getDocumentDate(item?.createdAt);
+
+      if (date) {
+        const period = getPeriodId(date);
+
+        if (period >= FINANCE_START_PERIOD) {
+          periods.add(period);
+        }
+      }
+    });
+
+    periods.add(FINANCE_START_PERIOD);
+
+    if (currentPeriod >= FINANCE_START_PERIOD) {
+      periods.add(currentPeriod);
+    }
+
+    return Array.from(periods).sort((a, b) => b.localeCompare(a));
+  }, [financePeriods, expenses, orders, stockPurchases, currentPeriod]);
+
+  // =======================================================
+  // KIVÁLASZTOTT PÉNZÜGYI IDŐSZAK
+  // =======================================================
+
+  const selectedFinancePeriod = financePeriods.find(
+    (item) => item?.period === selectedPeriod,
   );
 
-  // =========================================================
+  const isSelectedPeriodClosed = selectedFinancePeriod?.isClosed === true;
+
+  // =======================================================
+  // HAVI KEZDŐ PÉNZ
+  // =======================================================
+
+  const selectedStartingBalance = useMemo(() => {
+    if (selectedPeriod === FINANCE_START_PERIOD) {
+      return initialCapital;
+    }
+
+    const previousPeriod = getPreviousPeriod(selectedPeriod);
+
+    const previousFinancePeriod = financePeriods.find(
+      (item) => item?.period === previousPeriod,
+    );
+
+    if (previousFinancePeriod?.isClosed === true) {
+      return Number(previousFinancePeriod?.closingBalance ?? 0);
+    }
+
+    return initialCapital;
+  }, [selectedPeriod, financePeriods, initialCapital]);
+
+  // =======================================================
+  // KIVÁLASZTOTT HÓNAP BEVÉTELE
+  // =======================================================
+
+  const selectedMonthRevenue = useMemo(() => {
+    return orders.reduce((sum, order) => {
+      if (!isDateInPeriod(order?.createdAt, selectedPeriod)) {
+        return sum;
+      }
+
+      if (order?.orderStatus && order.orderStatus !== "Fizetve") {
+        return sum;
+      }
+
+      return sum + Number(order?.orderAmount || 0);
+    }, 0);
+  }, [orders, selectedPeriod]);
+
+  // =======================================================
+  // KIVÁLASZTOTT HÓNAP BESZERZÉSE
+  // =======================================================
+
+  const selectedMonthPurchases = useMemo(() => {
+    return stockPurchases.reduce((sum, purchase) => {
+      if (!isDateInPeriod(purchase?.createdAt, selectedPeriod)) {
+        return sum;
+      }
+
+      return sum + Number(purchase?.total || 0);
+    }, 0);
+  }, [stockPurchases, selectedPeriod]);
+
+  // =======================================================
+  // KIVÁLASZTOTT HÓNAP RENDEZETT KIADÁSA
+  // =======================================================
+
+  const selectedMonthPaidExpenses = useMemo(() => {
+    return expenses.reduce((sum, expense) => {
+      if (expense?.period !== selectedPeriod) {
+        return sum;
+      }
+
+      if (expense?.status !== "paid") {
+        return sum;
+      }
+
+      return sum + Number(expense?.amount || 0);
+    }, 0);
+  }, [expenses, selectedPeriod]);
+
+  // =======================================================
+  // KIVÁLASZTOTT HÓNAP FÜGGŐ KIADÁSA
+  // =======================================================
+
+  const selectedMonthPendingExpenses = useMemo(() => {
+    return expenses.reduce((sum, expense) => {
+      if (expense?.period !== selectedPeriod) {
+        return sum;
+      }
+
+      if (expense?.status === "paid") {
+        return sum;
+      }
+
+      return sum + Number(expense?.amount || 0);
+    }, 0);
+  }, [expenses, selectedPeriod]);
+
+  // =======================================================
+  // KIVÁLASZTOTT HÓNAP EREDMÉNYE
+  // =======================================================
+
+  const selectedMonthlyResult =
+    selectedMonthRevenue - selectedMonthPurchases - selectedMonthPaidExpenses;
+
+  // =======================================================
+  // KIVÁLASZTOTT HÓNAP PÉNZE
+  // =======================================================
+
+  const selectedCurrentMoney = isSelectedPeriodClosed
+    ? Number(
+        selectedFinancePeriod?.closingBalance ??
+          selectedStartingBalance + selectedMonthlyResult,
+      )
+    : selectedStartingBalance + selectedMonthlyResult;
+
+  // =======================================================
   // MAI RENDELÉSEK
-  // =========================================================
+  // =======================================================
 
   const todayOrders = useMemo(() => {
     return orders.filter((order) =>
@@ -172,32 +376,33 @@ const Admin = () => {
     );
   }, [orders]);
 
-  // =========================================================
+  // =======================================================
   // MAI BEVÉTEL
-  // =========================================================
+  // =======================================================
 
   const todayRevenue = useMemo(() => {
-    return todayOrders.reduce((sum, order) => {
-      return sum + Number(order?.orderAmount || 0);
-    }, 0);
+    return todayOrders.reduce(
+      (sum, order) => sum + Number(order?.orderAmount || 0),
+      0,
+    );
   }, [todayOrders]);
 
-  // =========================================================
+  // =======================================================
   // ÁTLAGOS RENDELÉSI ÉRTÉK
-  // =========================================================
+  // =======================================================
 
   const averageOrder =
     todayOrders.length > 0 ? todayRevenue / todayOrders.length : 0;
 
-  // =========================================================
+  // =======================================================
   // UTOLSÓ 7 NAP
-  // =========================================================
+  // =======================================================
 
   const last7Days = useMemo(() => {
     const days = [];
 
     for (let i = 6; i >= 0; i -= 1) {
-      const date = new Date(today);
+      const date = new Date();
 
       date.setHours(0, 0, 0, 0);
 
@@ -240,26 +445,24 @@ const Admin = () => {
 
   const maxDailyOrders = Math.max(...last7Days.map((day) => day.orders), 1);
 
-  // =========================================================
+  // =======================================================
   // RENDELÉSI STÁTUSZOK
-  // =========================================================
+  // =======================================================
 
   const statusStats = useMemo(() => {
     const stats = {};
 
     orders.forEach((order) => {
-      const rawStatus = order?.orderStatus || "Ismeretlen";
+      const status = order?.orderStatus || "Ismeretlen";
 
-      const key = getStatusKey(rawStatus);
-
-      if (!stats[key]) {
-        stats[key] = {
-          name: rawStatus,
+      if (!stats[status]) {
+        stats[status] = {
+          name: status,
           count: 0,
         };
       }
 
-      stats[key].count += 1;
+      stats[status].count += 1;
     });
 
     return Object.values(stats).sort((a, b) => b.count - a.count);
@@ -267,9 +470,9 @@ const Admin = () => {
 
   const maxStatusCount = Math.max(...statusStats.map((item) => item.count), 1);
 
-  // =========================================================
-  // MAI TOP TERMÉKEK
-  // =========================================================
+  // =======================================================
+  // TOP TERMÉKEK
+  // =======================================================
 
   const popularProducts = useMemo(() => {
     const productMap = {};
@@ -304,9 +507,9 @@ const Admin = () => {
     1,
   );
 
-  // =========================================================
-  // KÉSZLET FIGYELMEZTETÉSEK
-  // =========================================================
+  // =======================================================
+  // KÉSZLET
+  // =======================================================
 
   const stockAlerts = useMemo(() => {
     return products
@@ -330,110 +533,106 @@ const Admin = () => {
     (product) => Number(product?.stock || 0) <= 0,
   ).length;
 
-  // =========================================================
-  // HAVI PÉNZÜGYEK
-  // =========================================================
+  // =======================================================
+  // FELHASZNÁLÓI ADATOK
+  // =======================================================
 
-  const currentFinancePeriod = financePeriods.find(
-    (item) => item?.period === currentPeriod,
-  );
+  const onlineUsers = useMemo(() => {
+    return users.filter((user) => user?.online === true);
+  }, [users]);
 
-  const startingBalance = useMemo(() => {
-    /*
-     * A kávézó induló hónapja:
-     * 2026.08 = 1 000 000 Ft.
-     */
+  const userRoleStats = useMemo(() => {
+    const stats = {
+      Admin: 0,
+      Manager: 0,
+      Leader: 0,
+      Employee: 0,
+    };
 
-    if (currentPeriod === "2026-08") {
-      return initialCapital;
+    users.forEach((user) => {
+      if (stats[user?.role] !== undefined) {
+        stats[user.role] += 1;
+      }
+    });
+
+    return stats;
+  }, [users]);
+
+  // =======================================================
+  // LEGUTÓBBI BEJELENTKEZÉSEK
+  // =======================================================
+
+  const recentLogins = useMemo(() => {
+    return users
+      .filter((user) => user?.last_login)
+      .sort((a, b) => {
+        const dateA = getDocumentDate(a.last_login);
+
+        const dateB = getDocumentDate(b.last_login);
+
+        return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
+      })
+      .slice(0, 5);
+  }, [users]);
+
+  // =======================================================
+  // ADMIN FIGYELMEZTETÉSEK
+  // =======================================================
+
+  const adminAlerts = useMemo(() => {
+    const alerts = [];
+
+    if (outOfStockCount > 0) {
+      alerts.push({
+        type: "danger",
+        icon: "🔴",
+        title: "Elfogyott termékek",
+        value: `${outOfStockCount} db`,
+        description: "Azonnali készletfeltöltés szükséges.",
+      });
     }
 
-    /*
-     * Későbbi hónapnál az előző
-     * lezárt hónap záró pénzét
-     * használjuk.
-     */
-
-    const previousPeriod = getPreviousPeriod(currentPeriod);
-
-    const previous = financePeriods.find(
-      (item) => item?.period === previousPeriod,
-    );
-
-    if (previous?.isClosed) {
-      return Number(previous?.closingBalance || 0);
+    if (criticalStockCount > 0) {
+      alerts.push({
+        type: "warning",
+        icon: "🟡",
+        title: "Kritikus készlet",
+        value: `${criticalStockCount} db`,
+        description: "Alacsony készletszintű termékek.",
+      });
     }
 
-    return initialCapital;
-  }, [currentPeriod, financePeriods, initialCapital]);
+    if (selectedMonthPendingExpenses > 0) {
+      alerts.push({
+        type: "warning",
+        icon: "💳",
+        title: "Rendezetlen kiadások",
+        value: `${formatCurrency(selectedMonthPendingExpenses)} Ft`,
+        description: "Még vannak nem rendezett számlák.",
+      });
+    }
 
-  const currentMonthRevenue = useMemo(() => {
-    return orders.reduce((sum, order) => {
-      if (
-        !isDateInPeriod(order?.createdAt ?? order?.orderDate, currentPeriod)
-      ) {
-        return sum;
-      }
+    if (onlineUsers.length === 0) {
+      alerts.push({
+        type: "info",
+        icon: "⚪",
+        title: "Nincs online felhasználó",
+        value: "0",
+        description: "Jelenleg senki nincs bejelentkezve.",
+      });
+    }
 
-      if (order?.orderStatus && order.orderStatus !== "Fizetve") {
-        return sum;
-      }
+    return alerts;
+  }, [
+    outOfStockCount,
+    criticalStockCount,
+    selectedMonthPendingExpenses,
+    onlineUsers.length,
+  ]);
 
-      return sum + Number(order?.orderAmount || 0);
-    }, 0);
-  }, [orders, currentPeriod]);
-
-  const currentMonthPurchases = useMemo(() => {
-    return stockPurchases.reduce((sum, purchase) => {
-      if (!isDateInPeriod(purchase?.createdAt, currentPeriod)) {
-        return sum;
-      }
-
-      return sum + Number(purchase?.total || 0);
-    }, 0);
-  }, [stockPurchases, currentPeriod]);
-
-  const currentMonthPaidExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => {
-      if (expense?.period !== currentPeriod) {
-        return sum;
-      }
-
-      if (expense?.status !== "paid") {
-        return sum;
-      }
-
-      return sum + Number(expense?.amount || 0);
-    }, 0);
-  }, [expenses, currentPeriod]);
-
-  const currentMonthPendingExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => {
-      if (expense?.period !== currentPeriod) {
-        return sum;
-      }
-
-      if (expense?.status === "paid") {
-        return sum;
-      }
-
-      return sum + Number(expense?.amount || 0);
-    }, 0);
-  }, [expenses, currentPeriod]);
-
-  const currentMoney = currentFinancePeriod?.isClosed
-    ? Number(currentFinancePeriod?.closingBalance || 0)
-    : startingBalance +
-      currentMonthRevenue -
-      currentMonthPurchases -
-      currentMonthPaidExpenses;
-
-  const monthlyResult =
-    currentMonthRevenue - currentMonthPurchases - currentMonthPaidExpenses;
-
-  // =========================================================
-  // ASZTALOK REALTIME FIGYELÉSE
-  // =========================================================
+  // =======================================================
+  // ASZTALOK REALTIME
+  // =======================================================
 
   useEffect(() => {
     const unsubscribers = [];
@@ -473,9 +672,9 @@ const Admin = () => {
     };
   }, []);
 
-  // =========================================================
+  // =======================================================
   // ASZTAL STATISZTIKA
-  // =========================================================
+  // =======================================================
 
   const tableStats = useMemo(() => {
     const free = tables.filter((table) => table.orders.length === 0);
@@ -488,12 +687,9 @@ const Admin = () => {
     };
   }, [tables]);
 
-  // =========================================================
+  // =======================================================
   // AKTÍV RENDELÉSEK
-  //
-  // Egy asztalt egy aktív rendelésként
-  // kezelünk a dashboardon.
-  // =========================================================
+  // =======================================================
 
   const activeOrders = useMemo(() => {
     return tables
@@ -519,20 +715,17 @@ const Admin = () => {
 
         return {
           tableNumber: table.number,
-
           total,
-
           itemCount,
-
           latestOrder,
         };
       })
       .sort((a, b) => b.total - a.total);
   }, [tables]);
 
-  // =========================================================
+  // =======================================================
   // RENDEZETLEN SZÁMLÁK
-  // =========================================================
+  // =======================================================
 
   const pendingExpenseList = useMemo(() => {
     return expenses
@@ -541,21 +734,25 @@ const Admin = () => {
           expense?.period === currentPeriod && expense?.status !== "paid",
       )
       .sort((a, b) => {
-        const dateA = a?.dueDate || "9999";
+        const dateA = a?.dueDate || "9999-12-31";
 
-        const dateB = b?.dueDate || "9999";
+        const dateB = b?.dueDate || "9999-12-31";
 
         return dateA.localeCompare(dateB);
       })
       .slice(0, 5);
   }, [expenses, currentPeriod]);
 
+  // =======================================================
+  // RENDER
+  // =======================================================
+
   return (
     <Layout>
       <section className="admin">
-        {/* ===================================================
+        {/* =================================================
             HEADER
-           =================================================== */}
+           ================================================= */}
 
         <header className="admin__header">
           <div>
@@ -571,9 +768,9 @@ const Admin = () => {
               <span className="admin__liveDot" />
 
               <div>
-                <small>Rendszer</small>
+                <small>{currentUserRole || "Felhasználó"}</small>
 
-                <strong>Aktív</strong>
+                <strong>Rendszer aktív</strong>
               </div>
             </div>
 
@@ -586,9 +783,9 @@ const Admin = () => {
           </div>
         </header>
 
-        {/* ===================================================
+        {/* =================================================
             KPI
-           =================================================== */}
+           ================================================= */}
 
         <section className="admin__stats">
           <article className="admin__statCard">
@@ -631,32 +828,52 @@ const Admin = () => {
             <strong className="admin__statValue">{products.length}</strong>
 
             <span className="admin__statMeta">
-              {criticalStockCount} alacsony · {outOfStockCount} elfogyott
+              {criticalStockCount} kritikus · {outOfStockCount} elfogyott
             </span>
           </article>
 
-          <article className="admin__statCard admin__statCard--money">
-            <div className="admin__statTop">
-              <div className="admin__statIcon">💵</div>
+          {/* ===============================================
+              ADMINNÁL FELHASZNÁLÓK
+             =============================================== */}
 
-              <span className="admin__statCaption">Kávézó pénze</span>
-            </div>
+          {currentUserRole === "Admin" ? (
+            <article className="admin__statCard">
+              <div className="admin__statTop">
+                <div className="admin__statIcon">👥</div>
 
-            <strong className="admin__statValue">
-              {formatCurrency(currentMoney)} Ft
-            </strong>
+                <span className="admin__statCaption">Felhasználók</span>
+              </div>
 
-            <span className="admin__statMeta">
-              {currentFinancePeriod?.isClosed
-                ? "🔒 Hónap lezárva"
-                : "🟢 Nyitott hónap"}
-            </span>
-          </article>
+              <strong className="admin__statValue">{users.length}</strong>
+
+              <span className="admin__statMeta">
+                {onlineUsers.length} online
+              </span>
+            </article>
+          ) : (
+            <article className="admin__statCard admin__statCard--money">
+              <div className="admin__statTop">
+                <div className="admin__statIcon">💵</div>
+
+                <span className="admin__statCaption">Kávézó pénze</span>
+              </div>
+
+              <strong className="admin__statValue">
+                {formatCurrency(selectedCurrentMoney)} Ft
+              </strong>
+
+              <span className="admin__statMeta">
+                {isSelectedPeriodClosed
+                  ? "🔒 Hónap lezárva"
+                  : "🟢 Nyitott hónap"}
+              </span>
+            </article>
+          )}
         </section>
 
-        {/* ===================================================
+        {/* =================================================
             MAIN GRID
-           =================================================== */}
+           ================================================= */}
 
         <section className="admin__mainGrid">
           {/* =================================================
@@ -752,6 +969,10 @@ const Admin = () => {
 
                 <h2>Asztalok</h2>
               </div>
+
+              <Link to="/tables" className="admin__panelLink">
+                Megnyitás
+              </Link>
             </div>
 
             <div className="admin__tableSummary">
@@ -782,8 +1003,9 @@ const Admin = () => {
                 );
 
                 return (
-                  <dev
+                  <Link
                     key={table.number}
+                    to="/tables"
                     className={
                       busy
                         ? "admin__tableMini admin__tableMini--busy"
@@ -795,7 +1017,7 @@ const Admin = () => {
                     <span>asztal</span>
 
                     {busy && <small>{formatCurrency(total)} Ft</small>}
-                  </dev>
+                  </Link>
                 );
               })}
             </div>
@@ -836,7 +1058,11 @@ const Admin = () => {
                   const empty = stock <= 0;
 
                   return (
-                    <dev key={product.id} className="admin__stockRow">
+                    <Link
+                      key={product.id}
+                      to="/products"
+                      className="admin__stockRow"
+                    >
                       <span
                         className={
                           empty
@@ -862,7 +1088,7 @@ const Admin = () => {
                       >
                         {stock} db
                       </strong>
-                    </dev>
+                    </Link>
                   );
                 })}
               </div>
@@ -895,8 +1121,9 @@ const Admin = () => {
             ) : (
               <div className="admin__activeOrderList">
                 {activeOrders.slice(0, 5).map((order) => (
-                  <dev
+                  <Link
                     key={order.tableNumber}
+                    to="/tables"
                     className="admin__activeOrderRow"
                   >
                     <div className="admin__activeOrderTable">
@@ -914,14 +1141,14 @@ const Admin = () => {
 
                       <small>{formatTime(order.latestOrder?.createdAt)}</small>
                     </div>
-                  </dev>
+                  </Link>
                 ))}
               </div>
             )}
           </article>
 
           {/* =================================================
-              RENDELÉS STÁTUSZOK
+              RENDELÉSI STÁTUSZOK
              ================================================= */}
 
           <article className="admin__panel">
@@ -1025,12 +1252,7 @@ const Admin = () => {
               <div>
                 <span className="admin__panelEyebrow">Pénzügyek</span>
 
-                <h2>
-                  {today.toLocaleDateString("hu-HU", {
-                    year: "numeric",
-                    month: "long",
-                  })}
-                </h2>
+                <h2>{formatPeriod(selectedPeriod)}</h2>
               </div>
 
               <Link to="/business" className="admin__panelLink">
@@ -1042,14 +1264,14 @@ const Admin = () => {
               <div>
                 <span>Kezdő pénzkészlet</span>
 
-                <strong>{formatCurrency(startingBalance)} Ft</strong>
+                <strong>{formatCurrency(selectedStartingBalance)} Ft</strong>
               </div>
 
               <div>
                 <span>Havi bevétel</span>
 
                 <strong className="admin__financePositive">
-                  + {formatCurrency(currentMonthRevenue)} Ft
+                  + {formatCurrency(selectedMonthRevenue)} Ft
                 </strong>
               </div>
 
@@ -1057,7 +1279,7 @@ const Admin = () => {
                 <span>Beszerzések</span>
 
                 <strong className="admin__financeNegative">
-                  − {formatCurrency(currentMonthPurchases)} Ft
+                  − {formatCurrency(selectedMonthPurchases)} Ft
                 </strong>
               </div>
 
@@ -1065,7 +1287,7 @@ const Admin = () => {
                 <span>Rendezett kiadások</span>
 
                 <strong className="admin__financeNegative">
-                  − {formatCurrency(currentMonthPaidExpenses)} Ft
+                  − {formatCurrency(selectedMonthPaidExpenses)} Ft
                 </strong>
               </div>
             </div>
@@ -1073,7 +1295,7 @@ const Admin = () => {
             <div className="admin__financeBalance">
               <span>Jelenlegi pénz</span>
 
-              <strong>{formatCurrency(currentMoney)} Ft</strong>
+              <strong>{formatCurrency(selectedCurrentMoney)} Ft</strong>
             </div>
           </article>
 
@@ -1089,11 +1311,9 @@ const Admin = () => {
                 <h2>Rendezetlen számlák</h2>
               </div>
 
-              {currentUserRole !== "Admin" && (
-                <Link to="/expenses" className="admin__panelLink">
-                  Kezelés
-                </Link>
-              )}
+              <Link to="/expenses" className="admin__panelLink">
+                Kezelés
+              </Link>
             </div>
 
             {pendingExpenseList.length === 0 ? (
@@ -1106,8 +1326,8 @@ const Admin = () => {
               <div className="admin__expenseList">
                 {pendingExpenseList.map((expense) => (
                   <Link
-                    to="/expenses"
                     key={expense.id}
+                    to="/expenses"
                     className="admin__expenseRow"
                   >
                     <div className="admin__expenseWarning">!</div>
@@ -1133,6 +1353,321 @@ const Admin = () => {
         </section>
 
         {/* ===================================================
+            ADMIN / RENDSZERFELÜGYELET
+           =================================================== */}
+
+        {currentUserRole === "Admin" && (
+          <section className="admin__adminSection">
+            <div className="admin__adminSectionHeader">
+              <div>
+                <span className="admin__eyebrow">Adminisztráció</span>
+
+                <h2>Admin / rendszerfelügyelet</h2>
+
+                <p>
+                  Felhasználók, jogosultságok és a rendszer állapotának
+                  áttekintése.
+                </p>
+              </div>
+
+              <Link to="/users" className="admin__adminUsersButton">
+                Felhasználók kezelése
+              </Link>
+            </div>
+
+            <div className="admin__adminGrid">
+              {/* =============================================
+                  FELHASZNÁLÓI ÁLLAPOT
+                 ============================================= */}
+
+              <article className="admin__adminPanel">
+                <div className="admin__panelHeader">
+                  <div>
+                    <span className="admin__panelEyebrow">Felhasználók</span>
+
+                    <h2>Felhasználói állapot</h2>
+                  </div>
+
+                  <span className="admin__panelBadge">
+                    {users.length} felhasználó
+                  </span>
+                </div>
+
+                <div className="admin__userStatusSummary">
+                  <div className="admin__userStatusMain">
+                    <span className="admin__userOnlineDot" />
+
+                    <div>
+                      <strong>{onlineUsers.length}</strong>
+
+                      <span>online</span>
+                    </div>
+                  </div>
+
+                  <div className="admin__userStatusOffline">
+                    <strong>
+                      {Math.max(users.length - onlineUsers.length, 0)}
+                    </strong>
+
+                    <span>offline</span>
+                  </div>
+                </div>
+
+                <div className="admin__userRoleMiniList">
+                  <div>
+                    <span>Admin</span>
+
+                    <strong>{userRoleStats.Admin}</strong>
+                  </div>
+
+                  <div>
+                    <span>Manager</span>
+
+                    <strong>{userRoleStats.Manager}</strong>
+                  </div>
+
+                  <div>
+                    <span>Leader</span>
+
+                    <strong>{userRoleStats.Leader}</strong>
+                  </div>
+
+                  <div>
+                    <span>Employee</span>
+
+                    <strong>{userRoleStats.Employee}</strong>
+                  </div>
+                </div>
+              </article>
+
+              {/* =============================================
+                  JOGOSULTSÁGOK
+                 ============================================= */}
+
+              <article className="admin__adminPanel">
+                <div className="admin__panelHeader">
+                  <div>
+                    <span className="admin__panelEyebrow">Jogosultság</span>
+
+                    <h2>Szerepkörök</h2>
+                  </div>
+                </div>
+
+                <div className="admin__permissionList">
+                  <div className="admin__permissionRow">
+                    <div className="admin__permissionIcon">A</div>
+
+                    <span>Admin</span>
+
+                    <strong>{userRoleStats.Admin}</strong>
+                  </div>
+
+                  <div className="admin__permissionRow">
+                    <div className="admin__permissionIcon">M</div>
+
+                    <span>Manager</span>
+
+                    <strong>{userRoleStats.Manager}</strong>
+                  </div>
+
+                  <div className="admin__permissionRow">
+                    <div className="admin__permissionIcon">L</div>
+
+                    <span>Leader</span>
+
+                    <strong>{userRoleStats.Leader}</strong>
+                  </div>
+
+                  <div className="admin__permissionRow">
+                    <div className="admin__permissionIcon">E</div>
+
+                    <span>Employee</span>
+
+                    <strong>{userRoleStats.Employee}</strong>
+                  </div>
+                </div>
+              </article>
+
+              {/* =============================================
+                  LEGUTÓBBI BEJELENTKEZÉSEK
+                 ============================================= */}
+
+              <article className="admin__adminPanel">
+                <div className="admin__panelHeader">
+                  <div>
+                    <span className="admin__panelEyebrow">Biztonság</span>
+
+                    <h2>Legutóbbi bejelentkezések</h2>
+                  </div>
+                </div>
+
+                {recentLogins.length === 0 ? (
+                  <div className="admin__emptySmall">
+                    <span>👥</span>
+
+                    <p>Még nincs bejelentkezési adat.</p>
+                  </div>
+                ) : (
+                  <div className="admin__recentLoginList">
+                    {recentLogins.map((user) => {
+                      const loginDate = getDocumentDate(user.last_login);
+
+                      return (
+                        <div key={user.id} className="admin__recentLoginRow">
+                          <div className="admin__recentLoginAvatar">
+                            {user.name?.charAt(0)?.toUpperCase() || "U"}
+                          </div>
+
+                          <div className="admin__recentLoginInfo">
+                            <strong>
+                              {user.name || "Ismeretlen felhasználó"}
+                            </strong>
+
+                            <span>{user.role || "Ismeretlen szerepkör"}</span>
+                          </div>
+
+                          <div className="admin__recentLoginTime">
+                            <strong>
+                              {loginDate
+                                ? loginDate.toLocaleDateString("hu-HU", {
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                  })
+                                : "—"}
+                            </strong>
+
+                            <span>
+                              {loginDate
+                                ? loginDate.toLocaleTimeString("hu-HU", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : "—"}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </article>
+
+              {/* =============================================
+                  RENDSZERÁLLAPOT
+                 ============================================= */}
+
+              <article className="admin__adminPanel">
+                <div className="admin__panelHeader">
+                  <div>
+                    <span className="admin__panelEyebrow">Rendszer</span>
+
+                    <h2>Rendszerállapot</h2>
+                  </div>
+                </div>
+
+                <div className="admin__systemList">
+                  <div className="admin__systemRow">
+                    <span className="admin__systemStatusDot" />
+
+                    <span>Felhasználói adatok</span>
+
+                    <strong>{users.length} rekord</strong>
+                  </div>
+
+                  <div className="admin__systemRow">
+                    <span className="admin__systemStatusDot" />
+
+                    <span>Termékadatok</span>
+
+                    <strong>{products.length} rekord</strong>
+                  </div>
+
+                  <div className="admin__systemRow">
+                    <span className="admin__systemStatusDot" />
+
+                    <span>Rendelések</span>
+
+                    <strong>{orders.length} rekord</strong>
+                  </div>
+
+                  <div className="admin__systemRow">
+                    <span className="admin__systemStatusDot" />
+
+                    <span>Pénzügyi időszakok</span>
+
+                    <strong>{financePeriods.length} rekord</strong>
+                  </div>
+
+                  <div className="admin__systemRow">
+                    <span className="admin__systemStatusDot" />
+
+                    <span>Kiadások</span>
+
+                    <strong>{expenses.length} rekord</strong>
+                  </div>
+                </div>
+              </article>
+
+              {/* =============================================
+                  ADMIN FIGYELMEZTETÉSEK
+                 ============================================= */}
+
+              <article className="admin__adminPanel admin__adminPanel--alerts">
+                <div className="admin__panelHeader">
+                  <div>
+                    <span className="admin__panelEyebrow">Figyelmeztetés</span>
+
+                    <h2>Admin figyelmeztetések</h2>
+                  </div>
+
+                  <span className="admin__panelBadge">
+                    {adminAlerts.length} elem
+                  </span>
+                </div>
+
+                {adminAlerts.length === 0 ? (
+                  <div className="admin__adminNoAlerts">
+                    <span>✓</span>
+
+                    <div>
+                      <strong>Nincs kritikus figyelmeztetés</strong>
+
+                      <p>
+                        A rendszer jelenlegi állapotában nincs azonnali
+                        adminisztratív teendő.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="admin__adminAlertList">
+                    {adminAlerts.map((alert, index) => (
+                      <div
+                        key={`${alert.title}-${index}`}
+                        className={`admin__adminAlert admin__adminAlert--${alert.type}`}
+                      >
+                        <div className="admin__adminAlertIcon">
+                          {alert.icon}
+                        </div>
+
+                        <div className="admin__adminAlertInfo">
+                          <strong>{alert.title}</strong>
+
+                          <span>{alert.description}</span>
+                        </div>
+
+                        <strong className="admin__adminAlertValue">
+                          {alert.value}
+                        </strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </div>
+          </section>
+        )}
+
+        {/* ===================================================
             FOOTER SUMMARY
            =================================================== */}
 
@@ -1142,20 +1677,20 @@ const Admin = () => {
 
             <strong
               className={
-                monthlyResult >= 0
+                selectedMonthlyResult >= 0
                   ? "admin__financePositive"
                   : "admin__financeNegative"
               }
             >
-              {monthlyResult >= 0 ? "+" : "−"}{" "}
-              {formatCurrency(Math.abs(monthlyResult))} Ft
+              {selectedMonthlyResult >= 0 ? "+" : "−"}{" "}
+              {formatCurrency(Math.abs(selectedMonthlyResult))} Ft
             </strong>
           </div>
 
           <div>
             <span>Rendezetlen kiadások</span>
 
-            <strong>{formatCurrency(currentMonthPendingExpenses)} Ft</strong>
+            <strong>{formatCurrency(selectedMonthPendingExpenses)} Ft</strong>
           </div>
 
           <div>
