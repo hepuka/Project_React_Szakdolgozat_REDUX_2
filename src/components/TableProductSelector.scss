@@ -1,0 +1,632 @@
+@import "../index.scss";
+
+.tableProductSelector {
+  grid-area: products;
+
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+  min-height: 0;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   KÖZÖS HEADER
+   ========================================================= */
+
+.tableProductSelector__sectionHeader {
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.tableProductSelector__sectionHeader span {
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+}
+
+.tableProductSelector__sectionHeader h2 {
+  margin: 3px 0 0;
+
+  color: var(--text);
+
+  font-size: 1.25rem;
+}
+
+/* =========================================================
+   KATEGÓRIÁK
+   ========================================================= */
+
+.tableProductSelector__categories {
+  flex: 0 0 auto;
+}
+
+.tableProductSelector__categoryList {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  margin-top: 11px;
+
+  max-height: 84px;
+
+  overflow-y: auto;
+
+  scrollbar-width: none;
+}
+
+.tableProductSelector__categoryList::-webkit-scrollbar {
+  display: none;
+}
+
+.tableProductSelector__category {
+  min-height: 37px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 10px;
+
+  background: var(--surface-soft);
+
+  color: var(--text);
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.tableProductSelector__category:hover {
+  background: var(--surface-hover);
+
+  transform: translateY(-1px);
+}
+
+.tableProductSelector__category span {
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 6px;
+
+  color: #765238;
+
+  font-size: 0.72rem;
+}
+
+.tableProductSelector__category--active {
+  background: var(--accent);
+
+  color: #2c1e1a;
+
+  border-color: #dfb33d;
+}
+
+.tableProductSelector__category--active span {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* =========================================================
+   TERMÉKEK
+   ========================================================= */
+
+.tableProductSelector__products {
+  flex: 1;
+
+  min-height: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  margin-top: 15px;
+}
+
+.tableProductSelector__productList {
+  flex: 1;
+
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+
+  align-content: flex-start;
+
+  gap: 9px;
+
+  margin-top: 10px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #d5c8be transparent;
+}
+
+.tableProductSelector__productList::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tableProductSelector__productList::-webkit-scrollbar-thumb {
+  background: #d5c8be;
+
+  border-radius: 20px;
+}
+
+.tableProductSelector__product {
+  min-width: 0;
+
+  min-height: 76px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 9px;
+
+  background: var(--surface-soft);
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+
+  color: var(--text);
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.tableProductSelector__product:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  background: var(--surface-hover);
+
+  border-color: #d5c3b7;
+}
+
+.tableProductSelector__product--selected {
+  border-color: #e0b33d;
+
+  background: #fff7e6;
+
+  box-shadow: 0 0 0 2px rgba(240, 193, 75, 0.18);
+}
+
+.tableProductSelector__product--disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+.tableProductSelector__productImage {
+  width: 44px;
+  height: 44px;
+
+  flex: 0 0 44px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 11px;
+
+  overflow: hidden;
+}
+
+.tableProductSelector__productImage img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.tableProductSelector__productInfo {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.tableProductSelector__productInfo strong {
+  overflow: hidden;
+
+  color: var(--text);
+
+  font-size: 0.95rem;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tableProductSelector__productInfo span {
+  color: #765238;
+
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.tableProductSelector__productInfo small {
+  color: var(--text-muted);
+
+  font-size: 0.73rem;
+}
+
+/* =========================================================
+   KIVÁLASZTOTT TERMÉK
+   ========================================================= */
+
+.tableProductSelector__selected {
+  flex: 0 0 auto;
+
+  margin-top: 15px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid var(--border);
+}
+
+.tableProductSelector__selectedContent {
+  display: grid;
+
+  grid-template-columns:
+    76px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 13px;
+
+  margin-top: 12px;
+}
+
+.tableProductSelector__selectedImage {
+  width: 76px;
+  height: 76px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 15px;
+
+  overflow: hidden;
+}
+
+.tableProductSelector__selectedImage img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.tableProductSelector__selectedImage span {
+  font-size: 2rem;
+}
+
+.tableProductSelector__selectedInfo {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.tableProductSelector__selectedInfo > strong:first-child {
+  color: var(--text);
+
+  font-size: 1.2rem;
+}
+
+.tableProductSelector__selectedInfo > span {
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+}
+
+.tableProductSelector__selectedInfo > strong {
+  color: #765238;
+
+  font-size: 1rem;
+}
+
+.tableProductSelector__stock {
+  width: fit-content;
+
+  margin-top: 4px;
+
+  padding: 4px 8px;
+
+  background: var(--success-soft);
+
+  color: var(--success);
+
+  border-radius: 20px;
+
+  font-size: 0.75rem;
+
+  font-weight: 700;
+}
+
+.tableProductSelector__stock--low {
+  background: var(--warning-soft);
+
+  color: var(--warning);
+}
+
+.tableProductSelector__stock--empty {
+  background: var(--danger-soft);
+
+  color: var(--danger);
+}
+
+.tableProductSelector__controls {
+  display: flex;
+
+  align-items: flex-end;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.tableProductSelector__amount {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.tableProductSelector__amount button {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: var(--surface-soft);
+
+  color: var(--text);
+
+  border: 1px solid var(--border);
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-size: 1.1rem;
+}
+
+.tableProductSelector__amount button:disabled {
+  opacity: 0.4;
+
+  cursor: not-allowed;
+}
+
+.tableProductSelector__amount strong {
+  min-width: 20px;
+
+  color: var(--text);
+
+  text-align: center;
+}
+
+.tableProductSelector__controls > span {
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+
+  white-space: nowrap;
+}
+
+.tableProductSelector__controls > span strong {
+  color: #765238;
+}
+
+.tableProductSelector__add {
+  min-height: 38px;
+
+  padding: 0 13px;
+
+  background: var(--accent);
+
+  color: #2c1e1a;
+
+  border: 1px solid #dfb33d;
+
+  border-radius: 9px;
+
+  font-family: inherit;
+
+  font-size: 0.85rem;
+
+  font-weight: 750;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.tableProductSelector__add:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.tableProductSelector__add:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.tableProductSelector__empty,
+.tableProductSelector__selectedEmpty {
+  flex: 1;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-direction: column;
+
+  color: var(--text-muted);
+
+  text-align: center;
+
+  font-size: 0.9rem;
+}
+
+.tableProductSelector__selectedEmpty {
+  padding: 16px 0;
+}
+
+.tableProductSelector__selectedEmpty > div {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #f3e8de;
+
+  border-radius: 12px;
+
+  margin-bottom: 7px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .tableProductSelector__selectedContent {
+    grid-template-columns:
+      64px
+      minmax(0, 1fr);
+  }
+
+  .tableProductSelector__selectedImage {
+    width: 64px;
+    height: 64px;
+  }
+
+  .tableProductSelector__controls {
+    grid-column: 1 / -1;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .tableProductSelector {
+    padding: 15px;
+  }
+
+  .tableProductSelector__categoryList {
+    max-height: none;
+  }
+
+  .tableProductSelector__productList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    max-height: 300px;
+  }
+
+  .tableProductSelector__selectedContent {
+    grid-template-columns:
+      60px
+      minmax(0, 1fr);
+  }
+
+  .tableProductSelector__selectedImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .tableProductSelector__controls {
+    grid-column: 1 / -1;
+
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .tableProductSelector__amount {
+    justify-content: center;
+  }
+
+  .tableProductSelector__add {
+    width: 100%;
+  }
+}

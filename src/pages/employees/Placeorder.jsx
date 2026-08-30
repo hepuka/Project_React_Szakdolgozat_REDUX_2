@@ -7,11 +7,9 @@ import { useSelector } from "react-redux";
 import { selectUserName } from "../../Redux/slice/authSlice";
 
 import TableDetails from "../../components/TableDetails";
-import TableButtons from "../../components/TableButtons";
-import TableProducts from "../../components/TableProducts";
-import TableProductDetailsContainer from "../../components/TableProductDetailsContainer";
 import TableOrders from "../../components/TableOrders";
 import TablePayment from "../../components/TablePayment";
+import TableProductSelector from "../../components/TableProductSelector";
 
 import { useEffect, useState } from "react";
 
@@ -90,11 +88,7 @@ const Placeorder = () => {
             sendTableId={sendTableId}
           />
 
-          <TableButtons />
-
-          <TableProducts />
-
-          <TableProductDetailsContainer
+          <TableProductSelector
             selectedTable={selectedTable}
             tableOrdersLength={tableOrders.length}
           />
