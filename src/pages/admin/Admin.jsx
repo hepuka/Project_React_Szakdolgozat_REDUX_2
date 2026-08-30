@@ -7,7 +7,7 @@ import Layout from "../../components/Layout";
 import useFetchCollection from "../../customHooks/useFetchCollection";
 import useFetchDocument from "../../customHooks/useFetchDocument";
 
-import { selectUserName } from "../../Redux/slice/authSlice";
+import { selectUserName, selectUserRole } from "../../Redux/slice/authSlice";
 
 import { collection, onSnapshot } from "firebase/firestore";
 
@@ -23,7 +23,6 @@ const INITIAL_CAPITAL = 1000000;
 
 const getPeriodId = (date = new Date()) => {
   const year = date.getFullYear();
-
   const month = String(date.getMonth() + 1).padStart(2, "0");
 
   return `${year}-${month}`;
@@ -110,6 +109,7 @@ const formatTime = (value) => {
 
 const Admin = () => {
   const currentUser = useSelector(selectUserName);
+  const currentUserRole = useSelector(selectUserRole);
 
   const orders = useFetchCollection("kunpaosorders");
 
@@ -813,9 +813,11 @@ const Admin = () => {
                 <h2>Figyelmeztetések</h2>
               </div>
 
-              <Link to="/products" className="admin__panelLink">
-                Termékek
-              </Link>
+              {currentUserRole !== "Admin" && (
+                <Link to="/products" className="admin__panelLink">
+                  Termékek
+                </Link>
+              )}
             </div>
 
             {stockAlerts.length === 0 ? (
@@ -1087,9 +1089,11 @@ const Admin = () => {
                 <h2>Rendezetlen számlák</h2>
               </div>
 
-              <Link to="/expenses" className="admin__panelLink">
-                Kezelés
-              </Link>
+              {currentUserRole !== "Admin" && (
+                <Link to="/expenses" className="admin__panelLink">
+                  Kezelés
+                </Link>
+              )}
             </div>
 
             {pendingExpenseList.length === 0 ? (
