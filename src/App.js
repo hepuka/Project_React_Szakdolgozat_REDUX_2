@@ -12,6 +12,7 @@ import OrderDetails from "./pages/admin/OrderDetails";
 import Business from "./pages/admin/Business";
 import Placeorder from "./pages/employees/Placeorder";
 import ProductOrder from "./pages/admin/ProductOrder";
+import Expenses from "./pages/admin/Expenses";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/business" element={<Business />}></Route>
           <Route path="/tables" element={<Placeorder />}></Route>
           <Route path="/product-order/:id" element={<ProductOrder />}></Route>
+          <Route path="/expenses" element={<Expenses />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

@@ -29,6 +29,7 @@ const NAV_ITEMS = {
     { to: "/products", icon: "☕", label: "Termékek" },
     { to: "/add-product/ADD", icon: "＋", label: "Új termék" },
     { to: "/orders", icon: "🧾", label: "Összes rendelés" },
+    { to: "/expenses", icon: "💰", label: "Munkabér és egyéb kiadások" },
     { to: "/contact", icon: "💬", label: "Hibabejelentés" },
   ],
   leader: [
