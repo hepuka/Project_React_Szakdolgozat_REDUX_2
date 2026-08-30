@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+
 import "./TablePayment.scss";
+
 import { useNavigate } from "react-router-dom";
+
 import { useDispatch, useSelector } from "react-redux";
+
 import { selectUserPin, selectEmail } from "../Redux/slice/authSlice";
+
 import { db } from "../firebase/config";
+
 import Notiflix from "notiflix";
+
 import {
   addDoc,
   collection,
@@ -14,80 +21,174 @@ import {
   query,
   getDocs,
 } from "firebase/firestore";
+
 import { SET_ZERO } from "../Redux/slice/tableSlice";
 
 const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
   const userPin = useSelector(selectUserPin);
+
   const userEmail = useSelector(selectEmail);
-  const today = new Date();
-  const date = today.toDateString();
-  const time = today.toLocaleTimeString();
+
   const [pin, setPin] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
-  const orderConfig = {
-    user: userEmail,
-    username: userName,
-    orderDate: date,
-    orderTime: time,
-    orderAmount: Math.ceil(getTotal() * 1.05),
-    orderStatus: "Fizetve",
-    tablenumber: id,
-    cartItems: tableOrders,
-    createdAt: Timestamp.now().toDate(),
-  };
+  const total = Number(getTotal() || 0);
+
+  const tax = Math.ceil(total * 0.05);
+
+  const finalAmount = total + tax;
 
   const saveOrder = async (e) => {
     e.preventDefault();
 
-    if (pin !== userPin) {
-      Notiflix.Notify.failure("Hibás pin kód");
-    } else {
-      addDoc(collection(db, "kunpaosorders"), orderConfig);
-
-      const docRef = query(collection(db, `tableorders_${id}`));
-      const toDelete = await getDocs(docRef);
-
-      toDelete.forEach((item) => {
-        const ID = item.id;
-        deleteDoc(doc(db, `tableorders_${id}`, ID));
-      });
-
-      Notiflix.Notify.success("Rendelés fizetve!");
-      navigate("/tables");
+    if (loading) {
+      return;
     }
 
-    dispatch(SET_ZERO({ id: id }));
+    if (Number(id) < 1) {
+      Notiflix.Notify.warning("Először válassz asztalt!");
 
-    setPin("");
+      return;
+    }
+
+    if (!tableOrders.length) {
+      Notiflix.Notify.warning("A rendelés üres.");
+
+      return;
+    }
+
+    if (pin !== userPin) {
+      Notiflix.Notify.failure("Hibás PIN kód.");
+
+      return;
+    }
+
+    setLoading(true);
+
+    const today = new Date();
+
+    const orderConfig = {
+      user: userEmail,
+
+      username: userName,
+
+      orderDate: today.toLocaleDateString("hu-HU"),
+
+      orderTime: today.toLocaleTimeString("hu-HU", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+
+      orderAmount: finalAmount,
+
+      orderStatus: "Fizetve",
+
+      tablenumber: Number(id),
+
+      cartItems: tableOrders,
+
+      createdAt: Timestamp.now().toDate(),
+    };
+
+    try {
+      await addDoc(collection(db, "kunpaosorders"), orderConfig);
+
+      const tableOrdersRef = collection(db, `tableorders_${id}`);
+
+      const snapshot = await getDocs(query(tableOrdersRef));
+
+      await Promise.all(
+        snapshot.docs.map((order) =>
+          deleteDoc(doc(db, `tableorders_${id}`, order.id)),
+        ),
+      );
+
+      dispatch(
+        SET_ZERO({
+          id: Number(id),
+        }),
+      );
+
+      setPin("");
+
+      Notiflix.Notify.success("Rendelés fizetve!");
+
+      navigate("/tables");
+    } catch (error) {
+      console.error("Payment error:", error);
+
+      Notiflix.Notify.failure("Nem sikerült rögzíteni a fizetést.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="placeorder__card placeorder__tablepayment">
-      <div className="placeorder__tablepaymentdetails">
-        <h2>
-          Összeg: <span>{getTotal()} Ft</span>
-        </h2>
-        <h2>
-          Adó: <span>5%</span>
-        </h2>
-        <h2>
-          Végösszeg: <span>{Math.ceil(getTotal() * 1.05)} Ft</span>
-        </h2>
+      <div className="tablePayment__header">
+        <div>
+          <span>Fizetés</span>
+
+          <h2>Rendelés összesítése</h2>
+        </div>
+
+        <div className="tablePayment__table">#{id || "—"}</div>
       </div>
-      <div className="placeorder__tablepayment__button">
-        <form onSubmit={saveOrder}>
+
+      <div className="tablePayment__details">
+        <div>
+          <span>Részösszeg</span>
+
+          <strong>{total.toLocaleString("hu-HU")} Ft</strong>
+        </div>
+
+        <div>
+          <span>ÁFA</span>
+
+          <strong>5%</strong>
+        </div>
+
+        <div className="tablePayment__total">
+          <span>Végösszeg</span>
+
+          <strong>{finalAmount.toLocaleString("hu-HU")} Ft</strong>
+        </div>
+      </div>
+
+      <form className="tablePayment__form" onSubmit={saveOrder}>
+        <div className="tablePayment__pin">
+          <label htmlFor="payment-pin">PIN kód</label>
+
           <input
-            type="text"
+            id="payment-pin"
+            type="password"
             value={pin}
-            placeholder="PIN kód"
+            placeholder="••••"
+            inputMode="numeric"
+            maxLength={4}
             required
+            disabled={loading}
             onChange={(e) => setPin(e.target.value)}
           />
-          <button type="submit">Fizetés</button>
-        </form>
-      </div>
+        </div>
+
+        <button type="submit" disabled={loading || !tableOrders.length}>
+          {loading ? (
+            <>
+              <span className="tablePayment__spinner" />
+              Feldolgozás...
+            </>
+          ) : (
+            <>✓ Fizetés lezárása</>
+          )}
+        </button>
+      </form>
     </div>
   );
 };

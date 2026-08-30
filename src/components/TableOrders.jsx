@@ -1,5 +1,7 @@
 import "./TableOrders.scss";
+
 import Notiflix from "notiflix";
+
 import {
   collection,
   deleteDoc,
@@ -8,99 +10,135 @@ import {
   getDocs,
   where,
 } from "firebase/firestore";
+
 import { db } from "../firebase/config";
+
 import { SET_DELETETABLESORDERS } from "../Redux/slice/tableSlice";
+
 import { useDispatch } from "react-redux";
 
 const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
   const dispatch = useDispatch();
 
-  const decrElement = async () => {
-    dispatch(SET_DELETETABLESORDERS({ id: selectedTable }));
+  const decrElement = () => {
+    dispatch(
+      SET_DELETETABLESORDERS({
+        id: selectedTable,
+      }),
+    );
   };
 
-  const confirmDelete = (productid) => {
+  const deleteOrder = async (productId) => {
+    const ordersRef = collection(db, `tableorders_${selectedTable}`);
+
+    const ordersQuery = query(ordersRef, where("id", "==", productId));
+
+    const querySnapshot = await getDocs(ordersQuery);
+
+    if (querySnapshot.empty) {
+      throw new Error("A rendelési tétel nem található.");
+    }
+
+    const documentId = querySnapshot.docs[0].id;
+
+    await deleteDoc(doc(db, `tableorders_${selectedTable}`, documentId));
+  };
+
+  const confirmDelete = (product) => {
     Notiflix.Confirm.show(
-      "Rendelés törlése!",
-      "Valóban törölni akarja a rendelést?",
+      "Rendelési tétel törlése",
+      `Biztosan törölni szeretnéd a(z) ${product.name} tételt?`,
       "Törlés",
       "Mégse",
+      async () => {
+        try {
+          await deleteOrder(product.id);
 
-      function okCb() {
-        deleteOrder(productid);
-        decrElement();
-      },
+          decrElement();
 
-      function cancelCb() {
-        console.log("Törlés elutasítva!");
+          getTotal();
+
+          Notiflix.Notify.success("Termék törölve a rendelésből!");
+        } catch (error) {
+          console.error("Delete order item error:", error);
+
+          Notiflix.Notify.failure("Nem sikerült törölni a rendelési tételt.");
+        }
       },
+      () => {},
       {
-        width: "320px",
-        borderRadius: "8px",
-        titleColor: "red",
-        okButtonBackground: "red",
+        width: "340px",
+        borderRadius: "14px",
+        titleColor: "#2c1e1a",
+        okButtonBackground: "#b15252",
         cssAnimationStyle: "zoom",
-      }
+      },
     );
-  };
-
-  const deleteOrder = async (productid) => {
-    const q = query(
-      collection(db, `tableorders_${selectedTable}`),
-      where("id", "==", productid)
-    );
-
-    const querySnapshot = await getDocs(q);
-    const deletedProduct = querySnapshot.docs[0]._key.path.segments[6];
-
-    const docRef = doc(db, `tableorders_${selectedTable}`, deletedProduct);
-
-    deleteDoc(docRef).then(() => {
-      getTotal();
-      Notiflix.Notify.success("Termék törölve a rendelésből!");
-    });
   };
 
   return (
     <div className="placeorder__card placeorder__tableorders">
-      <div className="placeorder__tableordersdetails">
-        <div className="placeorder__tableordersdetailsimg">
-          <img
-            src="https://freesvg.org/img/1667812423coffee-shop-logo-concept.png"
-            alt="coffe_logo"
-          />
+      <div className="tableOrders__header">
+        <div>
+          <span>Aktív rendelés</span>
+
+          <h2>Asztal #{selectedTable}</h2>
         </div>
-        <div className="placeorder__tableordersdetailstitle">
-          <h2>KunPao's Coffee Management</h2>
-        </div>
-        <div className="placeorder__tableordersdetailsList">
-          {tableOrders.map((item) => {
-            return (
-              <div
-                key={item.createdAt}
-                onClick={() => confirmDelete(item.id)}
-                className="placeorder__tableordersdetails"
-              >
-                <div className="placeorder__tableordersdetail">
-                  <p>Megnevezés:</p>
-                  <p>{item.name}</p>
-                </div>
-                <div className="placeorder__tableordersdetail">
-                  <p>Egységár:</p>
-                  <p>{item.price} Ft</p>
-                </div>
-                <div className="placeorder__tableordersdetail">
-                  <p>Mennyiség:</p>
-                  <p>{item.amount}</p>
-                </div>
-                <div className="placeorder__tableordersdetail">
-                  <p>Összeg:</p>
-                  <p>{item.sum} Ft</p>
+
+        <div className="tableOrders__count">{tableOrders.length} tétel</div>
+      </div>
+
+      <div className="tableOrders__list">
+        {tableOrders.length === 0 ? (
+          <div className="tableOrders__empty">
+            <div>🧾</div>
+
+            <h3>A rendelés üres</h3>
+
+            <p>Válassz egy terméket a hozzáadáshoz.</p>
+          </div>
+        ) : (
+          tableOrders.map((item) => (
+            <article
+              key={item.documentId || item.id}
+              className="tableOrders__item"
+            >
+              <div className="tableOrders__itemMain">
+                <div className="tableOrders__itemIcon">☕</div>
+
+                <div className="tableOrders__itemInfo">
+                  <strong>{item.name}</strong>
+
+                  <span>
+                    {item.amount} ×{" "}
+                    {Number(item.price || 0).toLocaleString("hu-HU")} Ft
+                  </span>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              <div className="tableOrders__itemRight">
+                <strong>
+                  {Number(item.sum || 0).toLocaleString("hu-HU")} Ft
+                </strong>
+
+                <button
+                  type="button"
+                  onClick={() => confirmDelete(item)}
+                  aria-label={`${item.name} törlése`}
+                  title="Tétel törlése"
+                >
+                  ×
+                </button>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+
+      <div className="tableOrders__summary">
+        <span>Részösszeg</span>
+
+        <strong>{Number(getTotal() || 0).toLocaleString("hu-HU")} Ft</strong>
       </div>
     </div>
   );

@@ -1,69 +1,230 @@
 @import "../index.scss";
 
 .placeorder__tablepayment {
-    grid-column: 10/13;
-    grid-row: 10/13;
+  padding: 18px;
 
+  display: flex;
 
-    .placeorder__tablepaymentdetails {
-        width: 100%;
-        padding: 20px;
+  flex-direction: column;
 
-        h2 {
+  box-sizing: border-box;
+}
 
-            margin-bottom: 5px;
+.tablePayment__header {
+  display: flex;
 
-            span {
-                float: right;
-            }
-        }
-    }
+  align-items: flex-end;
 
-    .placeorder__tablepayment__button {
-        padding: 0 15px;
+  justify-content: space-between;
 
-        form {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            height: 37px;
+  gap: 10px;
 
-            input {
-                background-color: transparent;
-                padding-left: 5px;
-                height: 100%;
-                border: 1px solid;
-                width: 60%;
-                border-radius: 5px;
+  padding-bottom: 11px;
 
-                &:active {
-                    border: none;
+  margin-bottom: 12px;
 
-                }
-            }
+  border-bottom: 1px solid var(--border-soft);
+}
 
-            button {
-                background: $buttonBackground;
-                border: 1px solid;
-                border-color: $borderColor;
-                cursor: pointer;
-                border-radius: 4px;
-                text-align: center;
-                width: 40%;
-                padding: 10px 10px;
+.tablePayment__header span {
+  color: var(--text-muted);
 
+  font-size: 0.82rem;
 
-                &:active {
-                    transform: scale(0.95);
+  font-weight: 700;
 
-                }
+  text-transform: uppercase;
 
-            }
-        }
+  letter-spacing: 0.1em;
+}
 
+.tablePayment__header h2 {
+  margin: 3px 0 0;
 
-    }
+  color: var(--text);
 
+  font-size: 1.3rem;
+}
+
+.tablePayment__table {
+  padding: 5px 8px;
+
+  background: #f3e8de;
+
+  color: #765238;
+
+  border-radius: 8px;
+
+  font-size: 0.85rem;
+
+  font-weight: 750;
+}
+
+.tablePayment__details {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.tablePayment__details > div {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  color: var(--text-muted);
+
+  font-size: 0.9rem;
+}
+
+.tablePayment__details strong {
+  color: var(--text);
+}
+
+.tablePayment__total {
+  margin-top: 5px;
+
+  padding-top: 9px;
+
+  border-top: 1px solid var(--border);
+
+  font-weight: 700;
+}
+
+.tablePayment__total span {
+  color: var(--text);
+}
+
+.tablePayment__total strong {
+  color: #765238;
+
+  font-size: 1.4rem;
+}
+
+.tablePayment__form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(80px, 0.75fr)
+    minmax(130px, 1.25fr);
+
+  gap: 9px;
+
+  margin-top: auto;
+
+  padding-top: 12px;
+}
+
+.tablePayment__pin {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.tablePayment__pin label {
+  color: var(--text-muted);
+
+  font-size: 0.82rem;
+
+  font-weight: 650;
+}
+
+.tablePayment__pin input {
+  width: 100%;
+  height: 40px;
+
+  box-sizing: border-box;
+
+  background: var(--input-background);
+
+  color: var(--text);
+
+  border: 1px solid var(--border);
+
+  border-radius: 9px;
+
+  outline: none;
+
+  text-align: center;
+
+  letter-spacing: 0.18em;
+
+  &:focus {
+    border-color: #765238;
+
+    box-shadow: 0 0 0 3px rgba(118, 82, 56, 0.1);
+  }
+}
+
+.tablePayment__form > button {
+  min-height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  background: #2c1e1a;
+
+  color: #fffdf9;
+
+  border: none;
+
+  border-radius: 10px;
+
+  font-family: inherit;
+
+  font-size: 0.95rem;
+
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.tablePayment__form > button:hover:not(:disabled) {
+  background: #765238;
+
+  transform: translateY(-1px);
+}
+
+.tablePayment__form > button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+.tablePayment__spinner {
+  width: 13px;
+  height: 13px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+
+  border-top-color: #fff;
+
+  border-radius: 50%;
+
+  animation: tablePaymentSpinner 0.7s linear infinite;
+}
+
+@keyframes tablePaymentSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .tablePayment__form {
+    grid-template-columns: 1fr;
+  }
 }

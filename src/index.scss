@@ -1,50 +1,239 @@
-$font-color: #2e0b2e;
-$dark: #765850;
-$light: #c8b1a5;
-$buttonBackground: #f0c14b;
-$deleteBackground: rgb(177, 82, 82);
-$deleteColor: white;
-$borderColor: #a88734 #9c7e31 #846a29;
-$activeStatus: green;
-$inactiveStatus: gray;
+/* =========================================================
+   GLOBAL THEME VARIABLES
+   ========================================================= */
+
+:root {
+  /* =======================================================
+     COLORS - LIGHT
+     ======================================================= */
+
+  --background: #c8b1a5;
+
+  --surface: #fffdf9;
+  --surface-soft: #f8f3ee;
+  --surface-hover: #fcf6f0;
+
+  --primary: #2c1e1a;
+  --primary-light: #765238;
+
+  --accent: #f0c14b;
+  --accent-hover: #f4ca61;
+
+  --text: #2c1e1a;
+  --text-soft: #75675f;
+  --text-muted: #9a8c83;
+
+  --border: #e7ded6;
+  --border-soft: #eee7e1;
+
+  --danger: #b15252;
+  --danger-hover: #963f3f;
+  --danger-soft: #fff4f2;
+
+  --success: #3f7448;
+  --success-soft: #e7f1e8;
+
+  --warning: #8a641e;
+  --warning-soft: #fff1d2;
+
+  --info: #426989;
+  --info-soft: #e4edf7;
+
+  --input-background: #faf8f5;
+
+  /* =======================================================
+     SHADOWS - LIGHT
+     ======================================================= */
+
+  --shadow-sm: 0 5px 16px rgba(54, 35, 25, 0.05);
+
+  --shadow-md:
+    0 10px 28px rgba(54, 35, 25, 0.06), 0 2px 8px rgba(54, 35, 25, 0.03);
+
+  --shadow-lg:
+    0 18px 45px rgba(54, 35, 25, 0.1), 0 4px 12px rgba(54, 35, 25, 0.04);
+
+  /* =======================================================
+     RADIUS
+     ======================================================= */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* =======================================================
+     TRANSITION
+     ======================================================= */
+
+  --transition-fast: 0.18s ease;
+
+  --transition: 0.25s ease;
+}
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+:root[data-theme="dark"] {
+  /* =======================================================
+     COLORS - DARK
+     ======================================================= */
+
+  --background: #181210;
+
+  --surface: #241a16;
+  --surface-soft: #2b201b;
+  --surface-hover: #33251f;
+
+  --primary: #f5eee8;
+  --primary-light: #c89565;
+
+  --accent: #f0c14b;
+  --accent-hover: #f4ca61;
+
+  --text: #f6eee8;
+  --text-soft: #c4b5aa;
+  --text-muted: #9b8980;
+
+  --border: #46352d;
+  --border-soft: #3a2b25;
+
+  --danger: #d87878;
+  --danger-hover: #e58c8c;
+  --danger-soft: #38211f;
+
+  --success: #78a97f;
+  --success-soft: #203126;
+
+  --warning: #e0b65e;
+  --warning-soft: #382d1c;
+
+  --info: #78a3c5;
+  --info-soft: #202d38;
+
+  --input-background: #2b201b;
+
+  /* =======================================================
+     SHADOWS - DARK
+     ======================================================= */
+
+  --shadow-sm: 0 5px 18px rgba(0, 0, 0, 0.24);
+
+  --shadow-md: 0 14px 35px rgba(0, 0, 0, 0.28), 0 3px 10px rgba(0, 0, 0, 0.18);
+
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.36), 0 5px 15px rgba(0, 0, 0, 0.22);
+}
+
+/* =========================================================
+   GLOBAL RESET
+   ========================================================= */
 
 * {
   margin: 0;
   padding: 0;
+
   box-sizing: border-box;
+
   scroll-behavior: smooth;
+
   text-decoration: none;
 }
 
+/* =========================================================
+   HTML
+   ========================================================= */
+
 html {
   font-size: 10px;
+
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  color-scheme: light;
 }
 
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
 body {
-  max-height: 100vh;
-  background-color: $light;
+  min-height: 100vh;
+
+  background-color: var(--background);
+
+  color: var(--text);
+
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+
+  overflow-x: hidden;
 
   &::-webkit-scrollbar {
     display: none;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
   }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
 h1,
-h2 {
-  color: $font-color;
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text);
+
+  transition: color var(--transition);
 }
+
+/* =========================================================
+   TEXT
+   ========================================================= */
+
+p,
+span,
+label {
+  transition: color var(--transition);
+}
+
+/* =========================================================
+   FORM ELEMENTS
+   ========================================================= */
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* =========================================================
+   CODE
+   ========================================================= */
 
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+/* =========================================================
+   GLOBAL SCROLLBAR HELPERS
+   ========================================================= */
 
 .sidebar__container::-webkit-scrollbar {
   display: none;
@@ -54,4 +243,28 @@ code {
 .placeorder__tableordersdetails {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+  background: var(--accent);
+
+  color: #2c1e1a;
+}
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+
+  outline-offset: 2px;
 }

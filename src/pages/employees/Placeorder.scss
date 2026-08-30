@@ -1,21 +1,326 @@
 @import "../../index.scss";
 
 .placeorder {
+  width: 100%;
+  min-height: 100%;
+
+  padding: 26px 28px 36px;
+
+  box-sizing: border-box;
+
+  color: var(--text);
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #d5c8be transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d5c8be;
+    border-radius: 20px;
+  }
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.placeorder__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 22px;
+}
+
+.placeorder__eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #765238;
+
+  font-size: 1rem;
+  font-weight: 750;
+
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+.placeorder__header h1 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: clamp(2.7rem, 4vw, 4rem);
+
+  line-height: 1.05;
+
+  font-weight: 750;
+
+  letter-spacing: -0.045em;
+}
+
+.placeorder__header p {
+  margin: 8px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 1.2rem;
+
+  line-height: 1.5;
+}
+
+.placeorder__headerStatus {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 11px 15px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.placeorder__statusDot {
+  width: 10px;
+  height: 10px;
+
+  flex: 0 0 10px;
+
+  background: #4ea55b;
+
+  border-radius: 50%;
+
+  box-shadow: 0 0 0 4px rgba(78, 165, 91, 0.1);
+}
+
+.placeorder__headerStatus div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.placeorder__headerStatus small {
+  color: var(--text-muted);
+
+  font-size: 0.85rem;
+}
+
+.placeorder__headerStatus strong {
+  color: var(--text);
+
+  font-size: 1.05rem;
+}
+
+/* =========================================================
+   MAIN WORKSPACE
+   ========================================================= */
+
+.placeorder__workspace {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(230px, 0.75fr)
+    minmax(380px, 1.35fr)
+    minmax(320px, 0.95fr);
+
+  grid-template-rows:
+    minmax(380px, 1fr)
+    minmax(190px, auto);
+
+  grid-template-areas:
+    "tables products orders"
+    "categories selected payment";
+
+  gap: 16px;
+
+  min-height: calc(100vh - 195px);
+}
+
+/* =========================================================
+   COMMON CARD
+   ========================================================= */
+
+.placeorder__card {
+  min-width: 0;
+  min-height: 0;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+  box-shadow: var(--shadow-md);
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   GRID AREAS
+   ========================================================= */
+
+.placeorder__tablenumber {
+  grid-area: tables;
+}
+
+.placeorder__tablebuttons {
+  grid-area: categories;
+}
+
+.placeorder__tableproducts {
+  grid-area: products;
+}
+
+.placeorder__tableproductdetailsContainer {
+  grid-area: selected;
+}
+
+.placeorder__tableorders {
+  grid-area: orders;
+}
+
+.placeorder__tablepayment {
+  grid-area: payment;
+}
+
+/* =========================================================
+   REMOVE OLD GRID POSITIONING
+   ========================================================= */
+
+.placeorder__workspace .placeorder__tablenumber,
+.placeorder__workspace .placeorder__tablebuttons,
+.placeorder__workspace .placeorder__tableproducts,
+.placeorder__workspace .placeorder__tableproductdetailsContainer,
+.placeorder__workspace .placeorder__tableorders,
+.placeorder__workspace .placeorder__tablepayment {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .placeorder {
+    padding: 22px 18px 30px;
+  }
+
+  .placeorder__workspace {
+    grid-template-columns:
+      minmax(210px, 0.7fr)
+      minmax(340px, 1.3fr);
+
+    grid-template-rows:
+      minmax(330px, auto)
+      minmax(200px, auto)
+      minmax(300px, auto)
+      minmax(190px, auto);
+
+    grid-template-areas:
+      "tables products"
+      "categories products"
+      "selected orders"
+      "payment orders";
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .placeorder {
+    padding: 20px 12px 28px;
+  }
+
+  .placeorder__header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .placeorder__headerStatus {
     width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(12, 1fr);
-    gap: 20px;
 
+    box-sizing: border-box;
+  }
 
+  .placeorder__workspace {
+    display: flex;
 
+    flex-direction: column;
 
-    .placeorder__card {
-        border: 1px solid lightgray;
-        border-radius: 10px;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    }
+    gap: 12px;
 
+    min-height: auto;
+  }
 
+  .placeorder__card {
+    width: 100%;
+  }
+
+  .placeorder__tablenumber {
+    min-height: 390px;
+  }
+
+  .placeorder__tablebuttons {
+    min-height: 170px;
+  }
+
+  .placeorder__tableproducts {
+    min-height: 380px;
+  }
+
+  .placeorder__tableproductdetailsContainer {
+    min-height: 210px;
+  }
+
+  .placeorder__tableorders {
+    min-height: 330px;
+  }
+
+  .placeorder__tablepayment {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 500px) {
+  .placeorder {
+    padding: 18px 7px 24px;
+  }
+
+  .placeorder__header h1 {
+    font-size: 2.6rem;
+  }
+
+  .placeorder__header p {
+    font-size: 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placeorder__card {
+    transition: none;
+  }
 }

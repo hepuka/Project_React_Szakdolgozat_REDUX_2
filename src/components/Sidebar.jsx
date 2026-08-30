@@ -39,7 +39,11 @@ const NAV_ITEMS = {
     { to: "/business", icon: "📊", label: "Üzleti összesítő" },
     { to: "/contact", icon: "💬", label: "Hibabejelentés" },
   ],
-  employee: [{ to: "/tables", icon: "🛎️", label: "Rendelés / Fizetés" }],
+  employee: [
+    { to: "/tables", icon: "🛎️", label: "Rendelés / Fizetés" },
+    { to: "/products", icon: "☕", label: "Termékek" },
+    { to: "/orders", icon: "🧾", label: "Összes rendelés" },
+  ],
 };
 
 const activeLinkClass = ({ isActive }) =>
