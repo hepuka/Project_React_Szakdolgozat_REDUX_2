@@ -2,6 +2,8 @@
 
 .business {
   width: 100%;
+
+  min-width: 0;
   min-height: 100%;
 
   padding: 28px;
@@ -15,32 +17,53 @@
   gap: 18px;
 
   color: var(--text);
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #d5c8be transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d5c8be;
+
+    border-radius: 20px;
+  }
 }
 
 /* =========================================================
-   COMMON CARD
+   HEADER
    ========================================================= */
 
-.business__card {
-  min-height: 220px;
+.business__header {
+  grid-column: 1 / -1;
 
-  display: flex;
+  margin-bottom: 2px;
+}
 
-  flex-direction: column;
+.business__header h1 {
+  margin: 0;
 
-  justify-content: space-between;
+  color: var(--text);
 
-  padding: 24px;
+  font-size: clamp(2.7rem, 4vw, 4rem);
 
-  box-sizing: border-box;
+  line-height: 1.05;
 
-  background: var(--surface);
+  letter-spacing: -0.045em;
+}
 
-  border: 1px solid var(--border);
+.business__header p {
+  margin: 8px 0 0;
 
-  border-radius: 20px;
+  color: var(--text-muted);
 
-  box-shadow: var(--shadow-md);
+  font-size: 1.1rem;
+
+  line-height: 1.5;
 }
 
 /* =========================================================
@@ -48,6 +71,8 @@
    ========================================================= */
 
 .business__eyebrow {
+  display: block;
+
   color: var(--primary-light);
 
   font-size: 0.8rem;
@@ -60,115 +85,475 @@
 }
 
 /* =========================================================
-   TITLE
+   CURRENT BALANCE
    ========================================================= */
+
+.business__balanceCard {
+  grid-column: 1 / -1;
+
+  padding: 24px;
+
+  background: linear-gradient(135deg, var(--surface), var(--surface-soft));
+
+  border: 1px solid rgba(118, 82, 56, 0.25);
+
+  border-radius: 22px;
+
+  box-shadow: var(--shadow-md);
+}
+
+.business__balanceHeader {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.business__balanceHeader h2 {
+  margin: 5px 0 0;
+
+  color: var(--text);
+
+  font-size: 1.4rem;
+}
+
+.business__balanceIcon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: var(--surface-soft);
+
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+
+  font-size: 1.5rem;
+}
+
+.business__balance {
+  display: block;
+
+  margin-top: 22px;
+
+  font-size: clamp(3rem, 5vw, 4.5rem);
+
+  line-height: 1;
+
+  letter-spacing: -0.045em;
+}
+
+.business__balance--positive {
+  color: var(--success);
+}
+
+.business__balance--negative {
+  color: var(--danger);
+}
+
+.business__balanceFormula {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-top: 24px;
+}
+
+.business__balanceFormula > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  padding: 12px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border-soft);
+
+  border-radius: 12px;
+}
+
+.business__balanceFormula span {
+  color: var(--text-muted);
+
+  font-size: 0.75rem;
+}
+
+.business__balanceFormula strong {
+  color: var(--text);
+
+  font-size: 0.95rem;
+}
+
+.business__balanceFormula .business__negative {
+  color: var(--danger);
+}
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.business__card {
+  min-height: 210px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 20px;
+
+  box-shadow: var(--shadow-md);
+}
 
 .business__card h2 {
   margin: 8px 0;
 
   color: var(--text);
 
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
-
-/* =========================================================
-   MAIN VALUE
-   ========================================================= */
 
 .business__card > strong {
   color: var(--primary-light);
 
-  font-size: 2.5rem;
+  font-size: 2.3rem;
 
   line-height: 1;
 
   letter-spacing: -0.04em;
 }
 
-/* =========================================================
-   DESCRIPTION
-   ========================================================= */
-
 .business__card p {
   margin: 12px 0 0;
 
   color: var(--text-muted);
 
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 
   line-height: 1.5;
 }
 
-/* =========================================================
-   OPERATING RESULT
-   ========================================================= */
-
-.business__card3 {
-  border-color: rgba(63, 116, 72, 0.3);
-}
-
 .business__card3 > strong {
-  color: var(--success);
+  color: var(--danger);
 }
-
-/* =========================================================
-   PRODUCT COUNT
-   ========================================================= */
 
 .business__card4 > strong {
   color: var(--text);
 }
 
 /* =========================================================
-   CAFÉ BALANCE
+   MANAGEMENT CARDS
    ========================================================= */
 
-.business__card5 {
-  grid-column: 1 / -1;
+.business__managementCard {
+  min-height: 310px;
 
-  min-height: 190px;
+  display: flex;
 
-  background: linear-gradient(135deg, var(--surface), var(--surface-soft));
+  flex-direction: column;
 
-  border-color: rgba(118, 82, 56, 0.25);
+  justify-content: space-between;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 20px;
+
+  box-shadow: var(--shadow-md);
 }
 
-.business__card5 h2 {
-  font-size: 1.4rem;
+.business__managementHeader h2 {
+  margin: 6px 0;
+
+  color: var(--text);
+
+  font-size: 1.3rem;
 }
 
-.business__card5 > strong {
-  font-size: 3rem;
+.business__managementHeader p {
+  max-width: 500px;
+
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.88rem;
+
+  line-height: 1.5;
 }
 
-.business__balance--positive {
-  color: var(--success) !important;
+.business__managementCard form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 18px;
 }
 
-.business__balance--negative {
-  color: var(--danger) !important;
+.business__managementCard label {
+  color: var(--text);
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+}
+
+.business__managementCard input,
+.business__managementCard select {
+  width: 100%;
+
+  min-height: 42px;
+
+  padding: 0 11px;
+
+  box-sizing: border-box;
+
+  background: var(--input-background);
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  color: var(--text);
+
+  font-family: inherit;
+
+  font-size: 0.9rem;
+
+  outline: none;
+}
+
+.business__managementCard input:focus,
+.business__managementCard select:focus {
+  border-color: var(--primary-light);
+
+  box-shadow: 0 0 0 3px rgba(118, 82, 56, 0.1);
+}
+
+.business__managementCard button {
+  min-height: 44px;
+
+  margin-top: 6px;
+
+  padding: 0 15px;
+
+  background: var(--accent);
+
+  border: 1px solid #dfb33d;
+
+  border-radius: 10px;
+
+  color: var(--primary);
+
+  font-family: inherit;
+
+  font-size: 0.88rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.business__managementCard button:hover {
+  background: var(--accent-hover);
+}
+
+.business__managementCard button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
 }
 
 /* =========================================================
-   TABLET / MOBILE
+   EXPENSES
    ========================================================= */
 
-@media (max-width: 800px) {
+.business__expensesCard {
+  grid-column: 1 / -1;
+
+  padding: 22px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 20px;
+
+  box-shadow: var(--shadow-md);
+}
+
+.business__expenseList {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 18px;
+
+  max-height: 360px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+}
+
+.business__expenseItem {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 12px 14px;
+
+  background: var(--surface-soft);
+
+  border: 1px solid var(--border-soft);
+
+  border-radius: 11px;
+}
+
+.business__expenseItem > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.business__expenseItem strong {
+  color: var(--text);
+
+  font-size: 0.9rem;
+}
+
+.business__expenseItem span {
+  color: var(--text-muted);
+
+  font-size: 0.75rem;
+}
+
+.business__expenseItem > strong {
+  color: var(--danger);
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.business__empty {
+  min-height: 150px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  color: var(--text-muted);
+
+  text-align: center;
+}
+
+.business__empty span {
+  font-size: 2rem;
+}
+
+.business__empty p {
+  margin: 0;
+
+  font-size: 0.9rem;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
   .business {
-    padding: 18px 12px;
+    padding: 20px 16px;
 
     grid-template-columns: 1fr;
   }
 
-  .business__card {
-    min-height: 180px;
-  }
-
-  .business__card5 {
+  .business__header,
+  .business__balanceCard,
+  .business__expensesCard {
     grid-column: auto;
   }
 
-  .business__card5 > strong {
-    font-size: 2.5rem;
+  .business__balanceFormula {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .business {
+    padding: 18px 12px;
+  }
+
+  .business__balanceCard {
+    padding: 18px;
+  }
+
+  .business__balance {
+    font-size: 3rem;
+  }
+
+  .business__balanceFormula {
+    grid-template-columns: 1fr;
+  }
+
+  .business__card,
+  .business__managementCard,
+  .business__expensesCard {
+    padding: 18px;
+  }
+
+  .business__expenseItem {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 6px;
   }
 }
