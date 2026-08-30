@@ -25,13 +25,13 @@
 
 .tableDetails__header {
   display: flex;
+
   align-items: flex-start;
   justify-content: space-between;
 
   gap: 12px;
 
   padding-bottom: 13px;
-
   margin-bottom: 12px;
 
   border-bottom: 1px solid var(--border-soft);
@@ -40,7 +40,6 @@
 .tableDetails__header > div:first-child {
   display: flex;
   flex-direction: column;
-
   gap: 3px;
 }
 
@@ -75,16 +74,6 @@
   color: #765238;
 
   font-size: 1.1rem;
-}
-
-.tableDetails__clock span {
-  color: var(--text-muted);
-
-  font-size: 0.8rem;
-
-  text-transform: none;
-
-  letter-spacing: 0;
 }
 
 .tableDetails__legend {
@@ -139,6 +128,7 @@
   min-height: 78px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -152,8 +142,6 @@
 
   border-radius: 13px;
 
-  color: var(--text);
-
   cursor: pointer;
 
   transition:
@@ -163,6 +151,36 @@
     box-shadow 0.18s ease;
 }
 
+/* =========================================================
+   SZABAD ASZTAL
+   ========================================================= */
+
+.tableDetails__table--free {
+  border-color: rgba(78, 165, 91, 0.25);
+}
+
+.tableDetails__table--free strong {
+  color: #4ea55b;
+}
+
+/* =========================================================
+   FOGLALT ASZTAL
+   ========================================================= */
+
+.tableDetails__table--busy {
+  background: #fbf5ea;
+
+  border-color: rgba(216, 160, 54, 0.35);
+}
+
+.tableDetails__table--busy strong {
+  color: #d8a036;
+}
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
 .tableDetails__table:hover {
   transform: translateY(-1px);
 
@@ -171,11 +189,19 @@
   border-color: #d4c4b9;
 }
 
-.tableDetails__table strong {
-  color: var(--text);
+/* =========================================================
+   ASZTAL SZÁMA
+   ========================================================= */
 
+.tableDetails__table strong {
   font-size: 1.45rem;
+
+  line-height: 1;
 }
+
+/* =========================================================
+   "ASZTAL" FELIRAT
+   ========================================================= */
 
 .tableDetails__table span {
   color: var(--text-muted);
@@ -183,8 +209,13 @@
   font-size: 0.8rem;
 
   text-transform: none;
+
   letter-spacing: 0;
 }
+
+/* =========================================================
+   TÉTELSZÁM
+   ========================================================= */
 
 .tableDetails__table small {
   margin-top: 4px;
@@ -198,14 +229,13 @@
   border-radius: 20px;
 
   font-size: 0.72rem;
+
   font-weight: 700;
 }
 
-.tableDetails__table--busy {
-  background: #fbf5ea;
-
-  border-color: #e0cfb1;
-}
+/* =========================================================
+   KIVÁLASZTOTT ASZTAL
+   ========================================================= */
 
 .tableDetails__table--selected {
   background: #f0c14b;
@@ -215,13 +245,22 @@
   box-shadow: 0 7px 18px rgba(118, 82, 56, 0.14);
 }
 
-.tableDetails__table--selected strong,
-.tableDetails__table--selected span {
+.tableDetails__table--selected strong {
   color: #2c1e1a;
+}
+
+.tableDetails__table--selected span {
+  color: #4f3625;
 }
 
 .tableDetails__table--selected small {
   background: rgba(255, 255, 255, 0.45);
 
   color: #4f3625;
+}
+
+@media (max-width: 500px) {
+  .placeorder__tablenumber {
+    padding: 15px;
+  }
 }

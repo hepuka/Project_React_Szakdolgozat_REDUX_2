@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import "./Products.scss";
 import Layout from "../../components/Layout";
-import useFetchCollection from "../../customHooks/useFetchCollection";
 import Search from "../../components/Search";
 import { Link } from "react-router-dom";
 import Notiflix from "notiflix";
@@ -9,6 +8,8 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import { db, storage } from "../../firebase/config";
 import { OnlyManager } from "../../components/OnlyAdmin";
+import { useSelector } from "react-redux";
+import { selectProducts } from "../../Redux/slice/productSlice";
 
 const FALLBACK_IMAGES = {
   espresso:
@@ -72,8 +73,7 @@ const getStockStatus = (stock, minStock) => {
 };
 
 const Products = () => {
-  const data = useFetchCollection("kunpaosproducts");
-
+  const data = useSelector(selectProducts);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Összes");
 

@@ -79,10 +79,13 @@ const TableDetails = ({ sendTableId }) => {
                 type="button"
                 className={`tableDetails__table ${
                   isSelected ? "tableDetails__table--selected" : ""
-                } ${isBusy ? "tableDetails__table--busy" : ""}`}
+                } ${
+                  isBusy
+                    ? "tableDetails__table--busy"
+                    : "tableDetails__table--free"
+                }`}
                 onClick={() => {
                   sendTableId(tableNumber);
-
                   setSelTable(tableNumber);
                 }}
               >

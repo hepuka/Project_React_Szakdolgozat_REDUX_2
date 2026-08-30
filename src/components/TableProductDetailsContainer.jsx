@@ -4,17 +4,13 @@ import "./TableProductDetailsContainer.scss";
 
 import { selectSelectedProduct } from "../Redux/slice/filterSlice";
 
+import { selectProducts } from "../Redux/slice/productSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 
 import Notiflix from "notiflix";
 
-import {
-  collection,
-  doc,
-  onSnapshot,
-  runTransaction,
-  Timestamp,
-} from "firebase/firestore";
+import { collection, doc, runTransaction, Timestamp } from "firebase/firestore";
 
 import { db } from "../firebase/config";
 
@@ -23,69 +19,21 @@ import { SET_TABLESORDERS } from "../Redux/slice/tableSlice";
 const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
   const selectedProduct = useSelector(selectSelectedProduct);
 
+  const products = useSelector(selectProducts);
+
   const dispatch = useDispatch();
 
   const [count, setCount] = useState(1);
 
-  const [stock, setStock] = useState(Number(selectedProduct?.stock || 0));
-
-  const [stockLoading, setStockLoading] = useState(false);
-
   // =========================================================
-  // TERMÉK FIRESTORE KÉSZLETÉNEK FIGYELÉSE
+  // AKTUÁLIS TERMÉK A KÖZPONTI REDUX LISTÁBÓL
   // =========================================================
 
-  useEffect(() => {
-    if (!selectedProduct?.id) {
-      setStock(0);
-      return;
-    }
+  const liveProduct =
+    products.find((product) => product.id === selectedProduct?.id) ||
+    selectedProduct;
 
-    setStockLoading(true);
-
-    const productRef = doc(db, "kunpaosproducts", selectedProduct.id);
-
-    const unsubscribe = onSnapshot(
-      productRef,
-      (snapshot) => {
-        if (!snapshot.exists()) {
-          setStock(0);
-          setStockLoading(false);
-
-          return;
-        }
-
-        const productData = snapshot.data();
-
-        const currentStock = Number(productData.stock || 0);
-
-        setStock(currentStock);
-
-        setStockLoading(false);
-
-        /*
-         * Ha a kiválasztott termék készlete
-         * a kiválasztás közben csökkent,
-         * és a count nagyobb lett volna,
-         * automatikusan korrigáljuk.
-         */
-        setCount((currentCount) =>
-          Math.min(currentCount, Math.max(currentStock, 1)),
-        );
-      },
-      (error) => {
-        console.error("Product stock listener error:", error);
-
-        setStockLoading(false);
-
-        Notiflix.Notify.failure("Nem sikerült frissíteni a termék készletét.");
-      },
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [selectedProduct?.id]);
+  const stock = Number(liveProduct?.stock || 0);
 
   // =========================================================
   // TERMÉKVÁLTÁS
@@ -96,15 +44,24 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
   }, [selectedProduct?.id]);
 
   // =========================================================
+  // HA A KÉSZLET KISEBB LETT, MINT A KIVÁLASZTOTT MENNYISÉG
+  // =========================================================
+
+  useEffect(() => {
+    if (stock <= 0) {
+      setCount(1);
+      return;
+    }
+
+    setCount((currentCount) => Math.min(currentCount, stock));
+  }, [stock]);
+
+  // =========================================================
   // MENNYISÉG NÖVELÉSE
   // =========================================================
 
   const increase = () => {
-    if (!selectedProduct) {
-      return;
-    }
-
-    if (stockLoading) {
+    if (!liveProduct) {
       return;
     }
 
@@ -124,7 +81,7 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
   };
 
   // =========================================================
-  // ASZTALON LÉVŐ TERMÉKEK SZÁMLÁLÓJA
+  // ASZTAL TÉTELSZÁM
   // =========================================================
 
   const incrElement = () => {
@@ -141,7 +98,7 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
   // =========================================================
 
   const addToOrder = async () => {
-    if (!selectedProduct) {
+    if (!liveProduct) {
       Notiflix.Notify.warning("Válassz ki egy terméket!");
 
       return;
@@ -153,14 +110,8 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
       return;
     }
 
-    if (!selectedProduct.id) {
+    if (!liveProduct.id) {
       Notiflix.Notify.failure("A termék azonosítója nem található.");
-
-      return;
-    }
-
-    if (stockLoading) {
-      Notiflix.Notify.warning("A készlet ellenőrzése folyamatban van.");
 
       return;
     }
@@ -178,13 +129,9 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
     }
 
     try {
-      const productRef = doc(db, "kunpaosproducts", selectedProduct.id);
+      const productRef = doc(db, "kunpaosproducts", liveProduct.id);
 
       const tableOrderRef = doc(collection(db, `tableorders_${selectedTable}`));
-
-      // =====================================================
-      // FIRESTORE TRANZAKCIÓ
-      // =====================================================
 
       await runTransaction(db, async (transaction) => {
         const productSnapshot = await transaction.get(productRef);
@@ -196,6 +143,10 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
         const productData = productSnapshot.data();
 
         const currentStock = Number(productData.stock || 0);
+
+        // =================================================
+        // VALÓDI FIRESTORE STOCK ELLENŐRZÉS
+        // =================================================
 
         if (currentStock <= 0) {
           throw new Error(
@@ -213,17 +164,17 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
 
         const newStock = currentStock - count;
 
-        // -------------------------------------------------
-        // KÉSZLET CSÖKKENTÉSE
-        // -------------------------------------------------
+        // =================================================
+        // STOCK LEVONÁSA
+        // =================================================
 
         transaction.update(productRef, {
           stock: newStock,
         });
 
-        // -------------------------------------------------
+        // =================================================
         // RENDELÉSI TÉTEL
-        // -------------------------------------------------
+        // =================================================
 
         transaction.set(tableOrderRef, {
           id: Date.now(),
@@ -246,25 +197,13 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
 
           createdAt: Timestamp.now().toDate(),
 
-          productId: selectedProduct.id,
+          productId: liveProduct.id,
         });
       });
-
-      // =====================================================
-      // SIKER
-      // =====================================================
 
       setCount(1);
 
       incrElement();
-
-      /*
-       * A stock state-et itt már NEM módosítjuk
-       * kézzel.
-       *
-       * Az onSnapshot automatikusan megkapja
-       * a Firestore új értékét.
-       */
 
       Notiflix.Notify.success("Rendelés hozzáadva!");
     } catch (error) {
@@ -278,7 +217,7 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
 
   return (
     <div className="placeorder__card placeorder__tableproductdetailsContainer">
-      {!selectedProduct ? (
+      {!liveProduct ? (
         <div className="tableProductDetails__empty">
           <div>☕</div>
 
@@ -288,22 +227,18 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
         </div>
       ) : (
         <div className="tableProductDetails__content">
-          {/* =================================================
-              TERMÉK INFORMÁCIÓ
-             ================================================= */}
-
           <div className="tableProductDetails__info">
             <span>Kiválasztott termék</span>
 
-            <h2>{selectedProduct.name}</h2>
+            <h2>{liveProduct.name}</h2>
 
             <div className="tableProductDetails__meta">
-              <span>{selectedProduct.category}</span>
+              <span>{liveProduct.category}</span>
 
-              <span>{selectedProduct.packaging}</span>
+              <span>{liveProduct.packaging}</span>
 
               <strong>
-                {Number(selectedProduct.price || 0).toLocaleString("hu-HU")} Ft
+                {Number(liveProduct.price || 0).toLocaleString("hu-HU")} Ft
               </strong>
             </div>
 
@@ -311,31 +246,25 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
               className={`tableProductDetails__stock ${
                 stock <= 0
                   ? "tableProductDetails__stock--empty"
-                  : stock <= Number(selectedProduct.minStock || 0)
+                  : stock <= Number(liveProduct.minStock || 0)
                     ? "tableProductDetails__stock--low"
                     : ""
               }`}
             >
-              {stockLoading
-                ? "Készlet ellenőrzése..."
-                : stock <= 0
-                  ? "🔴 Elfogyott"
-                  : stock <= Number(selectedProduct.minStock || 0)
-                    ? `🟡 Alacsony készlet • ${stock} db`
-                    : `🟢 Készleten • ${stock} db`}
+              {stock <= 0
+                ? "🔴 Elfogyott"
+                : stock <= Number(liveProduct.minStock || 0)
+                  ? `🟡 Alacsony készlet • ${stock} db`
+                  : `🟢 Készleten • ${stock} db`}
             </div>
           </div>
-
-          {/* =================================================
-              MENNYISÉG
-             ================================================= */}
 
           <div className="tableProductDetails__settings">
             <div className="tableProductDetails__amount">
               <button
                 type="button"
                 onClick={decrease}
-                disabled={count <= 1 || stockLoading || stock <= 0}
+                disabled={count <= 1 || stock <= 0}
               >
                 −
               </button>
@@ -345,7 +274,7 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
               <button
                 type="button"
                 onClick={increase}
-                disabled={stockLoading || stock <= 0 || count >= stock}
+                disabled={stock <= 0 || count >= stock}
               >
                 ＋
               </button>
@@ -354,7 +283,7 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
             <span className="tableProductDetails__subtotal">
               Részösszeg:{" "}
               <strong>
-                {(count * Number(selectedProduct.price || 0)).toLocaleString(
+                {(count * Number(liveProduct.price || 0)).toLocaleString(
                   "hu-HU",
                 )}{" "}
                 Ft
@@ -362,14 +291,10 @@ const TableProductDetailsContainer = ({ selectedTable, tableOrdersLength }) => {
             </span>
           </div>
 
-          {/* =================================================
-              HOZZÁADÁS
-             ================================================= */}
-
           <button
             type="button"
             className="tableProductDetails__add"
-            disabled={selectedTable < 1 || stock <= 0 || stockLoading}
+            disabled={selectedTable < 1 || stock <= 0}
             onClick={addToOrder}
           >
             ＋ Hozzáad a rendeléshez

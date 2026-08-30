@@ -22,10 +22,6 @@ const productSlice = createSlice({
 
 export const { STORE_PRODUCTS, CLEAR_PRODUCTS } = productSlice.actions;
 
-// =========================================================
-// SELECTOR
-// =========================================================
-
 export const selectProducts = (state) => state.product.products;
 
 export default productSlice.reducer;

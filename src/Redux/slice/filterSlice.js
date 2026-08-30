@@ -80,27 +80,62 @@ const filterSlice = createSlice({
     },
 
     // =====================================================
-    // KATEGÓRIA
+    // KATEGÓRIA SZŰRÉS
     // =====================================================
 
     FILTER_BY_CATEGORY(state, action) {
       const { products, category } = action.payload;
 
-      state.selectedCategory = category || "Összes";
+      const selectedCategory = category || "Összes";
 
-      if (!category || category === "Összes") {
+      state.selectedCategory = selectedCategory;
+
+      if (selectedCategory === "Összes") {
         state.filteredProducts = [...products];
 
         return;
       }
 
       state.filteredProducts = products.filter(
-        (product) => product?.category?.trim() === category.trim(),
+        (product) => product?.category?.trim() === selectedCategory.trim(),
       );
     },
 
     // =====================================================
-    // KIVÁLASZTOTT TERMÉK
+    // REALTIME TERMÉKFRISSÍTÉS
+    // =====================================================
+
+    SYNC_PRODUCTS(state, action) {
+      const products = action.payload?.products || [];
+
+      state.filteredProducts =
+        state.selectedCategory === "Összes"
+          ? [...products]
+          : products.filter(
+              (product) =>
+                product?.category?.trim() === state.selectedCategory.trim(),
+            );
+
+      /*
+       * A kiválasztott terméket is frissítjük
+       * az új Firestore-adattal.
+       */
+
+      if (state.selectedproduct?.id) {
+        const updatedProduct = products.find(
+          (product) => product.id === state.selectedproduct.id,
+        );
+
+        if (updatedProduct) {
+          state.selectedproduct = updatedProduct;
+        } else {
+          state.selectedproduct = null;
+        }
+      }
+    },
+
+    // =====================================================
+    // TERMÉK KIVÁLASZTÁSA
     // =====================================================
 
     SET_SELECTEDPRODUCT(state, action) {
@@ -116,7 +151,7 @@ const filterSlice = createSlice({
     },
 
     // =====================================================
-    // KATEGÓRIA SZŰRÉS TÖRLÉSE
+    // SZŰRÉS VISSZAÁLLÍTÁSA
     // =====================================================
 
     CLEAR_CATEGORY_FILTER(state, action) {
@@ -126,10 +161,6 @@ const filterSlice = createSlice({
 
       state.filteredProducts = [...products];
     },
-
-    // =====================================================
-    // TELJES SZŰRÉS VISSZAÁLLÍTÁSA
-    // =====================================================
 
     RESET_FILTERS(state, action) {
       const products = action.payload?.products || [];
@@ -145,6 +176,7 @@ export const {
   FILTER_BY_SEARCH,
   SORT_PRODUCTS,
   FILTER_BY_CATEGORY,
+  SYNC_PRODUCTS,
   SET_SELECTEDPRODUCT,
   CLEAR_SELECTEDPRODUCT,
   CLEAR_CATEGORY_FILTER,

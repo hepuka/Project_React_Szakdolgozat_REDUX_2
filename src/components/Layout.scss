@@ -12,6 +12,7 @@
   min-height: 100vh;
 
   display: flex;
+
   gap: 24px;
 
   padding: 20px;
@@ -27,19 +28,30 @@
   color: var(--layout-text);
 
   box-sizing: border-box;
+
+  overflow: hidden;
 }
+
+/* =========================================================
+   MAIN
+   ========================================================= */
 
 .layout__main {
   min-width: 0;
-  min-height: calc(100vh - 40px);
+  min-height: 0;
 
   flex: 1;
 
   display: flex;
+
   flex-direction: column;
 
   overflow: hidden;
 }
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
 
 .layout__content {
   min-width: 0;
@@ -48,14 +60,19 @@
   flex: 1;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: stretch;
+
   justify-content: flex-start;
 
   padding: 4px;
+
   overflow: auto;
 
   scrollbar-width: thin;
+
   scrollbar-color: #d5c8be transparent;
 
   &::-webkit-scrollbar {
@@ -69,34 +86,120 @@
 
   &::-webkit-scrollbar-thumb {
     background: #d5c8be;
+
     border-radius: 20px;
   }
 }
 
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.layout__main > .footer {
+  flex: 0 0 auto;
+
+  width: 100%;
+
+  min-height: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding-top: 8px;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.layout > .sidebar {
+  flex: 0 0 300px;
+
+  min-width: 260px;
+
+  min-height: 0;
+
+  height: calc(100vh - 40px);
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
 @media only screen and (max-width: 1280px) {
   .layout {
     flex-direction: column;
+
     gap: 16px;
+
     padding: 14px;
+
+    overflow: auto;
   }
 
   .layout__main {
     order: 2;
+
     min-height: calc(100vh - 110px);
+
+    width: 100%;
   }
 
   .layout__content {
     padding: 0;
+
+    overflow: auto;
+  }
+
+  .layout > .sidebar {
+    order: 1;
+
+    width: 100%;
+
+    min-width: 0;
+
+    height: auto;
+
+    flex: none;
+  }
+
+  .layout__main > .footer {
+    min-height: 38px;
+
+    padding-top: 6px;
   }
 }
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media only screen and (max-width: 600px) {
   .layout {
     gap: 10px;
+
     padding: 10px;
+
+    min-height: 100vh;
   }
 
   .layout__main {
     min-height: calc(100vh - 86px);
+  }
+
+  .layout__content {
+    padding: 0;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .layout__main > .footer {
+    min-height: 34px;
+
+    padding-top: 4px;
   }
 }

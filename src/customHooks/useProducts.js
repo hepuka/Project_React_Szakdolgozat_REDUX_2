@@ -1,11 +1,12 @@
 import { useEffect } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
+
+import { collection, onSnapshot } from "firebase/firestore";
 
 import { useDispatch } from "react-redux";
 
 import { STORE_PRODUCTS } from "../Redux/slice/productSlice";
 
-import { RESET_FILTERS } from "../Redux/slice/filterSlice";
+import { SYNC_PRODUCTS } from "../Redux/slice/filterSlice";
 
 import { db } from "../firebase/config";
 
@@ -15,19 +16,17 @@ const useProducts = () => {
   useEffect(() => {
     const productsRef = collection(db, "kunpaosproducts");
 
-    const productsQuery = query(productsRef);
-
     const unsubscribe = onSnapshot(
-      productsQuery,
+      productsRef,
       (snapshot) => {
         const products = snapshot.docs.map((document) => ({
           id: document.id,
           ...document.data(),
         }));
 
-        // -------------------------------------------------
-        // KÖZPONTI TERMÉKLISTA FRISSÍTÉSE
-        // -------------------------------------------------
+        // =================================================
+        // KÖZPONTI TERMÉKLISTA
+        // =================================================
 
         dispatch(
           STORE_PRODUCTS({
@@ -35,12 +34,12 @@ const useProducts = () => {
           }),
         );
 
-        // -------------------------------------------------
-        // FILTER SLICE FRISSÍTÉSE
-        // -------------------------------------------------
+        // =================================================
+        // SZŰRT LISTA FRISSÍTÉSE
+        // =================================================
 
         dispatch(
-          RESET_FILTERS({
+          SYNC_PRODUCTS({
             products,
           }),
         );

@@ -1,7 +1,9 @@
 import "./Placeorder.scss";
+
 import Layout from "../../components/Layout";
 
 import { useSelector } from "react-redux";
+
 import { selectUserName } from "../../Redux/slice/authSlice";
 
 import TableDetails from "../../components/TableDetails";
@@ -19,11 +21,14 @@ import { db } from "../../firebase/config";
 
 const Placeorder = () => {
   const userName = useSelector(selectUserName);
+
   const [selectedTable, setSelectedTable] = useState(0);
+
   const [tableOrders, setTableOrders] = useState([]);
 
   useEffect(() => {
     const ordersRef = collection(db, `tableorders_${selectedTable}`);
+
     const ordersQuery = query(ordersRef, orderBy("createdAt"));
 
     const unsubscribe = onSnapshot(
@@ -31,7 +36,9 @@ const Placeorder = () => {
       (snapshot) => {
         const allData = snapshot.docs.map((item) => ({
           id: item.data().id ?? item.id,
+
           documentId: item.id,
+
           ...item.data(),
         }));
 
@@ -63,11 +70,13 @@ const Placeorder = () => {
         <header className="placeorder__header">
           <div>
             <span className="placeorder__eyebrow">POS / Order Management</span>
+
             <h1>Rendelés / Fizetés</h1>
           </div>
 
           <div className="placeorder__headerStatus">
             <span className="placeorder__statusDot" />
+
             <div>
               <strong>{userName || "Felhasználó"}</strong>
             </div>

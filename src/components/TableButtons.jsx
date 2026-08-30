@@ -2,22 +2,25 @@ import React from "react";
 
 import "./TableButtons.scss";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import { FILTER_BY_CATEGORY } from "../Redux/slice/filterSlice";
+import {
+  FILTER_BY_CATEGORY,
+  selectSelectedCategory,
+} from "../Redux/slice/filterSlice";
 
-import useFetchCollection from "../customHooks/useFetchCollection";
+import { selectProducts } from "../Redux/slice/productSlice";
 
 const TableButtons = () => {
   const dispatch = useDispatch();
 
-  const products = useFetchCollection("kunpaosproducts");
+  const products = useSelector(selectProducts);
 
-  const categories = Array.from(
+  const selectedCategory = useSelector(selectSelectedCategory);
+
+  const allCategories = Array.from(
     new Set(products.map((item) => item?.category?.trim()).filter(Boolean)),
   );
-
-  const allCategories = ["Összes", ...categories];
 
   const filterProducts = (category) => {
     dispatch(
@@ -39,18 +42,29 @@ const TableButtons = () => {
       </div>
 
       <div className="tableButtons__list">
+        <button
+          type="button"
+          className={`tableButtons__button ${
+            selectedCategory === "Összes" ? "tableButtons__button--active" : ""
+          }`}
+          onClick={() => filterProducts("Összes")}
+        >
+          <span className="tableButtons__icon">☕</span>
+          Összes
+        </button>
+
         {allCategories.map((category) => (
           <button
             type="button"
             key={category}
             className={`tableButtons__button ${
-              category === "Összes" ? "tableButtons__button--active" : ""
+              selectedCategory === category
+                ? "tableButtons__button--active"
+                : ""
             }`}
             onClick={() => filterProducts(category)}
           >
-            <span className="tableButtons__icon">
-              {category === "Összes" ? "☕" : "•"}
-            </span>
+            <span className="tableButtons__icon">•</span>
 
             {category}
           </button>
