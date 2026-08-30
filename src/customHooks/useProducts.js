@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+
+import { db } from "../firebase/config";
 
 import { useDispatch } from "react-redux";
 
-import { STORE_PRODUCTS } from "../Redux/slice/productSlice";
+import { STORE_PRODUCTS, CLEAR_PRODUCTS } from "../Redux/slice/productSlice";
 
 import { SYNC_PRODUCTS } from "../Redux/slice/filterSlice";
-
-import { db } from "../firebase/config";
 
 const useProducts = () => {
   const dispatch = useDispatch();
@@ -16,28 +16,32 @@ const useProducts = () => {
   useEffect(() => {
     const productsRef = collection(db, "kunpaosproducts");
 
+    const productsQuery = query(productsRef, orderBy("createdAt", "desc"));
+
     const unsubscribe = onSnapshot(
-      productsRef,
+      productsQuery,
       (snapshot) => {
         const products = snapshot.docs.map((document) => ({
           id: document.id,
           ...document.data(),
         }));
 
-        // =================================================
-        // KÖZPONTI TERMÉKLISTA
-        // =================================================
-
+        /*
+         * 1. Teljes realtime terméklista
+         */
         dispatch(
           STORE_PRODUCTS({
             products,
           }),
         );
 
-        // =================================================
-        // SZŰRT LISTA FRISSÍTÉSE
-        // =================================================
-
+        /*
+         * 2. A filterSlice aktuális
+         * szűrt listájának frissítése
+         *
+         * A SYNC_PRODUCTS a jelenlegi
+         * selectedCategory alapján dolgozik.
+         */
         dispatch(
           SYNC_PRODUCTS({
             products,
@@ -51,6 +55,8 @@ const useProducts = () => {
 
     return () => {
       unsubscribe();
+
+      dispatch(CLEAR_PRODUCTS());
     };
   }, [dispatch]);
 };

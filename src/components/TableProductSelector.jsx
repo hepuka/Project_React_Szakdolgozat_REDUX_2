@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import "./TableProductSelector.scss";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +9,7 @@ import {
   selectSelectedCategory,
   selectSelectedProduct,
   SET_SELECTEDPRODUCT,
+  CLEAR_SELECTEDPRODUCT,
 } from "../Redux/slice/filterSlice";
 
 import { selectProducts } from "../Redux/slice/productSlice";
@@ -25,28 +25,81 @@ import { SET_TABLESORDERS } from "../Redux/slice/tableSlice";
 const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
   const dispatch = useDispatch();
 
+  /*
+   * TELJES, REALTIME TERMÉKLISTA
+   */
   const products = useSelector(selectProducts);
 
+  /*
+   * AKTUÁLISAN SZŰRT TERMÉKEK
+   */
   const filteredProducts = useSelector(selectFilteredProducts);
 
+  /*
+   * AKTUÁLIS KATEGÓRIA
+   */
   const selectedCategory = useSelector(selectSelectedCategory);
 
+  /*
+   * KIVÁLASZTOTT TERMÉK
+   *
+   * Fontos:
+   * ezt kizárólag Reduxból vesszük.
+   */
   const selectedProduct = useSelector(selectSelectedProduct);
 
+  /*
+   * KIVÁLASZTOTT MENNYISÉG
+   */
   const [count, setCount] = useState(1);
 
   /*
-   * Az aktuális terméket mindig a
-   * realtime Redux listából keressük ki.
+   * Az "Összes" kategóriát csak egyszer állítjuk be
+   * az első terméklista betöltésekor.
+   *
+   * Nem szabad minden products-frissítésnél lefuttatni,
+   * mert akkor a realtime készletfrissítés visszaállítaná
+   * a felhasználó kategóriaválasztását.
    */
-  const liveProduct =
-    products.find((product) => product.id === selectedProduct?.id) ||
-    selectedProduct;
+  const initializedProductsRef = useRef(false);
 
+  // =========================================================
+  // AKTUÁLIS TERMÉK A REALTIME REDUX LISTÁBÓL
+  // =========================================================
+
+  const liveProduct = selectedProduct
+    ? products.find((product) => product.id === selectedProduct.id) ||
+      selectedProduct
+    : null;
+
+  /*
+   * Aktuális készlet.
+   *
+   * Fontos, hogy mindig a liveProduct értékéből dolgozunk,
+   * így a realtime Firestore frissítés után azonnal
+   * az aktuális stock jelenik meg.
+   */
   const stock = Number(liveProduct?.stock || 0);
 
   // =========================================================
-  // KIVÁLASZTOTT TERMÉK VÁLTÁSA
+  // OLDAL ELSŐ BETÖLTÉSE
+  // =========================================================
+
+  useEffect(() => {
+    if (!initializedProductsRef.current && products.length > 0) {
+      dispatch(
+        FILTER_BY_CATEGORY({
+          products,
+          category: "Összes",
+        }),
+      );
+
+      initializedProductsRef.current = true;
+    }
+  }, [products, dispatch]);
+
+  // =========================================================
+  // MENNYISÉG RESET
   // =========================================================
 
   useEffect(() => {
@@ -54,12 +107,16 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
   }, [selectedProduct?.id]);
 
   // =========================================================
-  // KATEGÓRIA
+  // KATEGÓRIÁK GENERÁLÁSA
   // =========================================================
 
   const allCategories = Array.from(
     new Set(products.map((item) => item?.category?.trim()).filter(Boolean)),
   );
+
+  // =========================================================
+  // KATEGÓRIA SZŰRÉS
+  // =========================================================
 
   const filterProducts = (category) => {
     dispatch(
@@ -91,12 +148,26 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
   };
 
   // =========================================================
-  // MENNYISÉG
+  // KIVÁLASZTOTT TERMÉK TÖRLÉSE
+  // =========================================================
+
+  const clearSelectedProduct = () => {
+    setCount(1);
+
+    dispatch(CLEAR_SELECTEDPRODUCT());
+  };
+
+  // =========================================================
+  // MENNYISÉG CSÖKKENTÉSE
   // =========================================================
 
   const decrease = () => {
     setCount((current) => Math.max(1, current - 1));
   };
+
+  // =========================================================
+  // MENNYISÉG NÖVELÉSE
+  // =========================================================
 
   const increase = () => {
     if (!liveProduct) {
@@ -111,7 +182,7 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
   };
 
   // =========================================================
-  // ASZTAL TÉTELSZÁM
+  // ASZTAL TÉTELSZÁM FRISSÍTÉSE
   // =========================================================
 
   const refreshTableCounter = () => {
@@ -124,28 +195,53 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
   };
 
   // =========================================================
-  // TERMÉK HOZZÁADÁSA
+  // ÖSSZES TERMÉK MEGJELENÍTÉSE
+  // =========================================================
+
+  const showAllProducts = () => {
+    dispatch(
+      FILTER_BY_CATEGORY({
+        products,
+        category: "Összes",
+      }),
+    );
+  };
+
+  // =========================================================
+  // TERMÉK HOZZÁADÁSA A RENDELÉSHEZ
   // =========================================================
 
   const addToOrder = async () => {
+    /*
+     * NINCS KIVÁLASZTOTT TERMÉK
+     */
     if (!liveProduct) {
       Notiflix.Notify.warning("Válassz ki egy terméket!");
 
       return;
     }
 
+    /*
+     * NINCS KIVÁLASZTOTT ASZTAL
+     */
     if (selectedTable < 1) {
       Notiflix.Notify.warning("Először válassz asztalt!");
 
       return;
     }
 
+    /*
+     * ELFOGYOTT
+     */
     if (stock <= 0) {
       Notiflix.Notify.failure("A kiválasztott termék elfogyott.");
 
       return;
     }
 
+    /*
+     * TÚL NAGY MENNYISÉG
+     */
     if (count > stock) {
       Notiflix.Notify.failure("A választott mennyiség meghaladja a készletet.");
 
@@ -153,29 +249,67 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
     }
 
     try {
+      /*
+       * FIRESTORE TERMÉK
+       */
       const productRef = doc(db, "kunpaosproducts", liveProduct.id);
 
+      /*
+       * ÚJ RENDELÉSI TÉTEL
+       */
       const tableOrderRef = doc(collection(db, `tableorders_${selectedTable}`));
 
+      /*
+       * ATOMIKUS FIRESTORE TRANZAKCIÓ
+       */
       await runTransaction(db, async (transaction) => {
-        const snapshot = await transaction.get(productRef);
+        /*
+         * FRISS TERMÉKADAT LEKÉRÉSE
+         */
+        const productSnapshot = await transaction.get(productRef);
 
-        if (!snapshot.exists()) {
+        if (!productSnapshot.exists()) {
           throw new Error("A termék már nem található.");
         }
 
-        const productData = snapshot.data();
+        const productData = productSnapshot.data();
 
+        /*
+         * AKTUÁLIS FIRESTORE KÉSZLET
+         */
         const currentStock = Number(productData.stock || 0);
 
-        if (count > currentStock) {
-          throw new Error(`A termékből már csak ${currentStock} db maradt.`);
+        /*
+         * IDŐKÖZBEN ELFOGYOTT
+         */
+        if (currentStock <= 0) {
+          throw new Error(
+            `A(z) ${productData.name || "termék"} időközben elfogyott.`,
+          );
         }
 
+        /*
+         * IDŐKÖZBEN VALAKI MÁS ELHASZNÁLTA
+         * A KÉSZLETET
+         */
+        if (count > currentStock) {
+          throw new Error(
+            `A(z) ${
+              productData.name || "termék"
+            } készletéből csak ${currentStock} db maradt.`,
+          );
+        }
+
+        /*
+         * KÉSZLET CSÖKKENTÉSE
+         */
         transaction.update(productRef, {
           stock: currentStock - count,
         });
 
+        /*
+         * RENDELÉSI TÉTEL ELMENTÉSE
+         */
         transaction.set(tableOrderRef, {
           id: Date.now(),
 
@@ -197,17 +331,47 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
 
           createdAt: Timestamp.now().toDate(),
 
+          /*
+           * Ezt használjuk később a készlet
+           * visszaadásához törléskor.
+           */
           productId: liveProduct.id,
         });
       });
 
+      // =====================================================
+      // SIKERES RENDELÉS UTÁNI UI FRISSÍTÉS
+      // =====================================================
+
+      /*
+       * Mennyiség visszaállítása
+       */
       setCount(1);
 
+      /*
+       * Asztal tételszámának frissítése
+       */
       refreshTableCounter();
 
+      /*
+       * Kategória visszaállítása Összes-re
+       */
+      showAllProducts();
+
+      /*
+       * KIVÁLASZTOTT TERMÉK TÖRLÉSE
+       *
+       * Ez szünteti meg az Expresszó / Coca-Cola /
+       * stb. sárga kijelölését.
+       */
+      dispatch(CLEAR_SELECTEDPRODUCT());
+
+      /*
+       * SIKERÜZENET
+       */
       Notiflix.Notify.success("Rendelés hozzáadva!");
     } catch (error) {
-      console.error("Add order error:", error);
+      console.error("Add order / stock transaction error:", error);
 
       Notiflix.Notify.failure(
         error.message || "Nem sikerült hozzáadni a terméket.",
@@ -229,6 +393,8 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
         </div>
 
         <div className="tableProductSelector__categoryList">
+          {/* ÖSSZES */}
+
           <button
             type="button"
             className={`tableProductSelector__category ${
@@ -242,6 +408,8 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
             Összes
           </button>
 
+          {/* KATEGÓRIÁK */}
+
           {allCategories.map((category) => (
             <button
               key={category}
@@ -254,6 +422,7 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
               onClick={() => filterProducts(category)}
             >
               <span>•</span>
+
               {category}
             </button>
           ))}
@@ -274,33 +443,48 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
         <div className="tableProductSelector__productList">
           {filteredProducts.length === 0 ? (
             <div className="tableProductSelector__empty">
-              Nincs megjeleníthető termék.
+              <span>☕</span>
+
+              <h3>Nincs megjeleníthető termék</h3>
+
+              <p>Válassz egy másik kategóriát.</p>
             </div>
           ) : (
             filteredProducts.map((item) => {
               const itemStock = Number(item?.stock || 0);
 
-              const isOut = itemStock <= 0;
+              const isOutOfStock = itemStock <= 0;
 
               const isSelected = selectedProduct?.id === item.id;
+
+              const isLowStock =
+                itemStock > 0 && itemStock <= Number(item?.minStock || 0);
 
               return (
                 <button
                   key={item.id}
                   type="button"
-                  disabled={isOut}
+                  disabled={isOutOfStock}
                   className={`tableProductSelector__product ${
                     isSelected ? "tableProductSelector__product--selected" : ""
-                  } ${isOut ? "tableProductSelector__product--disabled" : ""}`}
+                  } ${
+                    isOutOfStock
+                      ? "tableProductSelector__product--disabled"
+                      : ""
+                  }`}
                   onClick={() => selectProduct(item)}
                 >
+                  {/* KÉP */}
+
                   <div className="tableProductSelector__productImage">
                     {item.imageURL ? (
-                      <img src={item.imageURL} alt={item.name} />
+                      <img src={item.imageURL} alt={item.name || "Termék"} />
                     ) : (
-                      "☕"
+                      <span>☕</span>
                     )}
                   </div>
+
+                  {/* ADATOK */}
 
                   <div className="tableProductSelector__productInfo">
                     <strong>{item.name}</strong>
@@ -310,7 +494,11 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
                     </span>
 
                     <small>
-                      {isOut ? "Elfogyott" : `${itemStock} db készleten`}
+                      {isOutOfStock
+                        ? "Elfogyott"
+                        : isLowStock
+                          ? `Alacsony készlet • ${itemStock} db`
+                          : `${itemStock} db készleten`}
                     </small>
                   </div>
                 </button>
@@ -339,13 +527,24 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
           </div>
         ) : (
           <div className="tableProductSelector__selectedContent">
+            {/* =================================================
+                KÉP
+               ================================================= */}
+
             <div className="tableProductSelector__selectedImage">
               {liveProduct.imageURL ? (
-                <img src={liveProduct.imageURL} alt={liveProduct.name} />
+                <img
+                  src={liveProduct.imageURL}
+                  alt={liveProduct.name || "Termék"}
+                />
               ) : (
                 <span>☕</span>
               )}
             </div>
+
+            {/* =================================================
+                TERMÉKADATOK
+               ================================================= */}
 
             <div className="tableProductSelector__selectedInfo">
               <strong>{liveProduct.name}</strong>
@@ -375,12 +574,17 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
               </div>
             </div>
 
+            {/* =================================================
+                MENNYISÉG / HOZZÁADÁS
+               ================================================= */}
+
             <div className="tableProductSelector__controls">
               <div className="tableProductSelector__amount">
                 <button
                   type="button"
                   onClick={decrease}
                   disabled={count <= 1 || stock <= 0}
+                  aria-label="Mennyiség csökkentése"
                 >
                   −
                 </button>
@@ -391,12 +595,13 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
                   type="button"
                   onClick={increase}
                   disabled={stock <= 0 || count >= stock}
+                  aria-label="Mennyiség növelése"
                 >
                   ＋
                 </button>
               </div>
 
-              <span>
+              <span className="tableProductSelector__subtotal">
                 Részösszeg:{" "}
                 <strong>
                   {(count * Number(liveProduct.price || 0)).toLocaleString(

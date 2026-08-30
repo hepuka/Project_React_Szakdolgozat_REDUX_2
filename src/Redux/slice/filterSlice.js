@@ -1,8 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  // Aktuálisan megjelenített / szűrt termékek
   filteredProducts: [],
+
+  // Kiválasztott termék
   selectedproduct: null,
+
+  // Aktív kategória
   selectedCategory: "Összes",
 };
 
@@ -13,13 +18,33 @@ const filterSlice = createSlice({
 
   reducers: {
     // =====================================================
+    // REALTIME TERMÉKLISTA SZINKRONIZÁLÁSA
+    // =====================================================
+
+    SYNC_PRODUCTS(state, action) {
+      const products = action.payload?.products || [];
+
+      const category = state.selectedCategory || "Összes";
+
+      if (category === "Összes") {
+        state.filteredProducts = [...products];
+
+        return;
+      }
+
+      state.filteredProducts = products.filter(
+        (product) => product?.category?.trim() === category.trim(),
+      );
+    },
+
+    // =====================================================
     // KERESÉS
     // =====================================================
 
     FILTER_BY_SEARCH(state, action) {
-      const { products, search } = action.payload;
+      const { products = [], search = "" } = action.payload || {};
 
-      const searchValue = search?.toLowerCase().trim() || "";
+      const searchValue = String(search).toLowerCase().trim();
 
       if (!searchValue) {
         state.filteredProducts = [...products];
@@ -27,11 +52,19 @@ const filterSlice = createSlice({
         return;
       }
 
-      state.filteredProducts = products.filter(
-        (item) =>
-          item?.name?.toLowerCase().includes(searchValue) ||
-          item?.category?.toLowerCase().includes(searchValue),
-      );
+      state.filteredProducts = products.filter((item) => {
+        const name = item?.name?.toLowerCase() || "";
+
+        const category = item?.category?.toLowerCase() || "";
+
+        const description = item?.desc?.toLowerCase() || "";
+
+        return (
+          name.includes(searchValue) ||
+          category.includes(searchValue) ||
+          description.includes(searchValue)
+        );
+      });
     },
 
     // =====================================================
@@ -39,7 +72,7 @@ const filterSlice = createSlice({
     // =====================================================
 
     SORT_PRODUCTS(state, action) {
-      const { products, sort } = action.payload;
+      const { products = [], sort } = action.payload || {};
 
       let tempProducts = [...products];
 
@@ -50,25 +83,25 @@ const filterSlice = createSlice({
 
         case "lowest-price":
           tempProducts.sort(
-            (a, b) => Number(a.price || 0) - Number(b.price || 0),
+            (a, b) => Number(a?.price || 0) - Number(b?.price || 0),
           );
           break;
 
         case "highest-price":
           tempProducts.sort(
-            (a, b) => Number(b.price || 0) - Number(a.price || 0),
+            (a, b) => Number(b?.price || 0) - Number(a?.price || 0),
           );
           break;
 
         case "a-z":
           tempProducts.sort((a, b) =>
-            (a.name || "").localeCompare(b.name || "", "hu"),
+            (a?.name || "").localeCompare(b?.name || "", "hu"),
           );
           break;
 
         case "z-a":
           tempProducts.sort((a, b) =>
-            (b.name || "").localeCompare(a.name || "", "hu"),
+            (b?.name || "").localeCompare(a?.name || "", "hu"),
           );
           break;
 
@@ -80,62 +113,29 @@ const filterSlice = createSlice({
     },
 
     // =====================================================
-    // KATEGÓRIA SZŰRÉS
+    // KATEGÓRIA
     // =====================================================
 
     FILTER_BY_CATEGORY(state, action) {
-      const { products, category } = action.payload;
+      const { products = [], category = "Összes" } = action.payload || {};
 
-      const selectedCategory = category || "Összes";
+      const normalizedCategory = category?.trim() || "Összes";
 
-      state.selectedCategory = selectedCategory;
+      state.selectedCategory = normalizedCategory;
 
-      if (selectedCategory === "Összes") {
+      if (normalizedCategory === "Összes") {
         state.filteredProducts = [...products];
 
         return;
       }
 
       state.filteredProducts = products.filter(
-        (product) => product?.category?.trim() === selectedCategory.trim(),
+        (product) => product?.category?.trim() === normalizedCategory,
       );
     },
 
     // =====================================================
-    // REALTIME TERMÉKFRISSÍTÉS
-    // =====================================================
-
-    SYNC_PRODUCTS(state, action) {
-      const products = action.payload?.products || [];
-
-      state.filteredProducts =
-        state.selectedCategory === "Összes"
-          ? [...products]
-          : products.filter(
-              (product) =>
-                product?.category?.trim() === state.selectedCategory.trim(),
-            );
-
-      /*
-       * A kiválasztott terméket is frissítjük
-       * az új Firestore-adattal.
-       */
-
-      if (state.selectedproduct?.id) {
-        const updatedProduct = products.find(
-          (product) => product.id === state.selectedproduct.id,
-        );
-
-        if (updatedProduct) {
-          state.selectedproduct = updatedProduct;
-        } else {
-          state.selectedproduct = null;
-        }
-      }
-    },
-
-    // =====================================================
-    // TERMÉK KIVÁLASZTÁSA
+    // KIVÁLASZTOTT TERMÉK
     // =====================================================
 
     SET_SELECTEDPRODUCT(state, action) {
@@ -151,7 +151,7 @@ const filterSlice = createSlice({
     },
 
     // =====================================================
-    // SZŰRÉS VISSZAÁLLÍTÁSA
+    // KATEGÓRIA SZŰRÉS TÖRLÉSE
     // =====================================================
 
     CLEAR_CATEGORY_FILTER(state, action) {
@@ -161,6 +161,10 @@ const filterSlice = createSlice({
 
       state.filteredProducts = [...products];
     },
+
+    // =====================================================
+    // TELJES SZŰRÉS VISSZAÁLLÍTÁSA
+    // =====================================================
 
     RESET_FILTERS(state, action) {
       const products = action.payload?.products || [];
@@ -172,11 +176,15 @@ const filterSlice = createSlice({
   },
 });
 
+// =========================================================
+// ACTIONS
+// =========================================================
+
 export const {
+  SYNC_PRODUCTS,
   FILTER_BY_SEARCH,
   SORT_PRODUCTS,
   FILTER_BY_CATEGORY,
-  SYNC_PRODUCTS,
   SET_SELECTEDPRODUCT,
   CLEAR_SELECTEDPRODUCT,
   CLEAR_CATEGORY_FILTER,
