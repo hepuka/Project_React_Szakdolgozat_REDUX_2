@@ -11,6 +11,7 @@ import Orders from "./pages/admin/Orders";
 import OrderDetails from "./pages/admin/OrderDetails";
 import Business from "./pages/admin/Business";
 import Placeorder from "./pages/employees/Placeorder";
+import ProductOrder from "./pages/admin/ProductOrder";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/orders" element={<Orders />}></Route>
           <Route path="/business" element={<Business />}></Route>
           <Route path="/tables" element={<Placeorder />}></Route>
+          <Route path="/product-order/:id" element={<ProductOrder />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

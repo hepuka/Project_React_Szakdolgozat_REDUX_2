@@ -14,10 +14,13 @@ import { selectProducts } from "../../Redux/slice/productSlice";
 const FALLBACK_IMAGES = {
   espresso:
     "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=85",
+
   latte:
     "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=85",
+
   cappuccino:
     "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=85",
+
   coffee:
     "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=900&q=85",
 };
@@ -28,6 +31,7 @@ const getProductImage = (product) => {
   }
 
   const category = product?.category?.toLowerCase() || "";
+
   const name = product?.name?.toLowerCase() || "";
 
   if (category.includes("latte") || name.includes("latte")) {
@@ -47,6 +51,7 @@ const getProductImage = (product) => {
 
 const getStockStatus = (stock, minStock) => {
   const currentStock = Number(stock || 0);
+
   const minimumStock = Number(minStock || 0);
 
   if (currentStock <= 0) {
@@ -74,15 +79,23 @@ const getStockStatus = (stock, minStock) => {
 
 const Products = () => {
   const data = useSelector(selectProducts);
+
   const [search, setSearch] = useState("");
+
   const [selectedCategory, setSelectedCategory] = useState("Összes");
+
+  // =========================================================
+  // SZŰRÉS
+  // =========================================================
 
   const filteredProducts = useMemo(() => {
     const searchValue = search.trim().toLowerCase();
 
     return data.filter((item) => {
       const name = item?.name?.toLowerCase() || "";
+
       const category = item?.category?.toLowerCase() || "";
+
       const description = item?.desc?.toLowerCase() || "";
 
       const matchesSearch =
@@ -99,6 +112,10 @@ const Products = () => {
       return matchesSearch && matchesCategory;
     });
   }, [data, search, selectedCategory]);
+
+  // =========================================================
+  // TERMÉK TÖRLÉSE
+  // =========================================================
 
   const confirmDelete = (id, imageURL) => {
     Notiflix.Confirm.show(
@@ -122,6 +139,10 @@ const Products = () => {
     try {
       await deleteDoc(doc(db, "kunpaosproducts", id));
 
+      /*
+       * Csak a régi Firebase Storage
+       * képeket próbáljuk törölni.
+       */
       if (imageURL && imageURL.includes("firebasestorage.googleapis.com")) {
         try {
           await deleteObject(ref(storage, imageURL));
@@ -138,6 +159,10 @@ const Products = () => {
     }
   };
 
+  // =========================================================
+  // KÉP HIBA -> FALLBACK
+  // =========================================================
+
   const handleImageError = (event, product) => {
     const fallback = getProductImage({
       ...product,
@@ -149,14 +174,32 @@ const Products = () => {
     }
   };
 
+  // =========================================================
+  // SZŰRŐK TÖRLÉSE
+  // =========================================================
+
   const clearFilters = () => {
     setSearch("");
     setSelectedCategory("Összes");
   };
 
+  // =========================================================
+  // KATEGÓRIÁK
+  // =========================================================
+
+  const categories = useMemo(() => {
+    return Array.from(
+      new Set(data.map((item) => item?.category?.trim()).filter(Boolean)),
+    );
+  }, [data]);
+
   return (
     <Layout>
       <section className="products">
+        {/* =====================================================
+            FEJLÉC
+           ===================================================== */}
+
         <header className="products__header">
           <div>
             <span className="products__eyebrow">Coffee Management</span>
@@ -166,6 +209,10 @@ const Products = () => {
             <p>A kávézóban elérhető termékek és készletek kezelése.</p>
           </div>
 
+          {/*
+           * Új termék -> csak Manager
+           */}
+
           <OnlyManager>
             <Link to="/add-product/ADD" className="products__addButton">
               <span aria-hidden="true">＋</span>
@@ -173,6 +220,10 @@ const Products = () => {
             </Link>
           </OnlyManager>
         </header>
+
+        {/* =====================================================
+            TOOLBAR
+           ===================================================== */}
 
         <div className="products__toolbar">
           <div className="products__count">
@@ -192,7 +243,13 @@ const Products = () => {
           <Search value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
 
+        {/* =====================================================
+            KATEGÓRIÁK
+           ===================================================== */}
+
         <div className="products__categoryBar">
+          {/* ÖSSZES */}
+
           <button
             type="button"
             className={`products__categoryButton ${
@@ -208,40 +265,30 @@ const Products = () => {
             <span>Összes</span>
           </button>
 
-          {data.map((item, index) => {
-            const category = item?.category?.trim();
+          {/* KATEGÓRIÁK */}
 
-            if (!category) {
-              return null;
-            }
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              className={`products__categoryButton ${
+                selectedCategory === category
+                  ? "products__categoryButton--active"
+                  : ""
+              }`}
+              onClick={() => setSelectedCategory(category)}
+              aria-pressed={selectedCategory === category}
+            >
+              <div className="products__categoryIcon">☕</div>
 
-            const firstIndex = data.findIndex(
-              (product) => product?.category?.trim() === category,
-            );
-
-            if (firstIndex !== index) {
-              return null;
-            }
-
-            return (
-              <button
-                key={category}
-                type="button"
-                className={`products__categoryButton ${
-                  selectedCategory === category
-                    ? "products__categoryButton--active"
-                    : ""
-                }`}
-                onClick={() => setSelectedCategory(category)}
-                aria-pressed={selectedCategory === category}
-              >
-                <div className="products__categoryIcon">☕</div>
-
-                <span>{category}</span>
-              </button>
-            );
-          })}
+              <span>{category}</span>
+            </button>
+          ))}
         </div>
+
+        {/* =====================================================
+            NINCS TALÁLAT
+           ===================================================== */}
 
         {filteredProducts.length === 0 ? (
           <div className="products__empty">
@@ -272,8 +319,29 @@ const Products = () => {
 
               const stockStatus = getStockStatus(item.stock, item.minStock);
 
+              const currentStock = Number(item.stock || 0);
+
+              const minimumStock = Number(item.minStock || 0);
+
+              /*
+               * Kritikus készlet:
+               *
+               * stock <= minStock
+               */
+
+              const isCriticalStock = currentStock <= minimumStock;
+
               return (
-                <article key={item.id} className="products__card">
+                <article
+                  key={item.id}
+                  className={`products__card ${
+                    isCriticalStock ? "products__card--critical" : ""
+                  }`}
+                >
+                  {/* =========================================
+                        KÉP
+                       ========================================= */}
+
                   <div className="products__image">
                     <img
                       src={image}
@@ -288,6 +356,10 @@ const Products = () => {
                       </span>
                     )}
                   </div>
+
+                  {/* =========================================
+                        TERMÉK ADATOK
+                       ========================================= */}
 
                   <div className="products__details">
                     <div className="products__titleRow">
@@ -306,6 +378,10 @@ const Products = () => {
                       </span>
                     </div>
 
+                    {/* =======================================
+                          KÉSZLET
+                         ======================================= */}
+
                     <div className="products__stock">
                       <div
                         className={`products__stockStatus ${stockStatus.className}`}
@@ -318,23 +394,51 @@ const Products = () => {
                       <div className="products__stockInfo">
                         <span>Készlet</span>
 
-                        <strong>{Number(item.stock || 0)} db</strong>
+                        <strong>{currentStock} db</strong>
                       </div>
 
                       <div className="products__stockInfo">
                         <span>Minimum</span>
 
-                        <strong>{Number(item.minStock || 0)} db</strong>
+                        <strong>{minimumStock} db</strong>
                       </div>
                     </div>
+
+                    {/* =======================================
+                          LEÍRÁS
+                         ======================================= */}
 
                     {item.desc && (
                       <p className="products__description">{item.desc}</p>
                     )}
                   </div>
 
+                  {/* =================================================
+                        MANAGER MŰVELETEK
+                       ================================================= */}
+
                   <OnlyManager>
                     <div className="products__buttons">
+                      {/* =========================================
+                            RENDELÉS
+                           =========================================
+                           Csak kritikus készlethiánynál jelenik meg.
+                           ========================================= */}
+
+                      {isCriticalStock && (
+                        <Link
+                          to={`/product-order/${item.id}`}
+                          className="products__orderButton"
+                        >
+                          <span aria-hidden="true">↗</span>
+                          Rendelés
+                        </Link>
+                      )}
+
+                      {/* =========================================
+                            MÓDOSÍT
+                           ========================================= */}
+
                       <Link
                         to={`/add-product/${item.id}`}
                         className="products__editButton"
@@ -342,6 +446,10 @@ const Products = () => {
                         <span aria-hidden="true">✎</span>
                         Módosít
                       </Link>
+
+                      {/* =========================================
+                            TÖRÖL
+                           ========================================= */}
 
                       <button
                         type="button"
