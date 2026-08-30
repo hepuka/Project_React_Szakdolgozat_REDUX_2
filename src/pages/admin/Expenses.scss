@@ -723,3 +723,15 @@
     flex-wrap: wrap;
   }
 }
+
+.expenses__closingBalance {
+  display: block;
+
+  margin-top: 10px;
+
+  color: var(--text);
+
+  font-size: 0.95rem;
+
+  font-weight: 750;
+}

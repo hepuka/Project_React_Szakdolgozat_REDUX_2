@@ -80,8 +80,6 @@ const ProductOrder = () => {
 
   const purchasePrice = Math.round(originalPrice * 0.85);
 
-  const totalPrice = purchasePrice * quantity;
-
   // =========================================================
   // MENNYISÉG MÓDOSÍTÁSA
   // =========================================================

@@ -1,196 +1,156 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import Layout from "../../components/Layout";
 
 import useFetchCollection from "../../customHooks/useFetchCollection";
 import useFetchDocument from "../../customHooks/useFetchDocument";
 
-import { collection, doc, setDoc, addDoc, Timestamp } from "firebase/firestore";
-
-import { db } from "../../firebase/config";
-
-import Notiflix from "notiflix";
-
 import "./Business.scss";
 
-const Business = () => {
-  const orders = useFetchCollection("kunpaosorders");
+import {
+  calculatePeriodFinancials,
+  formatPeriod,
+  getPeriodId,
+  getPreviousPeriod,
+} from "../../services/financeCalculations";
 
-  const products = useFetchCollection("kunpaosproducts");
+const INITIAL_CAPITAL = 1000000;
+
+const Business = () => {
+  // =========================================================
+  // FIRESTORE ADATOK
+  // =========================================================
+
+  const orders = useFetchCollection("kunpaosorders");
 
   const stockPurchases = useFetchCollection("stockPurchases");
 
   const expenses = useFetchCollection("businessExpenses");
 
-  /*
-   * A kezdő pénzkészlet egyetlen Firestore
-   * dokumentumban található.
-   *
-   * finance/settings
-   */
+  const financePeriods = useFetchCollection("financePeriods");
+
   const financeSettings = useFetchDocument("finance", "settings");
 
-  const [startingBalanceInput, setStartingBalanceInput] = useState("");
-
-  const [expenseAmount, setExpenseAmount] = useState("");
-
-  const [expenseDescription, setExpenseDescription] = useState("");
-
-  const [expenseCategory, setExpenseCategory] = useState("Egyéb");
-
-  const [savingBalance, setSavingBalance] = useState(false);
-
-  const [savingExpense, setSavingExpense] = useState(false);
-
   // =========================================================
-  // KEZDŐ PÉNZKÉSZLET
+  // AKTUÁLIS IDŐSZAK
   // =========================================================
 
-  const startingBalance = Number(financeSettings?.startingBalance || 0);
+  const currentPeriod = getPeriodId();
+
+  /*
+   * A kávézó 2026.08-ban indult.
+   */
 
   // =========================================================
-  // ÉRTÉKESÍTÉSI BEVÉTEL
+  // KEZDŐTŐKE
   // =========================================================
 
-  const totalRevenue = useMemo(() => {
-    return orders.reduce(
-      (acc, curr) => acc + Number(curr?.orderAmount || 0),
-      0,
+  const initialCapital = Number(
+    financeSettings?.initialCapital ?? INITIAL_CAPITAL,
+  );
+
+  // =========================================================
+  // KIVÁLASZTOTT HÓNAP
+  // =========================================================
+
+  const defaultPeriod = currentPeriod >= "2026-08" ? currentPeriod : "2026-08";
+
+  /*
+   * React state külön import nélkül:
+   * a projekt jelenlegi változatában
+   * a hónapot a currentPeriod alapján
+   * kezeljük.
+   *
+   * Ezért célszerű a Business oldalon
+   * mindig az aktuális hónapot indítani.
+   */
+
+  const selectedPeriod = defaultPeriod;
+
+  // =========================================================
+  // ELÉRHETŐ HÓNAPOK
+  // =========================================================
+
+  // =========================================================
+  // FINANCE PERIOD
+  // =========================================================
+
+  const selectedFinancePeriod = financePeriods.find(
+    (item) => item?.period === selectedPeriod,
+  );
+
+  // =========================================================
+  // LEZÁRT?
+  // =========================================================
+
+  const isClosed = selectedFinancePeriod?.isClosed === true;
+
+  // =========================================================
+  // HAVI KEZDŐ PÉNZ
+  // =========================================================
+
+  const startingBalance = useMemo(() => {
+    /*
+     * 2026.08 = a kávézó indulása
+     */
+
+    if (selectedPeriod === "2026-08") {
+      return initialCapital;
+    }
+
+    /*
+     * Következő hónapok:
+     * előző lezárt hónap záró pénze.
+     */
+
+    const previousPeriod = getPreviousPeriod(selectedPeriod);
+
+    const previousFinancePeriod = financePeriods.find(
+      (item) => item?.period === previousPeriod,
     );
-  }, [orders]);
 
-  // =========================================================
-  // BESZERZÉSI KÖLTSÉG
-  // =========================================================
-
-  const totalPurchases = useMemo(() => {
-    return stockPurchases.reduce(
-      (acc, curr) => acc + Number(curr?.total || 0),
-      0,
-    );
-  }, [stockPurchases]);
-
-  // =========================================================
-  // EGYÉB KIADÁSOK
-  // =========================================================
-
-  const totalExpenses = useMemo(() => {
-    return expenses.reduce((acc, curr) => acc + Number(curr?.amount || 0), 0);
-  }, [expenses]);
-
-  // =========================================================
-  // JELENLEGI PÉNZ
-  // =========================================================
-
-  const currentMoney =
-    startingBalance + totalRevenue - totalPurchases - totalExpenses;
-
-  // =========================================================
-  // KEZDŐ PÉNZKÉSZLET MENTÉSE
-  // =========================================================
-
-  const saveStartingBalance = async (e) => {
-    e.preventDefault();
-
-    const amount = Number(startingBalanceInput);
-
-    if (!Number.isFinite(amount) || amount < 0) {
-      Notiflix.Notify.warning(
-        "Adj meg érvényes, 0 vagy annál nagyobb összeget.",
-      );
-
-      return;
+    if (previousFinancePeriod?.isClosed === true) {
+      return Number(previousFinancePeriod?.closingBalance ?? 0);
     }
 
-    if (savingBalance) {
-      return;
-    }
+    /*
+     * Ha még nincs előző lezárt
+     * hónap, nem tudunk hivatalos
+     * továbbgörgetett pénzkészletet
+     * számolni.
+     */
 
-    setSavingBalance(true);
-
-    try {
-      await setDoc(
-        doc(db, "finance", "settings"),
-        {
-          startingBalance: amount,
-
-          updatedAt: Timestamp.now().toDate(),
-        },
-        {
-          merge: true,
-        },
-      );
-
-      setStartingBalanceInput("");
-
-      Notiflix.Notify.success("A kezdő pénzkészlet mentve!");
-    } catch (error) {
-      console.error("Starting balance error:", error);
-
-      Notiflix.Notify.failure("Nem sikerült menteni a kezdő pénzkészletet.");
-    } finally {
-      setSavingBalance(false);
-    }
-  };
+    return initialCapital;
+  }, [selectedPeriod, financePeriods, initialCapital]);
 
   // =========================================================
-  // EGYÉB KIADÁS RÖGZÍTÉSE
+  // HAVI PÉNZÜGYEK
   // =========================================================
 
-  const saveExpense = async (e) => {
-    e.preventDefault();
+  const financials = useMemo(() => {
+    return calculatePeriodFinancials({
+      orders,
+      stockPurchases,
+      expenses,
+      period: selectedPeriod,
+      startingBalance,
+    });
+  }, [orders, stockPurchases, expenses, selectedPeriod, startingBalance]);
 
-    const amount = Number(expenseAmount);
+  // =========================================================
+  // JELENLEGI / ZÁRÓ PÉNZ
+  // =========================================================
 
-    const description = expenseDescription.trim();
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      Notiflix.Notify.warning("Adj meg érvényes kiadási összeget.");
-
-      return;
-    }
-
-    if (!description) {
-      Notiflix.Notify.warning("Add meg a kiadás megnevezését.");
-
-      return;
-    }
-
-    if (savingExpense) {
-      return;
-    }
-
-    setSavingExpense(true);
-
-    try {
-      await addDoc(collection(db, "businessExpenses"), {
-        amount,
-        description,
-        category: expenseCategory,
-
-        createdAt: Timestamp.now().toDate(),
-      });
-
-      setExpenseAmount("");
-      setExpenseDescription("");
-      setExpenseCategory("Egyéb");
-
-      Notiflix.Notify.success("A kiadás sikeresen rögzítve!");
-    } catch (error) {
-      console.error("Expense error:", error);
-
-      Notiflix.Notify.failure("Nem sikerült rögzíteni a kiadást.");
-    } finally {
-      setSavingExpense(false);
-    }
-  };
+  const currentMoney = isClosed
+    ? Number(selectedFinancePeriod?.closingBalance ?? financials.closingBalance)
+    : financials.closingBalance;
 
   return (
     <Layout>
       <section className="business">
-        {/* =====================================================
+        {/* ===================================================
             HEADER
-           ===================================================== */}
+           =================================================== */}
 
         <header className="business__header">
           <div>
@@ -198,25 +158,47 @@ const Business = () => {
 
             <h1>Üzleti összesítő</h1>
 
-            <p>
-              A kávézó bevételeinek, kiadásainak és pénzkészletének áttekintése.
-            </p>
+            <p>A kávézó pénzügyi helyzete havi bontásban.</p>
+          </div>
+
+          <div className="business__periodSelector">
+            <span>Pénzügyi időszak</span>
+
+            <select value={selectedPeriod} disabled>
+              <option value={selectedPeriod}>
+                {formatPeriod(selectedPeriod)}
+
+                {isClosed ? " 🔒" : ""}
+              </option>
+            </select>
           </div>
         </header>
 
-        {/* =====================================================
-            JELENLEGI PÉNZ
-           ===================================================== */}
+        {/* ===================================================
+            CURRENT MONEY
+           =================================================== */}
 
-        <div className="business__balanceCard">
+        <div
+          className={`business__balanceCard ${
+            isClosed ? "business__balanceCard--closed" : ""
+          }`}
+        >
           <div className="business__balanceHeader">
             <div>
-              <span className="business__eyebrow">Pénztár</span>
+              <span className="business__eyebrow">
+                {formatPeriod(selectedPeriod)}
+              </span>
 
               <h2>Kávézó jelenlegi pénze</h2>
+
+              {isClosed && (
+                <span className="business__closedBadge">🔒 Hónap lezárva</span>
+              )}
             </div>
 
-            <div className="business__balanceIcon">💰</div>
+            <div className="business__balanceIcon">
+              {isClosed ? "🔒" : "💰"}
+            </div>
           </div>
 
           <strong
@@ -229,6 +211,10 @@ const Business = () => {
             {currentMoney.toLocaleString("hu-HU")} Ft
           </strong>
 
+          {/* =================================================
+              FORMULA
+             ================================================= */}
+
           <div className="business__balanceFormula">
             <div>
               <span>Kezdő pénzkészlet</span>
@@ -237,225 +223,155 @@ const Business = () => {
             </div>
 
             <div>
-              <span>Értékesítési bevétel</span>
+              <span>Havi bevétel</span>
 
-              <strong>+ {totalRevenue.toLocaleString("hu-HU")} Ft</strong>
+              <strong>+ {financials.revenue.toLocaleString("hu-HU")} Ft</strong>
             </div>
 
             <div>
-              <span>Beszerzések</span>
+              <span>Havi beszerzés</span>
 
               <strong className="business__negative">
-                − {totalPurchases.toLocaleString("hu-HU")} Ft
+                − {financials.purchases.toLocaleString("hu-HU")} Ft
               </strong>
             </div>
 
             <div>
-              <span>Egyéb kiadások</span>
+              <span>Rendezett kiadások</span>
 
               <strong className="business__negative">
-                − {totalExpenses.toLocaleString("hu-HU")} Ft
+                − {financials.paidExpenses.toLocaleString("hu-HU")} Ft
               </strong>
             </div>
           </div>
         </div>
 
-        {/* =====================================================
-            STATISZTIKAI KÁRTYÁK
-           ===================================================== */}
+        {/* ===================================================
+            MONTHLY REVENUE
+           =================================================== */}
 
         <div className="business__card business__card1">
           <span className="business__eyebrow">Értékesítés</span>
 
-          <h2>Összes bevétel</h2>
+          <h2>Havi bevétel</h2>
 
-          <strong>{totalRevenue.toLocaleString("hu-HU")} Ft</strong>
+          <strong>{financials.revenue.toLocaleString("hu-HU")} Ft</strong>
 
-          <p>A lezárt rendelésekből származó teljes bevétel.</p>
+          <p>A kiválasztott hónap fizetett rendeléseiből származó bevétel.</p>
         </div>
+
+        {/* ===================================================
+            PURCHASES
+           =================================================== */}
 
         <div className="business__card business__card2">
           <span className="business__eyebrow">Készlet</span>
 
-          <h2>Beszerzési költség</h2>
+          <h2>Havi beszerzés</h2>
 
-          <strong>{totalPurchases.toLocaleString("hu-HU")} Ft</strong>
+          <strong>{financials.purchases.toLocaleString("hu-HU")} Ft</strong>
 
-          <p>Termék-utánpótlásra fordított összeg.</p>
+          <p>A kiválasztott hónap készletfeltöltési költsége.</p>
         </div>
+
+        {/* ===================================================
+            PAID EXPENSES
+           =================================================== */}
 
         <div className="business__card business__card3">
           <span className="business__eyebrow">Kiadások</span>
 
-          <h2>Egyéb kiadások</h2>
+          <h2>Rendezett kiadások</h2>
 
-          <strong>{totalExpenses.toLocaleString("hu-HU")} Ft</strong>
+          <strong>{financials.paidExpenses.toLocaleString("hu-HU")} Ft</strong>
 
-          <p>Minden egyéb kézzel rögzített kiadás.</p>
+          <p>Csak a már rendezett számlák csökkentik a pénzkészletet.</p>
         </div>
+
+        {/* ===================================================
+            PENDING EXPENSES
+           =================================================== */}
 
         <div className="business__card business__card4">
-          <span className="business__eyebrow">Termékek</span>
+          <span className="business__eyebrow">Függőben</span>
 
-          <h2>Termékek száma</h2>
+          <h2>Rendezetlen kiadások</h2>
 
-          <strong>{products.length}</strong>
+          <strong>
+            {financials.pendingExpenses.toLocaleString("hu-HU")} Ft
+          </strong>
 
-          <p>Aktuálisan nyilvántartott termékek.</p>
+          <p>Ezek még nem csökkentik a pénzkészletet.</p>
         </div>
 
-        {/* =====================================================
-            KEZDŐ PÉNZ
-           ===================================================== */}
+        {/* ===================================================
+            RESULT
+           =================================================== */}
 
-        <div className="business__managementCard">
-          <div className="business__managementHeader">
-            <span className="business__eyebrow">Pénztár beállítása</span>
+        <div className="business__resultCard">
+          <div>
+            <span className="business__eyebrow">Eredmény</span>
 
-            <h2>Kezdő pénzkészlet</h2>
-
-            <p>
-              Az az összeg, amellyel a pénztár a vizsgált időszak kezdetén
-              rendelkezett.
-            </p>
+            <h2>{formatPeriod(selectedPeriod)} havi eredménye</h2>
           </div>
 
-          <form onSubmit={saveStartingBalance}>
-            <label htmlFor="startingBalance">Összeg (Ft)</label>
+          <strong
+            className={
+              financials.monthlyResult >= 0
+                ? "business__result--positive"
+                : "business__result--negative"
+            }
+          >
+            {financials.monthlyResult.toLocaleString("hu-HU")} Ft
+          </strong>
 
-            <input
-              id="startingBalance"
-              type="number"
-              min="0"
-              step="1"
-              value={startingBalanceInput}
-              placeholder={`${startingBalance.toLocaleString("hu-HU")} Ft`}
-              onChange={(e) => setStartingBalanceInput(e.target.value)}
-              disabled={savingBalance}
-            />
-
-            <button type="submit" disabled={savingBalance}>
-              {savingBalance ? "Mentés..." : "Kezdő összeg mentése"}
-            </button>
-          </form>
+          <p>Bevétel − beszerzés − rendezett kiadások.</p>
         </div>
 
-        {/* =====================================================
-            EGYÉB KIADÁS
-           ===================================================== */}
+        {/* ===================================================
+            PERIOD SUMMARY
+           =================================================== */}
 
-        <div className="business__managementCard">
-          <div className="business__managementHeader">
-            <span className="business__eyebrow">Kiadás rögzítése</span>
+        <div className="business__periodCard">
+          <div>
+            <span className="business__eyebrow">Pénzügyi időszak</span>
 
-            <h2>Új egyéb kiadás</h2>
-
-            <p>
-              Például rezsi, javítás, takarítószer vagy egyéb működési költség.
-            </p>
+            <h2>{formatPeriod(selectedPeriod)}</h2>
           </div>
 
-          <form onSubmit={saveExpense}>
-            <label htmlFor="expenseAmount">Összeg (Ft)</label>
+          <div className="business__periodRows">
+            <div>
+              <span>Kezdő pénz</span>
 
-            <input
-              id="expenseAmount"
-              type="number"
-              min="1"
-              step="1"
-              value={expenseAmount}
-              placeholder="5000"
-              onChange={(e) => setExpenseAmount(e.target.value)}
-              disabled={savingExpense}
-              required
-            />
-
-            <label htmlFor="expenseCategory">Kategória</label>
-
-            <select
-              id="expenseCategory"
-              value={expenseCategory}
-              onChange={(e) => setExpenseCategory(e.target.value)}
-              disabled={savingExpense}
-            >
-              <option value="Egyéb">Egyéb</option>
-
-              <option value="Rezsi">Rezsi</option>
-
-              <option value="Karbantartás">Karbantartás</option>
-
-              <option value="Takarítás">Takarítás</option>
-
-              <option value="Eszköz">Eszköz</option>
-
-              <option value="Szállítás">Szállítás</option>
-            </select>
-
-            <label htmlFor="expenseDescription">Megnevezés</label>
-
-            <input
-              id="expenseDescription"
-              type="text"
-              value={expenseDescription}
-              placeholder="Pl. villanyszámla"
-              onChange={(e) => setExpenseDescription(e.target.value)}
-              disabled={savingExpense}
-              required
-            />
-
-            <button type="submit" disabled={savingExpense}>
-              {savingExpense ? "Rögzítés..." : "Kiadás rögzítése"}
-            </button>
-          </form>
-        </div>
-
-        {/* =====================================================
-            KIADÁSI LISTA
-           ===================================================== */}
-
-        <div className="business__expensesCard">
-          <div className="business__managementHeader">
-            <span className="business__eyebrow">Kiadások</span>
-
-            <h2>Rögzített egyéb kiadások</h2>
-          </div>
-
-          {expenses.length === 0 ? (
-            <div className="business__empty">
-              <span>💸</span>
-
-              <p>Még nincs rögzített egyéb kiadás.</p>
+              <strong>{startingBalance.toLocaleString("hu-HU")} Ft</strong>
             </div>
-          ) : (
-            <div className="business__expenseList">
-              {expenses
-                .slice()
-                .sort((a, b) => {
-                  const dateA = a?.createdAt?.toDate
-                    ? a.createdAt.toDate()
-                    : new Date(a?.createdAt || 0);
 
-                  const dateB = b?.createdAt?.toDate
-                    ? b.createdAt.toDate()
-                    : new Date(b?.createdAt || 0);
+            <div>
+              <span>Havi eredmény</span>
 
-                  return dateB - dateA;
-                })
-                .map((expense) => (
-                  <div key={expense.id} className="business__expenseItem">
-                    <div>
-                      <strong>{expense.description}</strong>
-
-                      <span>{expense.category}</span>
-                    </div>
-
-                    <strong>
-                      − {Number(expense.amount || 0).toLocaleString("hu-HU")} Ft
-                    </strong>
-                  </div>
-                ))}
+              <strong>
+                {financials.monthlyResult.toLocaleString("hu-HU")} Ft
+              </strong>
             </div>
-          )}
+
+            <div>
+              <span>Záró pénz</span>
+
+              <strong>{currentMoney.toLocaleString("hu-HU")} Ft</strong>
+            </div>
+
+            <div>
+              <span>Állapot</span>
+
+              <strong
+                className={
+                  isClosed ? "business__closedText" : "business__openText"
+                }
+              >
+                {isClosed ? "🔒 Lezárva" : "🟢 Nyitott"}
+              </strong>
+            </div>
+          </div>
         </div>
       </section>
     </Layout>
