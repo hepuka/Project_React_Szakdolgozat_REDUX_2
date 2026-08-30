@@ -4,11 +4,11 @@ import Notiflix from "notiflix";
 
 import {
   collection,
-  deleteDoc,
   doc,
   query,
   getDocs,
   where,
+  runTransaction,
 } from "firebase/firestore";
 
 import { db } from "../firebase/config";
@@ -20,6 +20,10 @@ import { useDispatch } from "react-redux";
 const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
   const dispatch = useDispatch();
 
+  // =========================================================
+  // REDUX - ASZTAL TÉTELSZÁM FRISSÍTÉSE
+  // =========================================================
+
   const decrElement = () => {
     dispatch(
       SET_DELETETABLESORDERS({
@@ -27,6 +31,10 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
       }),
     );
   };
+
+  // =========================================================
+  // RENDELÉSI TÉTEL TÖRLÉSE + KÉSZLET VISSZAADÁSA
+  // =========================================================
 
   const deleteOrder = async (productId) => {
     const ordersRef = collection(db, `tableorders_${selectedTable}`);
@@ -39,10 +47,76 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
       throw new Error("A rendelési tétel nem található.");
     }
 
-    const documentId = querySnapshot.docs[0].id;
+    const orderDocument = querySnapshot.docs[0];
 
-    await deleteDoc(doc(db, `tableorders_${selectedTable}`, documentId));
+    const orderDocumentId = orderDocument.id;
+
+    const orderData = orderDocument.data();
+
+    // =======================================================
+    // A korábbi rendeléseknél lehet, hogy még nincs productId.
+    // =======================================================
+
+    if (!orderData.productId) {
+      throw new Error(
+        "A rendelési tételhez nem tartozik termékazonosító. A készletet nem lehet automatikusan visszaállítani.",
+      );
+    }
+
+    const productIdFromOrder = orderData.productId;
+
+    const amount = Number(orderData.amount || 0);
+
+    if (amount <= 0) {
+      throw new Error("A rendelési mennyiség érvénytelen.");
+    }
+
+    const productRef = doc(db, "kunpaosproducts", productIdFromOrder);
+
+    const tableOrderRef = doc(
+      db,
+      `tableorders_${selectedTable}`,
+      orderDocumentId,
+    );
+
+    // =======================================================
+    // FIRESTORE TRANZAKCIÓ
+    // =======================================================
+
+    await runTransaction(db, async (transaction) => {
+      const productSnapshot = await transaction.get(productRef);
+
+      if (!productSnapshot.exists()) {
+        throw new Error(
+          "A kapcsolódó termék már nem található a termékek között.",
+        );
+      }
+
+      const productData = productSnapshot.data();
+
+      const currentStock = Number(productData.stock || 0);
+
+      const newStock = currentStock + amount;
+
+      // ---------------------------------------------------
+      // KÉSZLET VISSZAÁLLÍTÁSA
+      // ---------------------------------------------------
+
+      transaction.update(productRef, {
+        stock: newStock,
+      });
+
+      // ---------------------------------------------------
+      // RENDELÉSI TÉTEL TÖRLÉSE
+      // ---------------------------------------------------
+
+      transaction.delete(tableOrderRef);
+    });
   };
+
+  // =========================================================
+  // TÖRLÉS MEGERŐSÍTÉSE
+  // =========================================================
 
   const confirmDelete = (product) => {
     Notiflix.Confirm.show(
@@ -50,6 +124,7 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
       `Biztosan törölni szeretnéd a(z) ${product.name} tételt?`,
       "Törlés",
       "Mégse",
+
       async () => {
         try {
           await deleteOrder(product.id);
@@ -58,14 +133,20 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
 
           getTotal();
 
-          Notiflix.Notify.success("Termék törölve a rendelésből!");
+          Notiflix.Notify.success(
+            `${product.name} törölve. A készlet frissítve.`,
+          );
         } catch (error) {
-          console.error("Delete order item error:", error);
+          console.error("Delete order / stock restore error:", error);
 
-          Notiflix.Notify.failure("Nem sikerült törölni a rendelési tételt.");
+          Notiflix.Notify.failure(
+            error.message || "Nem sikerült törölni a rendelési tételt.",
+          );
         }
       },
+
       () => {},
+
       {
         width: "340px",
         borderRadius: "14px",

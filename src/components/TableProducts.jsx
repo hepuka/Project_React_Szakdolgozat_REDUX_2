@@ -1,7 +1,4 @@
-import React from "react";
-
 import "./TableProducts.scss";
-
 import {
   SET_SELECTEDPRODUCT,
   selectFilteredProducts,
@@ -11,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 const TableProducts = () => {
   const dispatch = useDispatch();
-
   const selectedFilteredProduct = useSelector(selectFilteredProducts);
 
   const selectedProduct = (item) => {
@@ -54,7 +50,6 @@ const TableProducts = () => {
         ) : (
           selectedFilteredProduct.map((item) => {
             const stock = Number(item?.stock || 0);
-
             const isOutOfStock = stock <= 0;
 
             const isLowStock =
