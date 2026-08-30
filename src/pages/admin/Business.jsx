@@ -189,7 +189,7 @@ const Business = () => {
                 {formatPeriod(selectedPeriod)}
               </span>
 
-              <h2>Kávézó jelenlegi pénze</h2>
+              <h2>Rendelkezésre álló egyenleg</h2>
 
               {isClosed && (
                 <span className="business__closedBadge">🔒 Hónap lezárva</span>
