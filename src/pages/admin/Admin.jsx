@@ -183,28 +183,6 @@ const Admin = () => {
   }, [todayOrders]);
 
   // =========================================================
-  // TELJES BEVÉTEL
-  // =========================================================
-
-  const totalRevenue = useMemo(() => {
-    return orders.reduce((sum, order) => {
-      /*
-       * A fizetett rendelések számítanak
-       * valódi bevételnek.
-       *
-       * Régebbi rekordoknál, ahol nincs
-       * orderStatus, továbbra is számoljuk.
-       */
-
-      if (order?.orderStatus && order.orderStatus !== "Fizetve") {
-        return sum;
-      }
-
-      return sum + Number(order?.orderAmount || 0);
-    }, 0);
-  }, [orders]);
-
-  // =========================================================
   // ÁTLAGOS RENDELÉSI ÉRTÉK
   // =========================================================
 

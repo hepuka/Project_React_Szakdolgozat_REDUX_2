@@ -268,6 +268,9 @@ const Expenses = () => {
 
         dueDate: dueDate || null,
 
+        /*
+         * Új kiadás mindig rendezetlen.
+         */
         status: "pending",
 
         createdAt: Timestamp.now().toDate(),
@@ -292,35 +295,46 @@ const Expenses = () => {
 
   // =========================================================
   // SZÁMLA RENDEZÉSE
+  //
+  // FONTOS:
+  // A folyamat csak egyirányú:
+  //
+  // pending → paid
+  //
+  // paid → NINCS VISSZAÁLLÍTÁS
   // =========================================================
 
-  const toggleExpenseStatus = async (expense) => {
+  const markExpenseAsPaid = async (expense) => {
     if (isClosed) {
       Notiflix.Notify.warning("A lezárt hónap kiadásai már nem módosíthatók.");
 
       return;
     }
 
-    const newStatus = expense.status === "paid" ? "pending" : "paid";
+    /*
+     * Ha már rendezve van,
+     * semmilyen művelet ne történjen.
+     */
+    if (expense?.status === "paid") {
+      return;
+    }
 
     try {
       await updateDoc(doc(db, "businessExpenses", expense.id), {
-        status: newStatus,
+        status: "paid",
 
-        paidAt: newStatus === "paid" ? Timestamp.now().toDate() : null,
+        paidAt: Timestamp.now().toDate(),
 
         updatedAt: Timestamp.now().toDate(),
       });
 
-      Notiflix.Notify.success(
-        newStatus === "paid"
-          ? "A számla rendezve."
-          : "A számla visszaállítva függőben állapotra.",
-      );
+      Notiflix.Notify.success("A kiadás rendezve és véglegesítve.");
     } catch (error) {
-      console.error("Expense status update error:", error);
+      console.error("Expense payment update error:", error);
 
-      Notiflix.Notify.failure("Nem sikerült módosítani a számla állapotát.");
+      Notiflix.Notify.failure(
+        "Nem sikerült rendezett állapotba állítani a kiadást.",
+      );
     }
   };
 
@@ -340,7 +354,6 @@ const Expenses = () => {
       `Biztosan törölni szeretnéd a(z) ${expense.description} kiadást?`,
       "Törlés",
       "Mégse",
-
       async () => {
         try {
           await deleteDoc(doc(db, "businessExpenses", expense.id));
@@ -352,16 +365,11 @@ const Expenses = () => {
           Notiflix.Notify.failure("Nem sikerült törölni a kiadást.");
         }
       },
-
       () => {},
-
       {
         width: "340px",
-
         borderRadius: "14px",
-
         titleColor: "#2c1e1a",
-
         okButtonBackground: "#b15252",
       },
     );
@@ -381,26 +389,17 @@ const Expenses = () => {
     if (financials.pendingExpenses > 0) {
       Notiflix.Confirm.show(
         "Függőben lévő számlák",
-
         `A hónapban még ${financials.pendingExpenses.toLocaleString(
           "hu-HU",
         )} Ft értékű rendezetlen kiadás van. Biztosan le szeretnéd zárni a hónapot?`,
-
         "Lezárás",
-
         "Mégse",
-
         () => performClosePeriod(),
-
         () => {},
-
         {
           width: "420px",
-
           borderRadius: "14px",
-
           titleColor: "#8a641e",
-
           okButtonBackground: "#8a641e",
         },
       );
@@ -410,28 +409,19 @@ const Expenses = () => {
 
     Notiflix.Confirm.show(
       "Hónap lezárása",
-
       `Biztosan lezárod a(z) ${formatPeriod(
         selectedPeriod,
       )} időszakot? A záró pénzkészlet ${financials.closingBalance.toLocaleString(
         "hu-HU",
       )} Ft lesz.`,
-
       "Hónap lezárása",
-
       "Mégse",
-
       () => performClosePeriod(),
-
       () => {},
-
       {
         width: "420px",
-
         borderRadius: "14px",
-
         titleColor: "#b15252",
-
         okButtonBackground: "#b15252",
       },
     );
@@ -450,11 +440,6 @@ const Expenses = () => {
 
     try {
       await ensureFinancePeriod();
-
-      /*
-       * A legfrissebb számított pénzügyi
-       * értéket mentjük a Firestore-ba.
-       */
 
       const closingBalance = financials.closingBalance;
 
@@ -614,7 +599,7 @@ const Expenses = () => {
           </div>
 
           <div className="expenses__summaryCard">
-            <span>Függőben</span>
+            <span>Rendezetlen kiadások</span>
 
             <strong>
               {financials.pendingExpenses.toLocaleString("hu-HU")} Ft
@@ -799,7 +784,7 @@ const Expenses = () => {
                             : "expenses__status expenses__status--pending"
                         }
                       >
-                        {isPaid ? "Rendezve" : "Függőben"}
+                        {isPaid ? "Rendezve" : "Rendezetlen"}
                       </span>
                     </div>
 
@@ -810,21 +795,24 @@ const Expenses = () => {
                             type="button"
                             className={
                               isPaid
-                                ? "expenses__undoButton"
+                                ? "expenses__payButton expenses__payButton--disabled"
                                 : "expenses__payButton"
                             }
-                            onClick={() => toggleExpenseStatus(expense)}
+                            onClick={() => markExpenseAsPaid(expense)}
+                            disabled={isPaid}
                           >
-                            {isPaid ? "Visszaállít" : "Rendezve"}
+                            {isPaid ? "Rendezve" : "Rendezetlen"}
                           </button>
 
-                          <button
-                            type="button"
-                            className="expenses__deleteButton"
-                            onClick={() => deleteExpense(expense)}
-                          >
-                            Töröl
-                          </button>
+                          {!isPaid && (
+                            <button
+                              type="button"
+                              className="expenses__deleteButton"
+                              onClick={() => deleteExpense(expense)}
+                            >
+                              Töröl
+                            </button>
+                          )}
                         </>
                       )}
                     </div>

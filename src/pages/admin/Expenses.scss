@@ -13,6 +13,18 @@
   color: var(--text);
 
   overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #d5c8be transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d5c8be;
+    border-radius: 20px;
+  }
 }
 
 /* =========================================================
@@ -53,6 +65,8 @@
 
   font-size: clamp(2.7rem, 4vw, 4rem);
 
+  line-height: 1.05;
+
   letter-spacing: -0.045em;
 }
 
@@ -62,7 +76,13 @@
   color: var(--text-muted);
 
   font-size: 1.05rem;
+
+  line-height: 1.5;
 }
+
+/* =========================================================
+   PERIOD STATUS
+   ========================================================= */
 
 .expenses__period {
   min-width: 180px;
@@ -86,7 +106,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-.expenses__period span {
+.expenses__period > span:first-child {
   color: var(--text-muted);
 
   font-size: 0.75rem;
@@ -99,7 +119,47 @@
 }
 
 /* =========================================================
-   PERIOD
+   OPEN / CLOSED STATUS
+   ========================================================= */
+
+.expenses__closedBadge {
+  display: inline-flex;
+
+  align-items: center;
+
+  margin-top: 5px;
+
+  padding: 4px 8px;
+
+  background: var(--danger-soft);
+
+  border: 1px solid rgba(177, 82, 82, 0.25);
+
+  border-radius: 20px;
+
+  color: var(--danger);
+
+  font-size: 0.7rem;
+
+  font-weight: 750;
+}
+
+.expenses__openBadge {
+  display: inline-flex;
+
+  align-items: center;
+
+  margin-top: 5px;
+
+  color: var(--success);
+
+  font-size: 0.7rem;
+
+  font-weight: 750;
+}
+
+/* =========================================================
+   PERIOD SELECTOR
    ========================================================= */
 
 .expenses__periodCard {
@@ -124,6 +184,14 @@
   box-shadow: var(--shadow-sm);
 }
 
+.expenses__periodCard > div:first-child {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
 .expenses__periodCard span {
   color: var(--text-muted);
 
@@ -131,7 +199,7 @@
 }
 
 .expenses__periodCard h2 {
-  margin: 3px 0 0;
+  margin: 0;
 
   color: var(--text);
 
@@ -160,6 +228,48 @@
   outline: none;
 }
 
+.expenses__periodControls select:focus {
+  border-color: var(--primary-light);
+
+  box-shadow: 0 0 0 3px rgba(118, 82, 56, 0.1);
+}
+
+/* =========================================================
+   CLOSED NOTICE
+   ========================================================= */
+
+.expenses__closedNotice {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+
+  padding: 14px 16px;
+
+  background: var(--danger-soft);
+
+  border: 1px solid rgba(177, 82, 82, 0.25);
+
+  border-radius: 15px;
+}
+
+.expenses__closedNotice strong {
+  color: var(--danger);
+
+  font-size: 0.95rem;
+}
+
+.expenses__closedNotice p {
+  margin: 4px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+}
+
 /* =========================================================
    SUMMARY
    ========================================================= */
@@ -167,7 +277,7 @@
 .expenses__summary {
   display: grid;
 
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 12px;
 
@@ -215,15 +325,13 @@
 }
 
 /* =========================================================
-   FORMS
+   FORM
    ========================================================= */
 
 .expenses__forms {
   display: grid;
 
-  grid-template-columns:
-    minmax(300px, 0.8fr)
-    minmax(400px, 1.2fr);
+  grid-template-columns: 1fr;
 
   gap: 18px;
 
@@ -329,6 +437,8 @@
 
   margin-top: 8px;
 
+  padding: 0 15px;
+
   background: var(--accent);
 
   border: 1px solid #dfb33d;
@@ -342,10 +452,28 @@
   font-weight: 700;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .expenses__card button:hover {
   background: var(--accent-hover);
+
+  transform: translateY(-1px);
+}
+
+.expenses__card button:active {
+  transform: scale(0.98);
+}
+
+.expenses__card button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
 }
 
 /* =========================================================
@@ -376,6 +504,14 @@
   margin-bottom: 15px;
 }
 
+.expenses__listHeader > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
 .expenses__listHeader span {
   color: var(--primary-light);
 
@@ -389,7 +525,7 @@
 }
 
 .expenses__listHeader h2 {
-  margin: 5px 0 0;
+  margin: 0;
 
   color: var(--text);
 
@@ -416,6 +552,14 @@
   font-weight: 700;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.expenses__filterButton:hover {
+  background: var(--surface-hover);
 }
 
 .expenses__filterButton--active {
@@ -500,6 +644,12 @@
   color: var(--text);
 
   font-size: 0.95rem;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
 .expenses__expenseMain > div {
@@ -515,6 +665,10 @@
 
   font-size: 0.73rem;
 }
+
+/* =========================================================
+   AMOUNT / STATUS
+   ========================================================= */
 
 .expenses__expenseAmount {
   display: flex;
@@ -535,7 +689,7 @@
 }
 
 .expenses__status {
-  padding: 3px 7px;
+  padding: 3px 8px;
 
   border-radius: 20px;
 
@@ -571,7 +725,7 @@
 .expenses__expenseActions button {
   min-height: 36px;
 
-  padding: 0 10px;
+  padding: 0 11px;
 
   border-radius: 9px;
 
@@ -582,30 +736,97 @@
   font-weight: 700;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    opacity 0.18s ease;
 }
+
+/* =========================================================
+   RENDEZETLEN GOMB
+   ========================================================= */
 
 .expenses__payButton {
-  background: var(--success);
+  background: var(--accent);
 
-  border: 1px solid var(--success);
+  border: 1px solid var(--accent);
 
-  color: white;
+  color: var(--primary);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
 }
 
-.expenses__undoButton {
-  background: var(--surface);
+.expenses__payButton:hover {
+  background: var(--accent-hover);
 
-  border: 1px solid var(--border);
+  border-color: var(--accent-hover);
 
-  color: var(--text);
+  transform: translateY(-1px);
 }
+
+.expenses__payButton:active {
+  transform: scale(0.98);
+}
+
+/* =========================================================
+   RENDEZVE - INAKTÍV
+   ========================================================= */
+
+.expenses__payButton--disabled {
+  background: var(--surface-soft);
+
+  border-color: var(--border);
+
+  color: var(--text-muted);
+
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none !important;
+}
+
+.expenses__payButton--disabled:hover {
+  background: var(--surface-soft);
+
+  border-color: var(--border);
+
+  color: var(--text-muted);
+
+  transform: none !important;
+}
+
+/* =========================================================
+   TÖRLÉS
+   ========================================================= */
 
 .expenses__deleteButton {
   background: var(--danger-soft);
 
-  border: 1px solid #dfb6af;
+  border: 1px solid rgba(177, 82, 82, 0.25);
 
   color: var(--danger);
+}
+
+.expenses__deleteButton:hover {
+  background: var(--danger);
+
+  border-color: var(--danger);
+
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+.expenses__deleteButton:active {
+  transform: scale(0.98);
 }
 
 /* =========================================================
@@ -623,6 +844,8 @@
 
   flex-direction: column;
 
+  gap: 8px;
+
   text-align: center;
 }
 
@@ -631,9 +854,11 @@
 }
 
 .expenses__empty h3 {
-  margin: 10px 0 4px;
+  margin: 0;
 
   color: var(--text);
+
+  font-size: 1.1rem;
 }
 
 .expenses__empty p {
@@ -645,16 +870,128 @@
 }
 
 /* =========================================================
+   MONTH CLOSE
+   ========================================================= */
+
+.expenses__closingCard {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-top: 18px;
+
+  padding: 20px;
+
+  background: var(--surface);
+
+  border: 1px solid rgba(177, 82, 82, 0.3);
+
+  border-radius: 18px;
+
+  box-shadow: var(--shadow-md);
+}
+
+.expenses__closingCard h2 {
+  margin: 5px 0;
+
+  color: var(--text);
+
+  font-size: 1.3rem;
+}
+
+.expenses__closingCard p {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.83rem;
+
+  line-height: 1.45;
+}
+
+.expenses__closingBalance {
+  display: block;
+
+  margin-top: 10px;
+
+  color: var(--text);
+
+  font-size: 0.95rem;
+
+  font-weight: 750;
+}
+
+.expenses__closingWarning {
+  display: block;
+
+  margin-top: 8px;
+
+  color: var(--warning);
+
+  font-size: 0.8rem;
+}
+
+.expenses__closeButton {
+  min-height: 46px;
+
+  flex: 0 0 auto;
+
+  padding: 0 17px;
+
+  background: var(--danger);
+
+  border: 1px solid var(--danger);
+
+  border-radius: 11px;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 0.88rem;
+
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.expenses__closeButton:hover {
+  background: #c45f5f;
+
+  transform: translateY(-1px);
+}
+
+.expenses__closeButton:active {
+  transform: scale(0.98);
+}
+
+.expenses__closeButton:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+/* =========================================================
    TABLET
    ========================================================= */
 
 @media (max-width: 950px) {
-  .expenses__summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .expenses {
+    padding: 22px 18px 30px;
   }
 
-  .expenses__forms {
-    grid-template-columns: 1fr;
+  .expenses__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .expenses__expense {
@@ -685,7 +1022,9 @@
   }
 
   .expenses__period {
-    align-self: stretch;
+    width: 100%;
+
+    box-sizing: border-box;
 
     align-items: flex-start;
   }
@@ -705,6 +1044,12 @@
     grid-template-columns: 1fr;
   }
 
+  .expenses__listHeader {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
   .expenses__expense {
     grid-template-columns:
       38px
@@ -722,16 +1067,44 @@
 
     flex-wrap: wrap;
   }
+
+  .expenses__closingCard {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .expenses__closeButton {
+    width: 100%;
+  }
+
+  .expenses__closedNotice {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
 }
 
-.expenses__closingBalance {
-  display: block;
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
 
-  margin-top: 10px;
+@media (max-width: 420px) {
+  .expenses {
+    padding: 15px 9px 22px;
+  }
 
-  color: var(--text);
+  .expenses__card,
+  .expenses__listCard,
+  .expenses__balanceCard {
+    padding: 15px;
+  }
 
-  font-size: 0.95rem;
+  .expenses__expenseActions {
+    width: 100%;
+  }
 
-  font-weight: 750;
+  .expenses__expenseActions button {
+    flex: 1;
+  }
 }
