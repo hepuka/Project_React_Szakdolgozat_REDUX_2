@@ -774,10 +774,6 @@ const Admin = () => {
 
                 <h2>Asztalok</h2>
               </div>
-
-              <Link to="/tables" className="admin__panelLink">
-                Megnyitás
-              </Link>
             </div>
 
             <div className="admin__tableSummary">
@@ -808,9 +804,8 @@ const Admin = () => {
                 );
 
                 return (
-                  <Link
+                  <dev
                     key={table.number}
-                    to="/tables"
                     className={
                       busy
                         ? "admin__tableMini admin__tableMini--busy"
@@ -822,7 +817,7 @@ const Admin = () => {
                     <span>asztal</span>
 
                     {busy && <small>{formatCurrency(total)} Ft</small>}
-                  </Link>
+                  </dev>
                 );
               })}
             </div>
@@ -861,11 +856,7 @@ const Admin = () => {
                   const empty = stock <= 0;
 
                   return (
-                    <Link
-                      to="/products"
-                      key={product.id}
-                      className="admin__stockRow"
-                    >
+                    <dev key={product.id} className="admin__stockRow">
                       <span
                         className={
                           empty
@@ -891,7 +882,7 @@ const Admin = () => {
                       >
                         {stock} db
                       </strong>
-                    </Link>
+                    </dev>
                   );
                 })}
               </div>
@@ -924,9 +915,8 @@ const Admin = () => {
             ) : (
               <div className="admin__activeOrderList">
                 {activeOrders.slice(0, 5).map((order) => (
-                  <Link
+                  <dev
                     key={order.tableNumber}
-                    to="/tables"
                     className="admin__activeOrderRow"
                   >
                     <div className="admin__activeOrderTable">
@@ -944,7 +934,7 @@ const Admin = () => {
 
                       <small>{formatTime(order.latestOrder?.createdAt)}</small>
                     </div>
-                  </Link>
+                  </dev>
                 ))}
               </div>
             )}
