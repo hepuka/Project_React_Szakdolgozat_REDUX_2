@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useMemo } from "react";
 import Notiflix from "notiflix";
@@ -113,13 +113,13 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <div className="sidebar__user">
+          <Link to={`/register/${currentUserId}`} className="sidebar__user">
             <div className="sidebar__avatar">{userInitial}</div>
             <div className="sidebar__userInfo">
               <span>Bejelentkezve</span>
               <strong>{currentUser || "Felhasználó"}</strong>
             </div>
-          </div>
+          </Link>
         </div>
 
         <nav className="sidebar__buttons" aria-label="Főmenü">

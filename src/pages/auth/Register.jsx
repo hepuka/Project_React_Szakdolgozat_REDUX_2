@@ -5,10 +5,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import Notiflix from "notiflix";
 import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
-
+import { selectUserRole } from "../../Redux/slice/authSlice";
 import { auth, db } from "../../firebase/config";
 import useFetchDocument from "../../customHooks/useFetchDocument.js";
 import detectForm from "../../services/detectForm.js";
+import { useSelector } from "react-redux";
+import { OnlyAdmin } from "../../components/OnlyAdmin";
 
 const categories = [
   { id: 1, name: "Admin" },
@@ -32,13 +34,12 @@ const initialState = {
 const Register = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const currentUserRole = useSelector(selectUserRole);
   const userEdit = useFetchDocument("users", id);
   const [user, setUser] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-
   const isEditMode = id !== "ADD";
 
   useEffect(() => {
@@ -182,15 +183,16 @@ const Register = () => {
                 : "Hozz létre új felhasználói fiókot a rendszerben."}
             </p>
           </div>
-
-          <button
-            type="button"
-            className="register__backButton"
-            onClick={() => navigate("/users")}
-            disabled={loading}
-          >
-            ← Vissza
-          </button>
+          <OnlyAdmin>
+            <button
+              type="button"
+              className="register__backButton"
+              onClick={() => navigate("/users")}
+              disabled={loading}
+            >
+              ← Vissza
+            </button>
+          </OnlyAdmin>
         </header>
 
         <form
@@ -231,7 +233,7 @@ const Register = () => {
                   name="bdate"
                   value={user.bdate || ""}
                   onChange={handleInputChange}
-                  disabled={loading}
+                  disabled={loading || isEditMode}
                 />
               </div>
 
@@ -245,7 +247,7 @@ const Register = () => {
                   value={user.bplace || ""}
                   placeholder="Pl. Debrecen"
                   onChange={handleInputChange}
-                  disabled={loading}
+                  disabled={loading || isEditMode}
                 />
               </div>
             </div>
@@ -373,7 +375,7 @@ const Register = () => {
                   name="role"
                   value={user.role || ""}
                   onChange={handleInputChange}
-                  disabled={loading}
+                  disabled={currentUserRole !== "Admin"}
                 >
                   <option value="" disabled>
                     -- Válassz jogosultságot --
@@ -389,7 +391,6 @@ const Register = () => {
 
               <div className="register__field">
                 <label htmlFor="tax">Felhasználó adószáma</label>
-
                 <input
                   id="tax"
                   type="text"
@@ -402,7 +403,7 @@ const Register = () => {
                   value={user.tax || ""}
                   placeholder="12345678"
                   onChange={handleInputChange}
-                  disabled={loading}
+                  disabled={loading || isEditMode}
                 />
               </div>
 
@@ -428,15 +429,16 @@ const Register = () => {
           </div>
 
           <div className="register__actions">
-            <button
-              type="button"
-              className="register__cancelButton"
-              onClick={() => navigate("/users")}
-              disabled={loading}
-            >
-              Mégse
-            </button>
-
+            <OnlyAdmin>
+              <button
+                type="button"
+                className="register__cancelButton"
+                onClick={() => navigate("/users")}
+                disabled={loading}
+              >
+                Mégse
+              </button>
+            </OnlyAdmin>
             <button
               type="submit"
               className="register__submitButton"
