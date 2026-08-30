@@ -1,15 +1,13 @@
 import "./Placeorder.scss";
-
 import Layout from "../../components/Layout";
 
 import { useSelector } from "react-redux";
-
 import { selectUserName } from "../../Redux/slice/authSlice";
 
 import TableDetails from "../../components/TableDetails";
+import TableProductSelector from "../../components/TableProductSelector";
 import TableOrders from "../../components/TableOrders";
 import TablePayment from "../../components/TablePayment";
-import TableProductSelector from "../../components/TableProductSelector";
 
 import { useEffect, useState } from "react";
 
@@ -20,7 +18,11 @@ import { db } from "../../firebase/config";
 const Placeorder = () => {
   const userName = useSelector(selectUserName);
 
+  // Az asztal, amelyhez ténylegesen a rendelés tartozik
   const [selectedTable, setSelectedTable] = useState(0);
+
+  // Az asztal, amely vizuálisan legyen sárgával kijelölve
+  const [highlightedTable, setHighlightedTable] = useState(0);
 
   const [tableOrders, setTableOrders] = useState([]);
 
@@ -55,7 +57,15 @@ const Placeorder = () => {
   }, [selectedTable]);
 
   const sendTableId = (id) => {
+    // Tényleges aktív asztal
     setSelectedTable(id);
+
+    // Vizuális kijelölés
+    setHighlightedTable(id);
+  };
+
+  const clearTableHighlight = () => {
+    setHighlightedTable(0);
   };
 
   const getTotal = () => {
@@ -83,19 +93,18 @@ const Placeorder = () => {
 
         <div className="placeorder__workspace">
           <TableDetails
-            id={selectedTable}
-            userName={userName}
+            selectedTable={highlightedTable}
             sendTableId={sendTableId}
           />
 
           <TableProductSelector
             selectedTable={selectedTable}
             tableOrdersLength={tableOrders.length}
+            onOrderAdded={clearTableHighlight}
           />
 
           <TableOrders
             getTotal={getTotal}
-            id={selectedTable}
             selectedTable={selectedTable}
             tableOrders={tableOrders}
           />

@@ -6,9 +6,7 @@ import { useSelector } from "react-redux";
 
 import { selectTableOrders } from "../Redux/slice/tableSlice";
 
-const TableDetails = ({ sendTableId }) => {
-  const [selTable, setSelTable] = useState(0);
-
+const TableDetails = ({ selectedTable, sendTableId }) => {
   const orderNumbers = useSelector(selectTableOrders);
 
   const [time, setTime] = useState(new Date());
@@ -40,8 +38,8 @@ const TableDetails = ({ sendTableId }) => {
         <div>
           <span>Asztalok</span>
 
-          {selTable ? (
-            <h2>Aktív asztal #{selTable}</h2>
+          {selectedTable ? (
+            <h2>Aktív asztal #{selectedTable}</h2>
           ) : (
             <h2 className="tableDetails__noActiveTable">
               Nincs aktív asztal kiválasztva
@@ -51,6 +49,7 @@ const TableDetails = ({ sendTableId }) => {
 
         <div className="tableDetails__clock">
           <strong>{currentDate}</strong>
+
           <strong>{currentTime}</strong>
         </div>
       </div>
@@ -75,7 +74,7 @@ const TableDetails = ({ sendTableId }) => {
 
             const productCount = Number(orderNumbers?.[i] || 0);
 
-            const isSelected = selTable === tableNumber;
+            const isSelected = selectedTable === tableNumber;
 
             const isBusy = productCount > 0;
 
@@ -90,10 +89,7 @@ const TableDetails = ({ sendTableId }) => {
                     ? "tableDetails__table--busy"
                     : "tableDetails__table--free"
                 }`}
-                onClick={() => {
-                  sendTableId(tableNumber);
-                  setSelTable(tableNumber);
-                }}
+                onClick={() => sendTableId(tableNumber)}
               >
                 <strong>{String(tableNumber).padStart(2, "0")}</strong>
 

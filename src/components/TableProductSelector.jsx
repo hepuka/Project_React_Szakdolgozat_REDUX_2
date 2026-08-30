@@ -22,7 +22,11 @@ import { db } from "../firebase/config";
 
 import { SET_TABLESORDERS } from "../Redux/slice/tableSlice";
 
-const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
+const TableProductSelector = ({
+  selectedTable,
+  tableOrdersLength,
+  onOrderAdded,
+}) => {
   const dispatch = useDispatch();
 
   /*
@@ -339,36 +343,32 @@ const TableProductSelector = ({ selectedTable, tableOrdersLength }) => {
         });
       });
 
-      // =====================================================
-      // SIKERES RENDELÉS UTÁNI UI FRISSÍTÉS
-      // =====================================================
+      // =========================================================
+      // SIKERES RENDELÉS
+      // =========================================================
 
-      /*
-       * Mennyiség visszaállítása
-       */
       setCount(1);
 
-      /*
-       * Asztal tételszámának frissítése
-       */
       refreshTableCounter();
 
       /*
-       * Kategória visszaállítása Összes-re
+       * Az összes termék jelenjen meg
        */
       showAllProducts();
 
       /*
-       * KIVÁLASZTOTT TERMÉK TÖRLÉSE
-       *
-       * Ez szünteti meg az Expresszó / Coca-Cola /
-       * stb. sárga kijelölését.
+       * A kiválasztott termék törlése
        */
       dispatch(CLEAR_SELECTEDPRODUCT());
 
       /*
-       * SIKERÜZENET
+       * A vizuálisan kijelölt asztal
+       * sárga kijelölésének megszüntetése
        */
+      if (onOrderAdded) {
+        onOrderAdded();
+      }
+
       Notiflix.Notify.success("Rendelés hozzáadva!");
     } catch (error) {
       console.error("Add order / stock transaction error:", error);
