@@ -138,7 +138,7 @@ const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
           <h2>Rendelés összesítése</h2>
         </div>
 
-        <div className="tablePayment__table">#{id || "—"}</div>
+        <div className="tablePayment__table">#{id || ""}</div>
       </div>
 
       <div className="tablePayment__details">
