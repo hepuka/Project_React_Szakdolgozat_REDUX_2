@@ -26,6 +26,7 @@ import { db } from "../../firebase/config";
 import Notiflix from "notiflix";
 
 import "./Expenses.scss";
+import { OnlyManager, OnlyLeader } from "../../components/OnlyAdmin";
 
 const INITIAL_CAPITAL = 1000000;
 
@@ -61,6 +62,7 @@ const Expenses = () => {
   const [closingPeriod, setClosingPeriod] = useState(false);
 
   const [showOnlyPending, setShowOnlyPending] = useState(false);
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
 
   // =========================================================
   // AKTUÁLIS IDŐSZAK
@@ -282,6 +284,7 @@ const Expenses = () => {
       setDescription("");
       setCategory("Rezsi");
       setDueDate("");
+      setShowExpenseForm(false);
 
       Notiflix.Notify.success("A kiadás sikeresen rögzítve!");
     } catch (error) {
@@ -629,85 +632,125 @@ const Expenses = () => {
         {/* ===================================================
             NEW EXPENSE
            =================================================== */}
+        <OnlyManager>
+          {!isClosed && (
+            <>
+              {/* ===================================================
+          ÚJ KIADÁS GOMB
+         =================================================== */}
 
-        {!isClosed && (
-          <section className="expenses__forms">
-            <div className="expenses__card">
-              <div className="expenses__cardHeader">
-                <span>Új kiadás</span>
+              {!showExpenseForm && (
+                <div className="expenses__newExpenseTrigger">
+                  <button
+                    type="button"
+                    className="expenses__newExpenseButton"
+                    onClick={() => setShowExpenseForm(true)}
+                  >
+                    <span aria-hidden="true">＋</span>
+                    Új kiadás rögzítése
+                  </button>
+                </div>
+              )}
 
-                <h2>Számla / költség rögzítése</h2>
+              {/* ===================================================
+          KIADÁS RÖGZÍTÉSI ŰRLAP
+         =================================================== */}
 
-                <p>
-                  Villany, víz, takarítás, karbantartás, szállítás vagy egyéb
-                  költség.
-                </p>
-              </div>
+              {showExpenseForm && (
+                <section className="expenses__forms">
+                  <div className="expenses__card">
+                    <div className="expenses__cardHeader">
+                      <span>Új kiadás</span>
 
-              <form onSubmit={saveExpense}>
-                <label htmlFor="amount">Összeg (Ft)</label>
+                      <div className="expenses__formTitleRow">
+                        <div>
+                          <h2>Számla / költség rögzítése</h2>
 
-                <input
-                  id="amount"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  required
-                  disabled={savingExpense}
-                />
+                          <p>
+                            Villany, víz, takarítás, karbantartás, szállítás
+                            vagy egyéb költség.
+                          </p>
+                        </div>
 
-                <label htmlFor="category">Kategória</label>
+                        <button
+                          type="button"
+                          className="expenses__formCloseButton"
+                          onClick={() => setShowExpenseForm(false)}
+                          aria-label="Űrlap bezárása"
+                          title="Bezárás"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
 
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  disabled={savingExpense}
-                >
-                  <option value="Rezsi">Rezsi</option>
+                    <form onSubmit={saveExpense}>
+                      <label htmlFor="amount">Összeg (Ft)</label>
 
-                  <option value="Takarítás">Takarítás</option>
+                      <input
+                        id="amount"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        required
+                        disabled={savingExpense}
+                      />
 
-                  <option value="Karbantartás">Karbantartás</option>
+                      <label htmlFor="category">Kategória</label>
 
-                  <option value="Szállítás">Szállítás</option>
+                      <select
+                        id="category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        disabled={savingExpense}
+                      >
+                        <option value="Rezsi">Rezsi</option>
 
-                  <option value="Eszköz">Eszköz</option>
+                        <option value="Takarítás">Takarítás</option>
 
-                  <option value="Egyéb">Egyéb</option>
-                </select>
+                        <option value="Karbantartás">Karbantartás</option>
 
-                <label htmlFor="description">Megnevezés</label>
+                        <option value="Szállítás">Szállítás</option>
 
-                <input
-                  id="description"
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Pl. Villanyszámla"
-                  required
-                  disabled={savingExpense}
-                />
+                        <option value="Eszköz">Eszköz</option>
 
-                <label htmlFor="dueDate">Fizetési határidő</label>
+                        <option value="Egyéb">Egyéb</option>
+                      </select>
 
-                <input
-                  id="dueDate"
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  disabled={savingExpense}
-                />
+                      <label htmlFor="description">Megnevezés</label>
 
-                <button type="submit" disabled={savingExpense}>
-                  {savingExpense ? "Mentés..." : "Kiadás rögzítése"}
-                </button>
-              </form>
-            </div>
-          </section>
-        )}
+                      <input
+                        id="description"
+                        type="text"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Pl. Villanyszámla"
+                        required
+                        disabled={savingExpense}
+                      />
+
+                      <label htmlFor="dueDate">Fizetési határidő</label>
+
+                      <input
+                        id="dueDate"
+                        type="date"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                        disabled={savingExpense}
+                      />
+
+                      <button type="submit" disabled={savingExpense}>
+                        {savingExpense ? "Mentés..." : "Kiadás rögzítése"}
+                      </button>
+                    </form>
+                  </div>
+                </section>
+              )}
+            </>
+          )}
+        </OnlyManager>
 
         {/* ===================================================
             EXPENSE LIST
@@ -791,18 +834,64 @@ const Expenses = () => {
                     <div className="expenses__expenseActions">
                       {!isClosed && (
                         <>
-                          <button
-                            type="button"
-                            className={
-                              isPaid
-                                ? "expenses__payButton expenses__payButton--disabled"
-                                : "expenses__payButton"
-                            }
-                            onClick={() => markExpenseAsPaid(expense)}
-                            disabled={isPaid}
-                          >
-                            {isPaid ? "Rendezve" : "Rendezetlen"}
-                          </button>
+                          {isPaid ? (
+                            <button
+                              type="button"
+                              className="expenses__payButton expenses__payButton--disabled"
+                              disabled
+                            >
+                              Rendezve
+                            </button>
+                          ) : Number(expense?.amount || 0) >= 50000 ? (
+                            <>
+                              {/* =================================================
+              50 000 Ft VAGY FELETTE:
+              CSAK LEADER RENDEZHETI
+             ================================================= */}
+
+                              <OnlyLeader>
+                                <button
+                                  type="button"
+                                  className="expenses__payButton"
+                                  onClick={() => markExpenseAsPaid(expense)}
+                                >
+                                  Rendezetlen
+                                </button>
+                              </OnlyLeader>
+
+                              {/* =================================================
+              MANAGER SZÁMÁRA INAKTÍV
+             ================================================= */}
+
+                              <OnlyManager>
+                                <button
+                                  type="button"
+                                  className="expenses__payButton expenses__payButton--disabled"
+                                  disabled
+                                >
+                                  Rendezetlen
+                                </button>
+                              </OnlyManager>
+                            </>
+                          ) : (
+                            /* =================================================
+           50 000 Ft ALATT:
+           MANAGER IS RENDEZHETI
+           ================================================= */
+
+                            <button
+                              type="button"
+                              className="expenses__payButton"
+                              onClick={() => markExpenseAsPaid(expense)}
+                            >
+                              Rendezetlen
+                            </button>
+                          )}
+
+                          {/* ===================================================
+          TÖRLÉS:
+          csak rendezetlen kiadásnál
+         =================================================== */}
 
                           {!isPaid && (
                             <button
