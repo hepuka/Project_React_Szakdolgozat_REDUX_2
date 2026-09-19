@@ -14,7 +14,7 @@ import {
   getPreviousPeriod,
 } from "../../services/financeCalculations";
 
-const INITIAL_CAPITAL = 1000000;
+import { INITIAL_CAPITAL, FINANCE_START_PERIOD } from "../../config/finance";
 
 const Business = () => {
   // =========================================================
@@ -53,7 +53,8 @@ const Business = () => {
   // KIVÁLASZTOTT HÓNAP
   // =========================================================
 
-  const defaultPeriod = currentPeriod >= "2026-08" ? currentPeriod : "2026-08";
+  const defaultPeriod =
+    currentPeriod >= FINANCE_START_PERIOD ? currentPeriod : FINANCE_START_PERIOD;
 
   /*
    * React state külön import nélkül:
@@ -94,7 +95,7 @@ const Business = () => {
      * 2026.08 = a kávézó indulása
      */
 
-    if (selectedPeriod === "2026-08") {
+    if (selectedPeriod === FINANCE_START_PERIOD) {
       return initialCapital;
     }
 

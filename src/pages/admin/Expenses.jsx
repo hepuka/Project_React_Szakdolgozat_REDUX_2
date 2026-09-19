@@ -28,7 +28,7 @@ import Notiflix from "notiflix";
 import "./Expenses.scss";
 import { OnlyManager, OnlyLeader } from "../../components/OnlyAdmin";
 
-const INITIAL_CAPITAL = 1000000;
+import { INITIAL_CAPITAL, FINANCE_START_PERIOD } from "../../config/finance";
 
 const Expenses = () => {
   // =========================================================
@@ -47,7 +47,7 @@ const Expenses = () => {
   // ÁLLAPOTOK
   // =========================================================
 
-  const [selectedPeriod, setSelectedPeriod] = useState("2026-08");
+  const [selectedPeriod, setSelectedPeriod] = useState(FINANCE_START_PERIOD);
 
   const [amount, setAmount] = useState("");
 
@@ -105,7 +105,7 @@ const Expenses = () => {
         if (!Number.isNaN(date.getTime())) {
           const period = getPeriodId(date);
 
-          if (period >= "2026-08") {
+          if (period >= FINANCE_START_PERIOD) {
             periods.add(period);
           }
         }
@@ -124,14 +124,14 @@ const Expenses = () => {
         if (!Number.isNaN(date.getTime())) {
           const period = getPeriodId(date);
 
-          if (period >= "2026-08") {
+          if (period >= FINANCE_START_PERIOD) {
             periods.add(period);
           }
         }
       }
     });
 
-    periods.add("2026-08");
+    periods.add(FINANCE_START_PERIOD);
 
     return Array.from(periods).sort((a, b) => b.localeCompare(a));
   }, [financePeriods, expenses, orders, stockPurchases]);
@@ -146,7 +146,7 @@ const Expenses = () => {
      * 2026.08 = 1 000 000 Ft
      */
 
-    if (selectedPeriod === "2026-08") {
+    if (selectedPeriod === FINANCE_START_PERIOD) {
       return INITIAL_CAPITAL;
     }
 

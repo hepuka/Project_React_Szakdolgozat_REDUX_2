@@ -49,6 +49,51 @@ export const isDateInPeriod = (value, period) => {
 };
 
 // =========================================================
+// A DÁTUM A MAI NAPRA ESIK-E
+// =========================================================
+
+export const isToday = (value) => {
+  const date = getDocumentDate(value);
+
+  if (!date) {
+    return false;
+  }
+
+  const today = new Date();
+
+  return (
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate()
+  );
+};
+
+// =========================================================
+// IDŐPONT FORMÁZÁSA (óra:perc)
+// =========================================================
+
+export const formatTime = (value) => {
+  const date = getDocumentDate(value);
+
+  if (!date) {
+    return "—";
+  }
+
+  return date.toLocaleTimeString("hu-HU", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+// =========================================================
+// ÖSSZEG FORMÁZÁSA
+// =========================================================
+
+export const formatCurrency = (value) => {
+  return Number(value || 0).toLocaleString("hu-HU");
+};
+
+// =========================================================
 // ELŐZŐ HÓNAP
 // =========================================================
 

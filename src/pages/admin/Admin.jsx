@@ -16,113 +16,23 @@ import { db } from "../../firebase/config";
 import "./Admin.scss";
 
 // =========================================================
-// ALAPÉRTELMEZETT KEZDŐTŐKE
+// PÉNZÜGYI KONSTANSOK ÉS SEGÉDFÜGGVÉNYEK
+//
+// Ezek korábban ebben a fájlban voltak újradefiniálva.
 // =========================================================
 
-const INITIAL_CAPITAL = 1000000;
+import { INITIAL_CAPITAL, FINANCE_START_PERIOD } from "../../config/finance";
 
-// =========================================================
-// PÉNZÜGYI INDULÁSI IDŐSZAK
-// =========================================================
-
-const FINANCE_START_PERIOD = "2026-08";
-
-// =========================================================
-// SEGÉDFÜGGVÉNYEK
-// =========================================================
-
-const getPeriodId = (date = new Date()) => {
-  const year = date.getFullYear();
-
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-
-  return `${year}-${month}`;
-};
-
-const getPreviousPeriod = (period) => {
-  const [year, month] = period.split("-");
-
-  const date = new Date(Number(year), Number(month) - 2, 1);
-
-  return getPeriodId(date);
-};
-
-const formatPeriod = (period) => {
-  if (!period) {
-    return "";
-  }
-
-  const [year, month] = period.split("-");
-
-  return new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(
-    "hu-HU",
-    {
-      year: "numeric",
-      month: "long",
-    },
-  );
-};
-
-const formatCurrency = (value) => {
-  return Number(value || 0).toLocaleString("hu-HU");
-};
-
-const getDocumentDate = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  if (typeof value?.toDate === "function") {
-    return value.toDate();
-  }
-
-  if (value instanceof Date) {
-    return value;
-  }
-
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime()) ? null : date;
-};
-
-const isToday = (value) => {
-  const date = getDocumentDate(value);
-
-  if (!date) {
-    return false;
-  }
-
-  const today = new Date();
-
-  return (
-    date.getFullYear() === today.getFullYear() &&
-    date.getMonth() === today.getMonth() &&
-    date.getDate() === today.getDate()
-  );
-};
-
-const isDateInPeriod = (value, period) => {
-  const date = getDocumentDate(value);
-
-  if (!date || !period) {
-    return false;
-  }
-
-  return getPeriodId(date) === period;
-};
-
-const formatTime = (value) => {
-  const date = getDocumentDate(value);
-
-  if (!date) {
-    return "—";
-  }
-
-  return date.toLocaleTimeString("hu-HU", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import {
+  calculatePeriodFinancials,
+  formatCurrency,
+  formatPeriod,
+  formatTime,
+  getDocumentDate,
+  getPeriodId,
+  getPreviousPeriod,
+  isToday,
+} from "../../services/financeCalculations";
 
 // =========================================================
 // ADMIN DASHBOARD
@@ -159,7 +69,7 @@ const Admin = () => {
 
   const currentPeriod = getPeriodId(today);
 
-  const [selectedPeriod, setSelectedPeriod] = useState(currentPeriod);
+  const [selectedPeriod] = useState(currentPeriod);
 
   const [chartMode, setChartMode] = useState("revenue");
 
@@ -197,58 +107,6 @@ const Admin = () => {
   });
 
   // =======================================================
-  // IDŐSZAKOK
-  // =======================================================
-
-  const availablePeriods = useMemo(() => {
-    const periods = new Set();
-
-    financePeriods.forEach((item) => {
-      if (item?.period) {
-        periods.add(item.period);
-      }
-    });
-
-    expenses.forEach((item) => {
-      if (item?.period) {
-        periods.add(item.period);
-      }
-    });
-
-    orders.forEach((item) => {
-      const date = getDocumentDate(item?.createdAt);
-
-      if (date) {
-        const period = getPeriodId(date);
-
-        if (period >= FINANCE_START_PERIOD) {
-          periods.add(period);
-        }
-      }
-    });
-
-    stockPurchases.forEach((item) => {
-      const date = getDocumentDate(item?.createdAt);
-
-      if (date) {
-        const period = getPeriodId(date);
-
-        if (period >= FINANCE_START_PERIOD) {
-          periods.add(period);
-        }
-      }
-    });
-
-    periods.add(FINANCE_START_PERIOD);
-
-    if (currentPeriod >= FINANCE_START_PERIOD) {
-      periods.add(currentPeriod);
-    }
-
-    return Array.from(periods).sort((a, b) => b.localeCompare(a));
-  }, [financePeriods, expenses, orders, stockPurchases, currentPeriod]);
-
-  // =======================================================
   // KIVÁLASZTOTT PÉNZÜGYI IDŐSZAK
   // =======================================================
 
@@ -281,79 +139,31 @@ const Admin = () => {
   }, [selectedPeriod, financePeriods, initialCapital]);
 
   // =======================================================
-  // KIVÁLASZTOTT HÓNAP BEVÉTELE
+  // KIVÁLASZTOTT HÓNAP PÉNZÜGYEI
+  //
+  // Bevétel, beszerzés, rendezett és függő kiadás,
+  // valamint a havi eredmény egyetlen forrásból.
+  // Ugyanez a függvény számol a Business és az
+  // Expenses oldalon is.
   // =======================================================
 
-  const selectedMonthRevenue = useMemo(() => {
-    return orders.reduce((sum, order) => {
-      if (!isDateInPeriod(order?.createdAt, selectedPeriod)) {
-        return sum;
-      }
-
-      if (order?.orderStatus && order.orderStatus !== "Fizetve") {
-        return sum;
-      }
-
-      return sum + Number(order?.orderAmount || 0);
-    }, 0);
-  }, [orders, selectedPeriod]);
-
-  // =======================================================
-  // KIVÁLASZTOTT HÓNAP BESZERZÉSE
-  // =======================================================
-
-  const selectedMonthPurchases = useMemo(() => {
-    return stockPurchases.reduce((sum, purchase) => {
-      if (!isDateInPeriod(purchase?.createdAt, selectedPeriod)) {
-        return sum;
-      }
-
-      return sum + Number(purchase?.total || 0);
-    }, 0);
-  }, [stockPurchases, selectedPeriod]);
-
-  // =======================================================
-  // KIVÁLASZTOTT HÓNAP RENDEZETT KIADÁSA
-  // =======================================================
-
-  const selectedMonthPaidExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => {
-      if (expense?.period !== selectedPeriod) {
-        return sum;
-      }
-
-      if (expense?.status !== "paid") {
-        return sum;
-      }
-
-      return sum + Number(expense?.amount || 0);
-    }, 0);
-  }, [expenses, selectedPeriod]);
-
-  // =======================================================
-  // KIVÁLASZTOTT HÓNAP FÜGGŐ KIADÁSA
-  // =======================================================
-
-  const selectedMonthPendingExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => {
-      if (expense?.period !== selectedPeriod) {
-        return sum;
-      }
-
-      if (expense?.status === "paid") {
-        return sum;
-      }
-
-      return sum + Number(expense?.amount || 0);
-    }, 0);
-  }, [expenses, selectedPeriod]);
-
-  // =======================================================
-  // KIVÁLASZTOTT HÓNAP EREDMÉNYE
-  // =======================================================
-
-  const selectedMonthlyResult =
-    selectedMonthRevenue - selectedMonthPurchases - selectedMonthPaidExpenses;
+  const {
+    revenue: selectedMonthRevenue,
+    purchases: selectedMonthPurchases,
+    paidExpenses: selectedMonthPaidExpenses,
+    pendingExpenses: selectedMonthPendingExpenses,
+    monthlyResult: selectedMonthlyResult,
+  } = useMemo(
+    () =>
+      calculatePeriodFinancials({
+        orders,
+        stockPurchases,
+        expenses,
+        period: selectedPeriod,
+        startingBalance: selectedStartingBalance,
+      }),
+    [orders, stockPurchases, expenses, selectedPeriod, selectedStartingBalance],
+  );
 
   // =======================================================
   // KIVÁLASZTOTT HÓNAP PÉNZE
