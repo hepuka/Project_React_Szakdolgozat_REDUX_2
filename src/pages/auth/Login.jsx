@@ -13,6 +13,8 @@ import useFetchCollection from "../../customHooks/useFetchCollection";
 import { useDispatch } from "react-redux";
 import { SET_ACTIVE_USER } from "../../Redux/slice/authSlice";
 
+import { getHomePath } from "../../config/permissions";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -84,15 +86,11 @@ const Login = () => {
       // NAVIGÁCIÓ
       // =====================================================
 
-      if (
-        currentUser.role === "Admin" ||
-        currentUser.role === "Manager" ||
-        currentUser.role === "Leader"
-      ) {
-        navigate("/main");
-      } else {
-        navigate("/tables");
-      }
+      /*
+       * A kezdőoldal a szerepkör jogosultságaiból
+       * következik, nem szerepkörnevek felsorolásából.
+       */
+      navigate(getHomePath(currentUser.role));
     } catch (error) {
       console.error("Login error:", error);
 

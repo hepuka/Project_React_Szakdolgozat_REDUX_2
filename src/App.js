@@ -14,26 +14,121 @@ import Placeorder from "./pages/employees/Placeorder";
 import ProductOrder from "./pages/admin/ProductOrder";
 import Expenses from "./pages/admin/Expenses";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+import { PERMISSIONS } from "./config/permissions";
+
 function App() {
   return (
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="/main" element={<Admin />}></Route>
-          <Route path="/" element={<Login />}></Route>
-          <Route path="/reset" element={<Reset />}></Route>
-          <Route path="/register/:id" element={<Register />}></Route>
-          <Route path="/add-product/:id" element={<AddProducts />}></Route>
-          <Route path="/order-details/:id" element={<OrderDetails />}></Route>
-          <Route path="/placeorder/:id" element={<Placeorder />}></Route>
-          <Route path="/users" element={<Users />}></Route>
-          <Route path="/contact" element={<Contact />}></Route>
-          <Route path="/products" element={<Products />}></Route>
-          <Route path="/orders" element={<Orders />}></Route>
-          <Route path="/business" element={<Business />}></Route>
-          <Route path="/tables" element={<Placeorder />}></Route>
-          <Route path="/product-order/:id" element={<ProductOrder />}></Route>
-          <Route path="/expenses" element={<Expenses />}></Route>
+          {/* ===============================================
+              NYILVÁNOS ÚTVONALAK
+             =============================================== */}
+
+          <Route path="/" element={<Login />} />
+          <Route path="/reset" element={<Reset />} />
+
+          {/* ===============================================
+              FŐOLDAL
+             =============================================== */}
+
+          <Route element={<ProtectedRoute permission={PERMISSIONS.MAIN_READ} />}>
+            <Route path="/main" element={<Admin />} />
+          </Route>
+
+          {/* ===============================================
+              FELHASZNÁLÓK
+             =============================================== */}
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.USERS_READ} />}
+          >
+            <Route path="/users" element={<Users />} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.USERS_CREATE} />}
+          >
+            <Route path="/register/ADD" element={<Register />} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.USERS_UPDATE} />}
+          >
+            <Route path="/register/:id" element={<Register />} />
+          </Route>
+
+          {/* ===============================================
+              TERMÉKEK
+             =============================================== */}
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.PRODUCTS_READ} />}
+          >
+            <Route path="/products" element={<Products />} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.PRODUCTS_CREATE} />}
+          >
+            <Route path="/add-product/ADD" element={<AddProducts />} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.PRODUCTS_UPDATE} />}
+          >
+            <Route path="/add-product/:id" element={<AddProducts />} />
+            <Route path="/product-order/:id" element={<ProductOrder />} />
+          </Route>
+
+          {/* ===============================================
+              RENDELÉSEK
+             =============================================== */}
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.ORDERS_READ} />}
+          >
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/order-details/:id" element={<OrderDetails />} />
+          </Route>
+
+          {/* ===============================================
+              PÉNZÜGYEK
+             =============================================== */}
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.BUSINESS_READ} />}
+          >
+            <Route path="/business" element={<Business />} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.EXPENSES_READ} />}
+          >
+            <Route path="/expenses" element={<Expenses />} />
+          </Route>
+
+          {/* ===============================================
+              HIBABEJELENTÉS
+             =============================================== */}
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.CONTACT_READ} />}
+          >
+            <Route path="/contact" element={<Contact />} />
+          </Route>
+
+          {/* ===============================================
+              ASZTALOK / RENDELÉSFELVÉTEL
+             =============================================== */}
+
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.TABLES_USE} />}
+          >
+            <Route path="/tables" element={<Placeorder />} />
+            <Route path="/placeorder/:id" element={<Placeorder />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

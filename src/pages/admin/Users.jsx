@@ -3,7 +3,8 @@ import "./Users.scss";
 import useFetchCollection from "../../customHooks/useFetchCollection";
 import { Link } from "react-router-dom";
 import { confirmDelete } from "../../services/confirmDelete.js";
-import { OnlyAdmin } from "../../components/OnlyAdmin.js";
+import RequirePermission from "../../components/RequirePermission";
+import { PERMISSIONS } from "../../config/permissions";
 
 const formatLastLogin = (value) => {
   if (!value) {
@@ -53,10 +54,12 @@ const Users = () => {
             <p>Felhasználói fiókok és jogosultságok kezelése.</p>
           </div>
 
-          <Link to="/register/ADD" className="users__addButton">
-            <span aria-hidden="true">＋</span>
-            Új felhasználó
-          </Link>
+          <RequirePermission permission={PERMISSIONS.USERS_CREATE}>
+            <Link to="/register/ADD" className="users__addButton">
+              <span aria-hidden="true">＋</span>
+              Új felhasználó
+            </Link>
+          </RequirePermission>
         </header>
 
         <div className="users__summary">
@@ -126,7 +129,7 @@ const Users = () => {
                   </div>
                 </div>
 
-                <OnlyAdmin>
+                <RequirePermission permission={PERMISSIONS.USERS_UPDATE}>
                   <div className="users__buttons">
                     <Link
                       to={`/register/${item.id}`}
@@ -145,7 +148,7 @@ const Users = () => {
                       Töröl
                     </button>
                   </div>
-                </OnlyAdmin>
+                </RequirePermission>
               </article>
             ))}
           </div>
@@ -157,10 +160,12 @@ const Users = () => {
 
             <p>Hozd létre az első felhasználói fiókot a rendszerben.</p>
 
-            <Link to="/register/ADD" className="users__addButton">
-              <span aria-hidden="true">＋</span>
-              Új felhasználó
-            </Link>
+            <RequirePermission permission={PERMISSIONS.USERS_CREATE}>
+              <Link to="/register/ADD" className="users__addButton">
+                <span aria-hidden="true">＋</span>
+                Új felhasználó
+              </Link>
+            </RequirePermission>
           </div>
         )}
       </section>

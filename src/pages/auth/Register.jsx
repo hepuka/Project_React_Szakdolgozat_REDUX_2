@@ -10,14 +10,8 @@ import { auth, db } from "../../firebase/config";
 import useFetchDocument from "../../customHooks/useFetchDocument.js";
 import detectForm from "../../services/detectForm.js";
 import { useSelector } from "react-redux";
-import { OnlyAdmin } from "../../components/OnlyAdmin";
-
-const categories = [
-  { id: 1, name: "Admin" },
-  { id: 2, name: "Manager" },
-  { id: 3, name: "Alap" },
-  { id: 4, name: "Leader" },
-];
+import RequirePermission from "../../components/RequirePermission";
+import { PERMISSIONS, ROLE_OPTIONS } from "../../config/permissions";
 
 const initialState = {
   name: "",
@@ -183,7 +177,7 @@ const Register = () => {
                 : "Hozz létre új felhasználói fiókot a rendszerben."}
             </p>
           </div>
-          <OnlyAdmin>
+          <RequirePermission permission={PERMISSIONS.USERS_READ}>
             <button
               type="button"
               className="register__backButton"
@@ -192,7 +186,7 @@ const Register = () => {
             >
               ← Vissza
             </button>
-          </OnlyAdmin>
+          </RequirePermission>
         </header>
 
         <form
@@ -381,9 +375,9 @@ const Register = () => {
                     -- Válassz jogosultságot --
                   </option>
 
-                  {categories.map((item) => (
-                    <option key={item.id} value={item.name}>
-                      {item.name}
+                  {ROLE_OPTIONS.map((role) => (
+                    <option key={role} value={role}>
+                      {role}
                     </option>
                   ))}
                 </select>
@@ -429,7 +423,7 @@ const Register = () => {
           </div>
 
           <div className="register__actions">
-            <OnlyAdmin>
+            <RequirePermission permission={PERMISSIONS.USERS_READ}>
               <button
                 type="button"
                 className="register__cancelButton"
@@ -438,7 +432,7 @@ const Register = () => {
               >
                 Mégse
               </button>
-            </OnlyAdmin>
+            </RequirePermission>
             <button
               type="submit"
               className="register__submitButton"

@@ -23,6 +23,8 @@ import "./Admin.scss";
 
 import { INITIAL_CAPITAL, FINANCE_START_PERIOD } from "../../config/finance";
 
+import { ROLES } from "../../config/permissions";
+
 import {
   calculatePeriodFinancials,
   formatCurrency,
@@ -353,10 +355,10 @@ const Admin = () => {
 
   const userRoleStats = useMemo(() => {
     const stats = {
-      Admin: 0,
-      Manager: 0,
-      Leader: 0,
-      Employee: 0,
+      [ROLES.ADMIN]: 0,
+      [ROLES.MANAGER]: 0,
+      [ROLES.LEADER]: 0,
+      [ROLES.EMPLOYEE]: 0,
     };
 
     users.forEach((user) => {
@@ -1227,25 +1229,25 @@ const Admin = () => {
                   <div>
                     <span>Admin</span>
 
-                    <strong>{userRoleStats.Admin}</strong>
+                    <strong>{userRoleStats[ROLES.ADMIN]}</strong>
                   </div>
 
                   <div>
                     <span>Manager</span>
 
-                    <strong>{userRoleStats.Manager}</strong>
+                    <strong>{userRoleStats[ROLES.MANAGER]}</strong>
                   </div>
 
                   <div>
                     <span>Leader</span>
 
-                    <strong>{userRoleStats.Leader}</strong>
+                    <strong>{userRoleStats[ROLES.LEADER]}</strong>
                   </div>
 
                   <div>
                     <span>Employee</span>
 
-                    <strong>{userRoleStats.Employee}</strong>
+                    <strong>{userRoleStats[ROLES.EMPLOYEE]}</strong>
                   </div>
                 </div>
               </article>
@@ -1269,7 +1271,7 @@ const Admin = () => {
 
                     <span>Admin</span>
 
-                    <strong>{userRoleStats.Admin}</strong>
+                    <strong>{userRoleStats[ROLES.ADMIN]}</strong>
                   </div>
 
                   <div className="admin__permissionRow">
@@ -1277,7 +1279,7 @@ const Admin = () => {
 
                     <span>Manager</span>
 
-                    <strong>{userRoleStats.Manager}</strong>
+                    <strong>{userRoleStats[ROLES.MANAGER]}</strong>
                   </div>
 
                   <div className="admin__permissionRow">
@@ -1285,7 +1287,7 @@ const Admin = () => {
 
                     <span>Leader</span>
 
-                    <strong>{userRoleStats.Leader}</strong>
+                    <strong>{userRoleStats[ROLES.LEADER]}</strong>
                   </div>
 
                   <div className="admin__permissionRow">
@@ -1293,7 +1295,7 @@ const Admin = () => {
 
                     <span>Employee</span>
 
-                    <strong>{userRoleStats.Employee}</strong>
+                    <strong>{userRoleStats[ROLES.EMPLOYEE]}</strong>
                   </div>
                 </div>
               </article>

@@ -7,7 +7,8 @@ import Notiflix from "notiflix";
 import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 import { db, storage } from "../../firebase/config";
-import { OnlyManager } from "../../components/OnlyAdmin";
+import RequirePermission from "../../components/RequirePermission";
+import { PERMISSIONS } from "../../config/permissions";
 import { useSelector } from "react-redux";
 import { selectProducts } from "../../Redux/slice/productSlice";
 
@@ -213,12 +214,12 @@ const Products = () => {
            * Új termék -> csak Manager
            */}
 
-          <OnlyManager>
+          <RequirePermission permission={PERMISSIONS.PRODUCTS_CREATE}>
             <Link to="/add-product/ADD" className="products__addButton">
               <span aria-hidden="true">＋</span>
               Új termék
             </Link>
-          </OnlyManager>
+          </RequirePermission>
         </header>
 
         {/* =====================================================
@@ -417,7 +418,7 @@ const Products = () => {
                         MANAGER MŰVELETEK
                        ================================================= */}
 
-                  <OnlyManager>
+                  <RequirePermission permission={PERMISSIONS.PRODUCTS_UPDATE}>
                     <div className="products__buttons">
                       {/* =========================================
                             RENDELÉS
@@ -460,7 +461,7 @@ const Products = () => {
                         Töröl
                       </button>
                     </div>
-                  </OnlyManager>
+                  </RequirePermission>
                 </article>
               );
             })}

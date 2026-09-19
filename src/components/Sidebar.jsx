@@ -9,62 +9,37 @@ import { auth, db } from "../firebase/config";
 import {
   selectUserName,
   selectCurrentUserId,
+  selectUserRole,
   REMOVE_ACTIVE_USER,
 } from "../Redux/slice/authSlice";
-import { OnlyAdmin, OnlyEmployee, OnlyManager, OnlyLeader } from "./OnlyAdmin";
-
-// Közös menüpontok, szerepkörönként összeállítva
-const NAV_ITEMS = {
-  admin: [
-    { to: "/main", icon: "⌂", label: "Főoldal" },
-    { to: "/users", icon: "👥", label: "Felhasználók" },
-    { to: "/register/ADD", icon: "＋", label: "Új felhasználó" },
-    { to: "/contact", icon: "💬", label: "Hibabejelentés" },
-  ],
-  manager: [
-    { to: "/main", icon: "⌂", label: "Főoldal" },
-    { to: "/users", icon: "👥", label: "Felhasználók" },
-    { to: "/products", icon: "☕", label: "Termékek" },
-    { to: "/add-product/ADD", icon: "＋", label: "Új termék" },
-    { to: "/orders", icon: "🧾", label: "Összes rendelés" },
-    { to: "/expenses", icon: "💰", label: "Munkabér és egyéb kiadások" },
-    { to: "/contact", icon: "💬", label: "Hibabejelentés" },
-  ],
-  leader: [
-    { to: "/main", icon: "⌂", label: "Főoldal" },
-    { to: "/users", icon: "👥", label: "Felhasználók" },
-    { to: "/products", icon: "☕", label: "Termékek" },
-    { to: "/orders", icon: "🧾", label: "Összes rendelés" },
-    { to: "/business", icon: "📊", label: "Üzleti összesítő" },
-    { to: "/contact", icon: "💬", label: "Hibabejelentés" },
-  ],
-  employee: [
-    { to: "/tables", icon: "🛎️", label: "Rendelés / Fizetés" },
-    { to: "/products", icon: "☕", label: "Termékek" },
-    { to: "/orders", icon: "🧾", label: "Összes rendelés" },
-  ],
-};
+import {
+  getMenuItems,
+  hasPermission,
+  PERMISSIONS,
+} from "../config/permissions";
 
 const activeLinkClass = ({ isActive }) =>
   isActive ? "sidebar__button sidebar__button_active" : "sidebar__button";
-
-// Kiemelve, hogy ne jöjjön létre újra minden rendernél
-const NavItems = ({ items }) => (
-  <>
-    {items.map(({ to, icon, label }) => (
-      <NavLink key={to} to={to} className={activeLinkClass}>
-        <span className="sidebar__icon">{icon}</span>
-        <span>{label}</span>
-      </NavLink>
-    ))}
-  </>
-);
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentUser = useSelector(selectUserName);
   const currentUserId = useSelector(selectCurrentUserId);
+  const userRole = useSelector(selectUserRole);
+
+  /*
+   * A menü a jogosultsági táblából áll össze.
+   * Szerepkörönként nincs külön lista: mindenki
+   * azt látja, amihez joga van.
+   */
+  const menuItems = useMemo(() => getMenuItems(userRole), [userRole]);
+
+  /*
+   * A saját adatlap csak annak nyílik meg,
+   * aki felhasználót módosíthat.
+   */
+  const canOpenOwnProfile = hasPermission(userRole, PERMISSIONS.USERS_UPDATE);
 
   const userInitial = useMemo(
     () => currentUser?.charAt(0)?.toUpperCase() || "U",
@@ -87,6 +62,16 @@ const Sidebar = () => {
     }
   }, [currentUserId, dispatch, navigate]);
 
+  const userCardContent = (
+    <>
+      <div className="sidebar__avatar">{userInitial}</div>
+      <div className="sidebar__userInfo">
+        <span>Bejelentkezve</span>
+        <strong>{currentUser || "Felhasználó"}</strong>
+      </div>
+    </>
+  );
+
   return (
     <aside className="sidebar">
       <div className="sidebar__container">
@@ -99,31 +84,22 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <Link to={`/register/${currentUserId}`} className="sidebar__user">
-            <div className="sidebar__avatar">{userInitial}</div>
-            <div className="sidebar__userInfo">
-              <span>Bejelentkezve</span>
-              <strong>{currentUser || "Felhasználó"}</strong>
-            </div>
-          </Link>
+          {canOpenOwnProfile ? (
+            <Link to={`/register/${currentUserId}`} className="sidebar__user">
+              {userCardContent}
+            </Link>
+          ) : (
+            <div className="sidebar__user">{userCardContent}</div>
+          )}
         </div>
 
         <nav className="sidebar__buttons" aria-label="Főmenü">
-          <OnlyAdmin>
-            <NavItems items={NAV_ITEMS.admin} />
-          </OnlyAdmin>
-
-          <OnlyManager>
-            <NavItems items={NAV_ITEMS.manager} />
-          </OnlyManager>
-
-          <OnlyLeader>
-            <NavItems items={NAV_ITEMS.leader} />
-          </OnlyLeader>
-
-          <OnlyEmployee>
-            <NavItems items={NAV_ITEMS.employee} />
-          </OnlyEmployee>
+          {menuItems.map(({ path, icon, label }) => (
+            <NavLink key={path} to={path} className={activeLinkClass}>
+              <span className="sidebar__icon">{icon}</span>
+              <span>{label}</span>
+            </NavLink>
+          ))}
         </nav>
 
         <button type="button" onClick={logoutUser} className="sidebar__logout">

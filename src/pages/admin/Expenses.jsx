@@ -26,7 +26,8 @@ import { db } from "../../firebase/config";
 import Notiflix from "notiflix";
 
 import "./Expenses.scss";
-import { OnlyManager, OnlyLeader } from "../../components/OnlyAdmin";
+import RequirePermission from "../../components/RequirePermission";
+import { PERMISSIONS } from "../../config/permissions";
 
 import { INITIAL_CAPITAL, FINANCE_START_PERIOD } from "../../config/finance";
 
@@ -632,7 +633,7 @@ const Expenses = () => {
         {/* ===================================================
             NEW EXPENSE
            =================================================== */}
-        <OnlyManager>
+        <RequirePermission permission={PERMISSIONS.EXPENSES_CREATE}>
           {!isClosed && (
             <>
               {/* ===================================================
@@ -750,7 +751,7 @@ const Expenses = () => {
               )}
             </>
           )}
-        </OnlyManager>
+        </RequirePermission>
 
         {/* ===================================================
             EXPENSE LIST
@@ -849,7 +850,7 @@ const Expenses = () => {
               CSAK LEADER RENDEZHETI
              ================================================= */}
 
-                              <OnlyLeader>
+                              <RequirePermission permission={PERMISSIONS.EXPENSES_PAY}>
                                 <button
                                   type="button"
                                   className="expenses__payButton"
@@ -857,13 +858,13 @@ const Expenses = () => {
                                 >
                                   Rendezetlen
                                 </button>
-                              </OnlyLeader>
+                              </RequirePermission>
 
                               {/* =================================================
               MANAGER SZÁMÁRA INAKTÍV
              ================================================= */}
 
-                              <OnlyManager>
+                              <RequirePermission permission={PERMISSIONS.EXPENSES_CREATE}>
                                 <button
                                   type="button"
                                   className="expenses__payButton expenses__payButton--disabled"
@@ -871,7 +872,7 @@ const Expenses = () => {
                                 >
                                   Rendezetlen
                                 </button>
-                              </OnlyManager>
+                              </RequirePermission>
                             </>
                           ) : (
                             /* =================================================
