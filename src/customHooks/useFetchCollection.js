@@ -6,27 +6,40 @@ import Notiflix from "notiflix";
 const useFetchCollection = (collectionName) => {
   const [data, setData] = useState([]);
 
-  const getCollection = () => {
-    try {
-      const docRef = collection(db, collectionName);
-      const q = query(docRef, orderBy("createdAt"));
+  useEffect(() => {
+    if (!collectionName) {
+      setData([]);
 
-      onSnapshot(q, (snapshot) => {
+      return undefined;
+    }
+
+    const docRef = collection(db, collectionName);
+    const q = query(docRef, orderBy("createdAt"));
+
+    /*
+     * Az onSnapshot visszatérési értéke a leiratkozó függvény.
+     * Ezt a useEffect cleanup ágában meg kell hívni, különben
+     * a komponens eltűnése után is élő marad a Firestore kapcsolat.
+     */
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
         const allData = snapshot.docs.map((item) => ({
           id: item.id,
           ...item.data(),
         }));
 
         setData(allData);
-      });
-    } catch (error) {
-      Notiflix.Notify.failure(error.message);
-    }
-  };
+      },
+      (error) => {
+        Notiflix.Notify.failure(error.message);
+      }
+    );
 
-  useEffect(() => {
-    getCollection();
-  }, []);
+    return () => {
+      unsubscribe();
+    };
+  }, [collectionName]);
 
   return data;
 };

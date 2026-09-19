@@ -12,8 +12,6 @@ import {
   REMOVE_ACTIVE_USER,
 } from "../Redux/slice/authSlice";
 import { OnlyAdmin, OnlyEmployee, OnlyManager, OnlyLeader } from "./OnlyAdmin";
-import { serverTimestamp } from "firebase/database";
-import { useEffect } from "react";
 
 // Közös menüpontok, szerepkörönként összeállítva
 const NAV_ITEMS = {
@@ -67,18 +65,6 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(selectUserName);
   const currentUserId = useSelector(selectCurrentUserId);
-
-  useEffect(() => {
-    if (!currentUserId) return;
-
-    const interval = setInterval(() => {
-      updateDoc(doc(db, "users", currentUserId), {
-        lastActive: serverTimestamp(),
-      }).catch(() => {});
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [currentUserId]);
 
   const userInitial = useMemo(
     () => currentUser?.charAt(0)?.toUpperCase() || "U",

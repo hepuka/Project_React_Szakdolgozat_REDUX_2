@@ -70,9 +70,13 @@ const getDateParts = (orderDate) => {
   match = value.match(/^\d{1,2}[.\-/]\s*(\d{1,2})[.\-/]\s*(\d{4})/);
 
   if (match) {
+    /*
+     * A minta két csoportot tartalmaz:
+     * 1 = hónap, 2 = év. (A nap nincs elkapva.)
+     */
     return {
-      year: match[3],
-      month: String(match[2]).padStart(2, "0"),
+      year: match[2],
+      month: String(match[1]).padStart(2, "0"),
     };
   }
 

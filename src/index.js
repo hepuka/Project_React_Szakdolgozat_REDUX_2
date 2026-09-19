@@ -17,9 +17,3 @@ root.render(
     </PersistGate>
   </Provider>
 );
-
-root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>
-);
