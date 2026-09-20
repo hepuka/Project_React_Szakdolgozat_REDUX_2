@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, updateDoc, Timestamp } from "firebase/firestore";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  Timestamp,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 
 import { auth, db } from "../../firebase/config";
 
 import Notiflix from "notiflix";
 import "./Auth.scss";
-
-import useFetchCollection from "../../customHooks/useFetchCollection";
 
 import { useDispatch } from "react-redux";
 import { SET_ACTIVE_USER } from "../../Redux/slice/authSlice";
@@ -23,8 +31,6 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const users = useFetchCollection("users");
 
   const signIn = async (e) => {
     e.preventDefault();
@@ -44,53 +50,102 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const currentUser = users.find(
-        (item) =>
-          item.email && item.email.trim().toLowerCase() === normalizedEmail,
+      // =====================================================
+      // 1. HITELESÍTÉS
+      //
+      // Először a Firebase Authentication dönt, és csak
+      // utána olvasunk bármit az adatbázisból. Így a users
+      // kollekció nem érhető el bejelentkezés nélkül.
+      // =====================================================
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        normalizedEmail,
+        password,
       );
 
-      if (!currentUser) {
-        Notiflix.Notify.failure("A felhasználó nem található.");
+      const uid = userCredential.user.uid;
+
+      // =====================================================
+      // 2. A FELHASZNÁLÓI ADATLAP BETÖLTÉSE
+      // =====================================================
+
+      let userId = uid;
+      let userData = null;
+
+      const userSnapshot = await getDoc(doc(db, "users", uid));
+
+      if (userSnapshot.exists()) {
+        userData = userSnapshot.data();
+      } else {
+        /*
+         * Átmeneti visszafelé-kompatibilitás.
+         *
+         * A korábban addDoc-kal létrehozott rekordok
+         * véletlen azonosítót kaptak, nem az auth UID-t.
+         * Ezeket e-mail alapján keressük meg - de már
+         * bejelentkezett állapotban.
+         */
+
+        const legacySnapshot = await getDocs(
+          query(
+            collection(db, "users"),
+            where("email", "==", normalizedEmail),
+            limit(1),
+          ),
+        );
+
+        if (!legacySnapshot.empty) {
+          userId = legacySnapshot.docs[0].id;
+          userData = legacySnapshot.docs[0].data();
+
+          console.warn(
+            "A felhasználó dokumentumának azonosítója nem az auth UID:",
+            userId,
+          );
+        }
+      }
+
+      if (!userData) {
+        Notiflix.Notify.failure(
+          "A felhasználói adatlap nem található. Kérd meg az adminisztrátort, hogy vegyen fel újra.",
+        );
+
+        await signOut(auth);
 
         return;
       }
 
       // =====================================================
-      // FIREBASE AUTHENTICATION
+      // 3. BELÉPÉS RÖGZÍTÉSE
       // =====================================================
 
-      await signInWithEmailAndPassword(auth, normalizedEmail, password);
-
-      await updateDoc(doc(db, "users", currentUser.id), {
+      await updateDoc(doc(db, "users", userId), {
         last_login: Timestamp.now().toDate(),
         online: true,
       });
 
       // =====================================================
-      // REDUX
+      // 4. REDUX
       // =====================================================
 
       dispatch(
         SET_ACTIVE_USER({
-          email: currentUser.email,
-          name: currentUser.name,
-          role: currentUser.role,
-          pin: currentUser.pin,
-          id: currentUser.id,
+          email: userData.email || normalizedEmail,
+          name: userData.name,
+          role: userData.role,
+          pin: userData.pin,
+          id: userId,
         }),
       );
 
       Notiflix.Notify.success("Sikeres bejelentkezés!");
 
       // =====================================================
-      // NAVIGÁCIÓ
+      // 5. NAVIGÁCIÓ
       // =====================================================
 
-      /*
-       * A kezdőoldal a szerepkör jogosultságaiból
-       * következik, nem szerepkörnevek felsorolásából.
-       */
-      navigate(getHomePath(currentUser.role));
+      navigate(getHomePath(userData.role));
     } catch (error) {
       console.error("Login error:", error);
 

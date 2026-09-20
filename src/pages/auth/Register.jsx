@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import "./Register.scss";
 import { useNavigate, useParams } from "react-router-dom";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserAccount } from "../../services/createUserAccount";
 import Notiflix from "notiflix";
-import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { selectUserRole } from "../../Redux/slice/authSlice";
-import { auth, db } from "../../firebase/config";
+import { db } from "../../firebase/config";
 import useFetchDocument from "../../customHooks/useFetchDocument.js";
 import detectForm from "../../services/detectForm.js";
 import { useSelector } from "react-redux";
@@ -26,7 +26,13 @@ const initialState = {
 };
 
 const Register = () => {
-  const { id } = useParams();
+  /*
+   * A /register/ADD statikus útvonal, ezért a useParams
+   * NEM ad vissza :id paramétert. A hiányzó értéket új
+   * rekord felvételének tekintjük.
+   */
+
+  const { id = "ADD" } = useParams();
   const navigate = useNavigate();
   const currentUserRole = useSelector(selectUserRole);
   const userEdit = useFetchDocument("users", id);
@@ -78,17 +84,27 @@ const Register = () => {
     try {
       const normalizedEmail = user.email.trim().toLowerCase();
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        normalizedEmail,
-        user.password,
-      );
+      /*
+       * A fiók külön Firebase app-példányban jön létre, hogy
+       * az admin ne essen ki a saját munkamenetéből.
+       *
+       * A megjelenítendő névbe csak a név kerül: a szerepkör
+       * és a PIN az adatbázisban van, nem az auth profilban.
+       */
 
-      await updateProfile(userCredential.user, {
-        displayName: `${user.name}|${user.role}|${user.pin}`,
+      const uid = await createUserAccount({
+        email: normalizedEmail,
+        password: user.password,
+        displayName: user.name.trim(),
       });
 
-      await addDoc(collection(db, "users"), {
+      /*
+       * A dokumentum azonosítója az auth UID, nem véletlen
+       * azonosító: így a bejelentkezéskor egyetlen
+       * olvasással megtalálható a felhasználó adatlapja.
+       */
+
+      await setDoc(doc(db, "users", uid), {
         name: user.name.trim(),
         email: normalizedEmail,
         bdate: user.bdate,

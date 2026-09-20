@@ -40,7 +40,13 @@ const initialState = {
 };
 
 const AddProducts = () => {
-  const { id } = useParams();
+  /*
+   * A /add-product/ADD statikus útvonal, ezért a useParams
+   * NEM ad vissza :id paramétert. A hiányzó értéket új
+   * rekord felvételének tekintjük.
+   */
+
+  const { id = "ADD" } = useParams();
 
   const navigate = useNavigate();
 
