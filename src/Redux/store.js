@@ -8,11 +8,20 @@ import tableReducer from "./slice/tableSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 
+/*
+ * Csak az asztalonkénti tételszámláló marad a localStorage-ban.
+ *
+ * Az auth állapotot szándékosan NEM perzisztáljuk: korábban a
+ * szerepkör és a PIN kód is a böngésző tárolójában végezte. A
+ * munkamenetet oldalfrissítés után a useAuthListener állítja
+ * vissza a Firebase saját munkamenetéből.
+ */
+
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
-
+  whitelist: ["table"],
 };
 
 const reducer = combineReducers({

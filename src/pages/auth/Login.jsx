@@ -1,17 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  query,
-  Timestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { doc, Timestamp, updateDoc } from "firebase/firestore";
 
 import { auth, db } from "../../firebase/config";
 
@@ -22,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { SET_ACTIVE_USER } from "../../Redux/slice/authSlice";
 
 import { getHomePath } from "../../config/permissions";
+
+import { loadUserProfile } from "../../services/loadUserProfile";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -70,43 +62,9 @@ const Login = () => {
       // 2. A FELHASZNÁLÓI ADATLAP BETÖLTÉSE
       // =====================================================
 
-      let userId = uid;
-      let userData = null;
+      const profile = await loadUserProfile(uid, normalizedEmail);
 
-      const userSnapshot = await getDoc(doc(db, "users", uid));
-
-      if (userSnapshot.exists()) {
-        userData = userSnapshot.data();
-      } else {
-        /*
-         * Átmeneti visszafelé-kompatibilitás.
-         *
-         * A korábban addDoc-kal létrehozott rekordok
-         * véletlen azonosítót kaptak, nem az auth UID-t.
-         * Ezeket e-mail alapján keressük meg - de már
-         * bejelentkezett állapotban.
-         */
-
-        const legacySnapshot = await getDocs(
-          query(
-            collection(db, "users"),
-            where("email", "==", normalizedEmail),
-            limit(1),
-          ),
-        );
-
-        if (!legacySnapshot.empty) {
-          userId = legacySnapshot.docs[0].id;
-          userData = legacySnapshot.docs[0].data();
-
-          console.warn(
-            "A felhasználó dokumentumának azonosítója nem az auth UID:",
-            userId,
-          );
-        }
-      }
-
-      if (!userData) {
+      if (!profile) {
         Notiflix.Notify.failure(
           "A felhasználói adatlap nem található. Kérd meg az adminisztrátort, hogy vegyen fel újra.",
         );
@@ -120,7 +78,7 @@ const Login = () => {
       // 3. BELÉPÉS RÖGZÍTÉSE
       // =====================================================
 
-      await updateDoc(doc(db, "users", userId), {
+      await updateDoc(doc(db, "users", profile.id), {
         last_login: Timestamp.now().toDate(),
         online: true,
       });
@@ -131,11 +89,10 @@ const Login = () => {
 
       dispatch(
         SET_ACTIVE_USER({
-          email: userData.email || normalizedEmail,
-          name: userData.name,
-          role: userData.role,
-          pin: userData.pin,
-          id: userId,
+          email: profile.data.email || normalizedEmail,
+          name: profile.data.name,
+          role: profile.data.role,
+          id: profile.id,
         }),
       );
 
@@ -145,7 +102,7 @@ const Login = () => {
       // 5. NAVIGÁCIÓ
       // =====================================================
 
-      navigate(getHomePath(userData.role));
+      navigate(getHomePath(profile.data.role));
     } catch (error) {
       console.error("Login error:", error);
 

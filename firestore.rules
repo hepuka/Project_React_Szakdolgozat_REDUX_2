@@ -1,0 +1,136 @@
+rules_version = '2';
+
+// =========================================================
+// KunPao's Coffee - Firestore biztonsági szabályok
+//
+// Alapelv: az adatbázis csak bejelentkezett felhasználónak
+// nyílik meg. A felhasználói adatlapokat ezen felül is védjük,
+// mert azok tartalmazzák a PIN kódot és a személyes adatokat.
+//
+// FIGYELEM: a szabályok engedélyei összeadódnak. Ezért nincs
+// mindenre kiterjedő "match /{document=**}" blokk - az
+// felülírná az alábbi szigorúbb szabályokat.
+// =========================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -----------------------------------------------------
+    // SEGÉDFÜGGVÉNYEK
+    // -----------------------------------------------------
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasProfile() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return signedIn() && hasProfile() && profile().role == 'Admin';
+    }
+
+    // -----------------------------------------------------
+    // FELHASZNÁLÓK
+    // -----------------------------------------------------
+
+    match /users/{userId} {
+
+      /*
+       * Olvasás: a Felhasználók oldalnak szüksége van a listára,
+       * és a bejelentkezés e-mail alapú visszakeresése is ide
+       * tartozik. Bejelentkezés nélkül viszont semmi nem látszik
+       * - korábban pont ez volt a legnagyobb hiányosság.
+       */
+      allow read: if signedIn();
+
+      /*
+       * Módosítás: a saját rekord (belépés időpontja, online
+       * állapot), illetve az adminisztrátor.
+       *
+       * A középső feltétel a régi, nem auth UID azonosítójú
+       * rekordokat fedi le. A felhasználók migrálása után
+       * törölhető.
+       */
+      allow update: if signedIn() && (
+        request.auth.uid == userId ||
+        resource.data.email == request.auth.token.email ||
+        isAdmin()
+      );
+
+      allow create, delete: if isAdmin();
+    }
+
+    // -----------------------------------------------------
+    // TERMÉKEK
+    //
+    // Írás minden bejelentkezett felhasználónak: a készletet a
+    // rendelésfelvétel is csökkenti, tehát a felszolgálónak is
+    // írnia kell.
+    // -----------------------------------------------------
+
+    match /kunpaosproducts/{productId} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+
+    // -----------------------------------------------------
+    // RENDELÉSEK
+    // -----------------------------------------------------
+
+    match /kunpaosorders/{orderId} {
+      allow read, write: if signedIn();
+    }
+
+    // -----------------------------------------------------
+    // ASZTALONKÉNTI RENDELÉSI TÉTELEK
+    //
+    // Az 5. fázis után ezek egyetlen tableOrders kollekcióvá
+    // olvadnak össze; az új nevet előre felvettük.
+    // -----------------------------------------------------
+
+    match /tableOrders/{itemId}    { allow read, write: if signedIn(); }
+
+    match /tableorders_1/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_2/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_3/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_4/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_5/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_6/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_7/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_8/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_9/{itemId}  { allow read, write: if signedIn(); }
+    match /tableorders_10/{itemId} { allow read, write: if signedIn(); }
+
+    // -----------------------------------------------------
+    // PÉNZÜGYEK
+    //
+    // Olvasás minden bejelentkezett felhasználónak (a főoldal
+    // összesítői ebből dolgoznak), írás egyelőre szintén.
+    // Szerepkörhöz kötni akkor érdemes, amikor minden rekord
+    // azonosítója az auth UID - addig a profile() a régi
+    // felhasználóknál nem találna adatlapot.
+    // -----------------------------------------------------
+
+    match /businessExpenses/{expenseId} {
+      allow read, write: if signedIn();
+    }
+
+    match /financePeriods/{periodId} {
+      allow read, write: if signedIn();
+    }
+
+    match /stockPurchases/{purchaseId} {
+      allow read, write: if signedIn();
+    }
+
+    match /finance/{documentId} {
+      allow read, write: if signedIn();
+    }
+  }
+}

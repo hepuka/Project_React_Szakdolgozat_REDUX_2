@@ -6,7 +6,10 @@ import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { selectUserPin, selectEmail } from "../Redux/slice/authSlice";
+import {
+  selectCurrentUserId,
+  selectEmail,
+} from "../Redux/slice/authSlice";
 
 import { db } from "../firebase/config";
 
@@ -18,6 +21,7 @@ import {
   Timestamp,
   deleteDoc,
   doc,
+  getDoc,
   query,
   getDocs,
 } from "firebase/firestore";
@@ -25,7 +29,7 @@ import {
 import { SET_ZERO } from "../Redux/slice/tableSlice";
 
 const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
-  const userPin = useSelector(selectUserPin);
+  const currentUserId = useSelector(selectCurrentUserId);
 
   const userEmail = useSelector(selectEmail);
 
@@ -62,41 +66,61 @@ const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
       return;
     }
 
-    if (pin !== userPin) {
-      Notiflix.Notify.failure("Hibás PIN kód.");
+    if (!currentUserId) {
+      Notiflix.Notify.failure("Nem található a bejelentkezett felhasználó.");
 
       return;
     }
 
     setLoading(true);
 
-    const today = new Date();
-
-    const orderConfig = {
-      user: userEmail,
-
-      username: userName,
-
-      orderDate: today.toLocaleDateString("hu-HU"),
-
-      orderTime: today.toLocaleTimeString("hu-HU", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }),
-
-      orderAmount: finalAmount,
-
-      orderStatus: "Fizetve",
-
-      tablenumber: Number(id),
-
-      cartItems: tableOrders,
-
-      createdAt: Timestamp.now().toDate(),
-    };
-
     try {
+      /*
+       * A PIN kódot az adatbázisból ellenőrizzük.
+       *
+       * Korábban a Redux állapotból jött, amit a redux-persist
+       * a localStorage-ba is kiírt - így a böngészőből
+       * kiolvasható volt.
+       */
+
+      const profileSnapshot = await getDoc(doc(db, "users", currentUserId));
+
+      const storedPin = profileSnapshot.exists()
+        ? String(profileSnapshot.data()?.pin ?? "")
+        : "";
+
+      if (!storedPin || pin !== storedPin) {
+        Notiflix.Notify.failure("Hibás PIN kód.");
+
+        return;
+      }
+
+      const today = new Date();
+
+      const orderConfig = {
+        user: userEmail,
+
+        username: userName,
+
+        orderDate: today.toLocaleDateString("hu-HU"),
+
+        orderTime: today.toLocaleTimeString("hu-HU", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+
+        orderAmount: finalAmount,
+
+        orderStatus: "Fizetve",
+
+        tablenumber: Number(id),
+
+        cartItems: tableOrders,
+
+        createdAt: Timestamp.now().toDate(),
+      };
+
       await addDoc(collection(db, "kunpaosorders"), orderConfig);
 
       const tableOrdersRef = collection(db, `tableorders_${id}`);

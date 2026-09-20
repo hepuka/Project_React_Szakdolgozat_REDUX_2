@@ -17,7 +17,37 @@ import Expenses from "./pages/admin/Expenses";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { PERMISSIONS } from "./config/permissions";
 
+import useAuthListener from "./customHooks/useAuthListener";
+
 function App() {
+  /*
+   * Amíg a Firebase nem mondta meg, van-e bejelentkezett
+   * felhasználó, egyetlen védett útvonalat sem renderelünk -
+   * különben a ProtectedRoute kidobná a bejelentkezésre azt,
+   * aki valójában be van jelentkezve.
+   */
+
+  const authChecked = useAuthListener();
+
+  if (!authChecked) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          color: "var(--text-muted)",
+          fontSize: "1.4rem",
+        }}
+      >
+        Betöltés...
+      </div>
+    );
+  }
+
   return (
     <div>
       <BrowserRouter>
