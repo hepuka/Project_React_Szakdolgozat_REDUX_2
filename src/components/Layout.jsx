@@ -10,13 +10,18 @@ const Layout = ({ children }) => {
 
   return (
     <div className="layout">
+      {/*
+       * Az oldalsáv a bal oldalon áll: az olvasási irány
+       * szerint először a navigáció, utána a tartalom.
+       */}
+
+      <Sidebar />
+
       <main className="layout__main">
         <div className="layout__content">{children}</div>
 
         <Footer />
       </main>
-
-      <Sidebar />
     </div>
   );
 };
