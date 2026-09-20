@@ -1,0 +1,19 @@
+# =========================================================
+# FEJLESZTŐI BEÁLLÍTÁSOK (Create React App)
+#
+# Ez a fájl csak a helyi gépen érvényes, a .gitignore
+# kizárja a verziókövetésből.
+# =========================================================
+
+# A forrástérképek generálása a fejlesztői szerver
+# indulásának és újrafordításának legdrágább lépése.
+# Kikapcsolva érezhetően gyorsabb az indulás; a hibák
+# helye a React hibaoverlay-en továbbra is látszik.
+GENERATE_SOURCEMAP=false
+
+# Ne nyisson új böngészőfület minden indításnál.
+BROWSER=none
+
+# Windowson a fájlfigyelés natív eseményekkel gyorsabb,
+# mint a másodpercenkénti körbekérdezéssel.
+CHOKIDAR_USEPOLLING=false

@@ -10,34 +10,47 @@ const tableSlice = createSlice({
   name: "table",
   initialState,
   reducers: {
+    /*
+     * Egy asztalhoz tartozó tételszám beállítása.
+     */
     SET_TABLESORDERS: (state, action) => {
+      const index = action.payload.id - 1;
+
       state.id = action.payload.id;
       state.length = action.payload.length;
 
-      state.tableorders.map((item, index) => {
-        if (index === action.payload.id - 1) {
-          state.tableorders[index] = action.payload.length + 1;
-        }
-      });
+      if (index >= 0 && index < state.tableorders.length) {
+        state.tableorders[index] = action.payload.length + 1;
+      }
     },
+
+    /*
+     * Egy tétel törlése az asztalról.
+     */
     SET_DELETETABLESORDERS: (state, action) => {
+      const index = action.payload.id - 1;
+
       state.id = action.payload.id;
 
-      state.tableorders.map((item, index) => {
-        if (index === action.payload.id - 1) {
-          state.tableorders[index] = item -= 1;
-        }
-      });
+      if (index >= 0 && index < state.tableorders.length) {
+        state.tableorders[index] = Math.max(
+          0,
+          Number(state.tableorders[index] || 0) - 1,
+        );
+      }
     },
 
+    /*
+     * Az asztal kiürítése fizetés után.
+     */
     SET_ZERO: (state, action) => {
+      const index = action.payload.id - 1;
+
       state.id = action.payload.id;
 
-      state.tableorders.map((item, index) => {
-        if (index === action.payload.id - 1) {
-          state.tableorders[index] = item = 0;
-        }
-      });
+      if (index >= 0 && index < state.tableorders.length) {
+        state.tableorders[index] = 0;
+      }
     },
   },
 });

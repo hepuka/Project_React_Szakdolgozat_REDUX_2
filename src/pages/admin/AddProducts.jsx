@@ -104,7 +104,7 @@ const AddProducts = () => {
 
       initializedIdRef.current = productEdit.id;
     }
-  }, [id, isEditMode, productEdit?.id]);
+  }, [id, isEditMode, productEdit]);
 
   // =========================================================
   // INPUT KEZELÉS
