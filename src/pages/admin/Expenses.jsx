@@ -31,6 +31,8 @@ import { PERMISSIONS } from "../../config/permissions";
 
 import { INITIAL_CAPITAL, FINANCE_START_PERIOD } from "../../config/finance";
 
+import Icon from "../../components/Icon";
+
 const Expenses = () => {
   // =========================================================
   // FIRESTORE ADATOK
@@ -535,9 +537,15 @@ const Expenses = () => {
             <strong>{formatPeriod(selectedPeriod)}</strong>
 
             {isClosed ? (
-              <span className="expenses__closedBadge">🔒 Lezárva</span>
+              <span className="expenses__closedBadge">
+                <Icon name="lock" size={12} />
+                Lezárva
+              </span>
             ) : (
-              <span className="expenses__openBadge">🟢 Nyitott</span>
+              <span className="expenses__openBadge">
+                <Icon name="check" size={12} />
+                Nyitott
+              </span>
             )}
           </div>
         </header>
@@ -567,7 +575,7 @@ const Expenses = () => {
                   <option key={period} value={period}>
                     {formatPeriod(period)}
 
-                    {periodData?.isClosed ? " 🔒" : ""}
+                    {periodData?.isClosed ? " (lezárva)" : ""}
                   </option>
                 );
               })}
@@ -582,7 +590,10 @@ const Expenses = () => {
         {isClosed && (
           <section className="expenses__closedNotice">
             <div>
-              <strong>🔒 Ez a hónap le van zárva</strong>
+              <strong>
+                <Icon name="lock" size={15} />
+                Ez a hónap le van zárva
+              </strong>
 
               <p>A lezárt pénzügyi időszak adatai már nem módosíthatók.</p>
             </div>
@@ -647,7 +658,7 @@ const Expenses = () => {
                     className="expenses__newExpenseButton"
                     onClick={() => setShowExpenseForm(true)}
                   >
-                    <span aria-hidden="true">＋</span>
+                    <Icon name="plus" size={16} />
                     Új kiadás rögzítése
                   </button>
                 </div>
@@ -780,7 +791,7 @@ const Expenses = () => {
 
           {visibleExpenses.length === 0 ? (
             <div className="expenses__empty">
-              <span>💳</span>
+              <Icon name="wallet" size={34} />
 
               <h3>Nincs kiadás</h3>
 
@@ -801,7 +812,7 @@ const Expenses = () => {
                     }`}
                   >
                     <div className="expenses__expenseIcon">
-                      {isPaid ? "✓" : "!"}
+                      <Icon name={isPaid ? "check" : "alert"} size={17} />
                     </div>
 
                     <div className="expenses__expenseMain">
@@ -936,7 +947,8 @@ const Expenses = () => {
 
               {financials.pendingExpenses > 0 && (
                 <strong className="expenses__closingWarning">
-                  ⚠ {financials.pendingExpenses.toLocaleString("hu-HU")} Ft
+                  <Icon name="alert" size={15} />
+                  {financials.pendingExpenses.toLocaleString("hu-HU")} Ft
                   rendezetlen kiadás van még.
                 </strong>
               )}
@@ -948,7 +960,14 @@ const Expenses = () => {
               onClick={closeCurrentPeriod}
               disabled={closingPeriod}
             >
-              {closingPeriod ? "Lezárás..." : "🔒 Hónap lezárása"}
+              {closingPeriod ? (
+                "Lezárás..."
+              ) : (
+                <>
+                  <Icon name="lock" size={16} />
+                  Hónap lezárása
+                </>
+              )}
             </button>
           </section>
         )}

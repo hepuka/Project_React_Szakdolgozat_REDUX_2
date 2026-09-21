@@ -1,594 +1,418 @@
+@use "../../styles/mixins" as *;
+
+/* =========================================================
+   REZSI ÉS KIADÁSOK
+   ========================================================= */
+
 .expenses {
-  width: 100%;
+  @include page;
 
   min-width: 0;
-  min-height: 100%;
-
-  padding: 28px;
-
-  box-sizing: border-box;
-
-  color: var(--text);
 
   overflow-y: auto;
 
   scrollbar-width: thin;
-  scrollbar-color: #d5c8be transparent;
+  scrollbar-color: var(--border) transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d5c8be;
-    border-radius: 20px;
+    background: var(--border);
+    border-radius: 999px;
   }
 }
 
 /* =========================================================
-   HEADER
+   FEJLÉC
    ========================================================= */
 
 .expenses__header {
-  display: flex;
+  @include page-header;
 
   align-items: center;
-  justify-content: space-between;
-
-  gap: 20px;
-
-  margin-bottom: 20px;
 }
 
 .expenses__eyebrow {
-  display: block;
-
-  margin-bottom: 5px;
-
-  color: var(--primary-light);
-
-  font-size: 0.85rem;
-
-  font-weight: 750;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.12em;
+  @include eyebrow;
 }
 
 .expenses__header h1 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: clamp(2.7rem, 4vw, 4rem);
-
-  line-height: 1.05;
-
-  letter-spacing: -0.045em;
+  @include page-title;
 }
 
 .expenses__header p {
-  margin: 8px 0 0;
-
-  color: var(--text-muted);
-
-  font-size: 1.05rem;
-
-  line-height: 1.5;
+  @include page-subtitle;
 }
 
 /* =========================================================
-   PERIOD STATUS
+   AKTÍV IDŐSZAK
    ========================================================= */
 
 .expenses__period {
+  @include card(13px 16px);
+
   min-width: 180px;
 
   display: flex;
-
   align-items: flex-end;
-
   flex-direction: column;
-
   gap: 3px;
 
-  padding: 13px 16px;
+  > span:first-child {
+    color: var(--text-muted);
 
-  background: var(--surface);
+    font-size: 1.05rem;
+  }
 
-  border: 1px solid var(--border);
+  strong {
+    @include tabular;
 
-  border-radius: 14px;
+    color: var(--text);
 
-  box-shadow: var(--shadow-sm);
+    font-size: 1.4rem;
+  }
 }
-
-.expenses__period > span:first-child {
-  color: var(--text-muted);
-
-  font-size: 0.75rem;
-}
-
-.expenses__period strong {
-  color: var(--text);
-
-  font-size: 1rem;
-}
-
-/* =========================================================
-   OPEN / CLOSED STATUS
-   ========================================================= */
 
 .expenses__closedBadge {
-  display: inline-flex;
-
-  align-items: center;
+  @include chip(var(--danger-soft), var(--danger));
 
   margin-top: 5px;
-
-  padding: 4px 8px;
-
-  background: var(--danger-soft);
-
-  border: 1px solid rgba(177, 82, 82, 0.25);
-
-  border-radius: 20px;
-
-  color: var(--danger);
-
-  font-size: 0.7rem;
-
-  font-weight: 750;
 }
 
 .expenses__openBadge {
-  display: inline-flex;
-
-  align-items: center;
+  @include chip(var(--success-soft), var(--success));
 
   margin-top: 5px;
-
-  color: var(--success);
-
-  font-size: 0.7rem;
-
-  font-weight: 750;
 }
 
 /* =========================================================
-   PERIOD SELECTOR
+   IDŐSZAKVÁLASZTÓ
    ========================================================= */
 
 .expenses__periodCard {
+  @include card(18px 20px);
+
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 20px;
 
-  padding: 18px 20px;
+  margin-bottom: 16px;
 
-  margin-bottom: 18px;
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
 
-  background: var(--surface);
+  span {
+    color: var(--text-muted);
 
-  border: 1px solid var(--border);
+    font-size: 1.05rem;
+  }
 
-  border-radius: 17px;
+  h2 {
+    margin: 0;
 
-  box-shadow: var(--shadow-sm);
-}
+    color: var(--text);
 
-.expenses__periodCard > div:first-child {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 3px;
-}
-
-.expenses__periodCard span {
-  color: var(--text-muted);
-
-  font-size: 0.78rem;
-}
-
-.expenses__periodCard h2 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: 1.15rem;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
 }
 
 .expenses__periodControls select {
+  @include field-input(42px);
+
   min-width: 200px;
+  width: auto;
 
-  min-height: 42px;
+  font-size: 1.25rem;
+  font-weight: 600;
 
-  padding: 0 12px;
-
-  background: var(--input-background);
-
-  border: 1px solid var(--border);
-
-  border-radius: 10px;
-
-  color: var(--text);
-
-  font-family: inherit;
-
-  font-size: 0.9rem;
-
-  outline: none;
-}
-
-.expenses__periodControls select:focus {
-  border-color: var(--primary-light);
-
-  box-shadow: 0 0 0 3px rgba(118, 82, 56, 0.1);
+  cursor: pointer;
 }
 
 /* =========================================================
-   CLOSED NOTICE
+   LEZÁRT HÓNAP FIGYELMEZTETÉS
    ========================================================= */
 
 .expenses__closedNotice {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
-  margin-bottom: 18px;
-
+  margin-bottom: 16px;
   padding: 14px 16px;
 
   background: var(--danger-soft);
 
-  border: 1px solid rgba(177, 82, 82, 0.25);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-lg);
 
-  border-radius: 15px;
-}
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 7px;
 
-.expenses__closedNotice strong {
-  color: var(--danger);
+    color: var(--danger);
 
-  font-size: 0.95rem;
-}
+    font-size: 1.3rem;
+  }
 
-.expenses__closedNotice p {
-  margin: 4px 0 0;
+  p {
+    margin: 4px 0 0;
 
-  color: var(--text-muted);
+    color: var(--text-muted);
 
-  font-size: 0.8rem;
+    font-size: 1.15rem;
+  }
 }
 
 /* =========================================================
-   SUMMARY
+   ÖSSZESÍTŐ
    ========================================================= */
 
 .expenses__summary {
   display: grid;
-
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 12px;
 
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .expenses__summaryCard {
+  @include card(16px);
+
   display: flex;
-
   flex-direction: column;
-
   gap: 8px;
 
-  padding: 16px;
+  span {
+    color: var(--text-muted);
 
-  background: var(--surface);
+    font-size: 1.1rem;
+  }
 
-  border: 1px solid var(--border);
+  strong {
+    @include tabular;
 
-  border-radius: 15px;
+    color: var(--text);
 
-  box-shadow: var(--shadow-sm);
-}
-
-.expenses__summaryCard span {
-  color: var(--text-muted);
-
-  font-size: 0.78rem;
-}
-
-.expenses__summaryCard strong {
-  color: var(--text);
-
-  font-size: 1.5rem;
+    font-size: 2rem;
+    font-weight: 600;
+  }
 }
 
 .expenses__summaryCard--balance {
-  background: var(--surface-soft);
+  background: var(--success-soft);
 
-  border-color: rgba(63, 116, 72, 0.25);
-}
+  border-color: var(--success);
 
-.expenses__summaryCard--balance strong {
-  color: var(--success);
+  strong {
+    color: var(--success);
+  }
 }
 
 /* =========================================================
-   FORM
+   ÚJ KIADÁS GOMB
+   ========================================================= */
+
+.expenses__newExpenseTrigger {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-start;
+
+  margin-bottom: 16px;
+}
+
+.expenses__newExpenseButton {
+  @include button-accent(46px);
+}
+
+/* =========================================================
+   KIADÁS RÖGZÍTŐ ŰRLAP
    ========================================================= */
 
 .expenses__forms {
   display: grid;
-
   grid-template-columns: 1fr;
 
-  gap: 18px;
+  gap: 16px;
 
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .expenses__card {
-  padding: 20px;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  box-shadow: var(--shadow-md);
+  @include card;
 }
 
 .expenses__cardHeader {
   margin-bottom: 16px;
+
+  > span {
+    @include eyebrow;
+
+    margin-bottom: 0;
+  }
+
+  h2 {
+    margin: 5px 0;
+
+    color: var(--text);
+
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 1.15rem;
+    line-height: 1.45;
+  }
 }
 
-.expenses__cardHeader span {
-  color: var(--primary-light);
+.expenses__formTitleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
 
-  font-size: 0.75rem;
-
-  font-weight: 750;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.1em;
+  > div {
+    min-width: 0;
+  }
 }
 
-.expenses__cardHeader h2 {
-  margin: 5px 0;
+.expenses__formCloseButton {
+  @include button-ghost(32px);
+  @include icon-button(32px);
 
-  color: var(--text);
-
-  font-size: 1.3rem;
-}
-
-.expenses__cardHeader p {
-  margin: 0;
-
+  background: var(--surface-soft);
   color: var(--text-muted);
 
-  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
 
-  line-height: 1.45;
+  font-size: 1.5rem;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    background: var(--danger-soft);
+    color: var(--danger);
+
+    border-color: var(--danger);
+  }
 }
 
 .expenses__card form {
   display: flex;
-
   flex-direction: column;
-
   gap: 8px;
 }
 
 .expenses__card label {
+  @include field-label;
+
   margin-top: 4px;
+  margin-bottom: 0;
 
-  color: var(--text);
-
-  font-size: 0.8rem;
-
-  font-weight: 700;
+  font-size: 1.15rem;
 }
 
 .expenses__card input,
 .expenses__card select {
-  width: 100%;
-
-  min-height: 42px;
-
-  padding: 0 11px;
-
-  box-sizing: border-box;
-
-  background: var(--input-background);
-
-  border: 1px solid var(--border);
-
-  border-radius: 10px;
-
-  color: var(--text);
-
-  font-family: inherit;
-
-  outline: none;
+  @include field-input(42px);
 }
 
-.expenses__card input:focus,
-.expenses__card select:focus {
-  border-color: var(--primary-light);
-
-  box-shadow: 0 0 0 3px rgba(118, 82, 56, 0.1);
+.expenses__card select {
+  cursor: pointer;
 }
 
 .expenses__card button {
-  min-height: 43px;
+  @include button-accent(43px);
 
   margin-top: 8px;
-
-  padding: 0 15px;
-
-  background: var(--accent);
-
-  border: 1px solid #dfb33d;
-
-  border-radius: 10px;
-
-  color: var(--primary);
-
-  font-family: inherit;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.expenses__card button:hover {
-  background: var(--accent-hover);
-
-  transform: translateY(-1px);
-}
-
-.expenses__card button:active {
-  transform: scale(0.98);
-}
-
-.expenses__card button:disabled {
-  opacity: 0.6;
-
-  cursor: not-allowed;
-
-  transform: none;
 }
 
 /* =========================================================
-   EXPENSE LIST CARD
+   KIADÁSLISTA
    ========================================================= */
 
 .expenses__listCard {
-  padding: 20px;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  box-shadow: var(--shadow-md);
+  @include card;
 }
 
 .expenses__listHeader {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
 
   margin-bottom: 15px;
-}
 
-.expenses__listHeader > div {
-  display: flex;
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
 
-  flex-direction: column;
+  span {
+    @include eyebrow;
 
-  gap: 3px;
-}
+    margin-bottom: 0;
+  }
 
-.expenses__listHeader span {
-  color: var(--primary-light);
+  h2 {
+    margin: 0;
 
-  font-size: 0.75rem;
+    color: var(--text);
 
-  font-weight: 750;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.1em;
-}
-
-.expenses__listHeader h2 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: 1.35rem;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
 }
 
 .expenses__filterButton {
-  min-height: 38px;
-
-  padding: 0 13px;
+  @include button-ghost(38px);
 
   background: var(--surface-soft);
 
-  border: 1px solid var(--border);
-
-  border-radius: 10px;
-
-  color: var(--text);
-
-  font-family: inherit;
-
-  font-size: 0.82rem;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.expenses__filterButton:hover {
-  background: var(--surface-hover);
+  font-size: 1.15rem;
 }
 
 .expenses__filterButton--active {
   background: var(--warning-soft);
-
-  border-color: #e5cf9f;
-
   color: var(--warning);
-}
 
-/* =========================================================
-   EXPENSE LIST
-   ========================================================= */
+  border-color: var(--warning);
+}
 
 .expenses__list {
   display: flex;
-
   flex-direction: column;
-
   gap: 9px;
 }
 
+/* =========================================================
+   EGY KIADÁS
+   ========================================================= */
+
 .expenses__expense {
   display: grid;
-
   grid-template-columns:
     42px
     minmax(180px, 1fr)
     auto
     auto;
-
   align-items: center;
 
   gap: 12px;
@@ -598,385 +422,249 @@
   background: var(--surface-soft);
 
   border: 1px solid var(--border-soft);
-
-  border-radius: 13px;
+  border-radius: var(--radius-md);
 }
 
 .expenses__expenseIcon {
-  width: 34px;
-  height: 34px;
+  @include icon-tile(34px);
 
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 9px;
-
-  font-weight: 800;
+  border-radius: var(--radius-sm);
 }
 
 .expenses__expense--paid .expenses__expenseIcon {
   background: var(--success-soft);
-
   color: var(--success);
 }
 
 .expenses__expense--pending .expenses__expenseIcon {
   background: var(--warning-soft);
-
   color: var(--warning);
 }
 
 .expenses__expenseMain {
+  min-width: 0;
+
   display: flex;
-
   flex-direction: column;
-
   gap: 5px;
 
-  min-width: 0;
-}
+  > strong {
+    overflow: hidden;
 
-.expenses__expenseMain > strong {
-  color: var(--text);
+    color: var(--text);
 
-  font-size: 0.95rem;
+    font-size: 1.3rem;
+    font-weight: 600;
 
-  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-  text-overflow: ellipsis;
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 
-  white-space: nowrap;
-}
+  span {
+    color: var(--text-muted);
 
-.expenses__expenseMain > div {
-  display: flex;
-
-  gap: 10px;
-
-  flex-wrap: wrap;
-}
-
-.expenses__expenseMain span {
-  color: var(--text-muted);
-
-  font-size: 0.73rem;
+    font-size: 1.05rem;
+  }
 }
 
 /* =========================================================
-   AMOUNT / STATUS
+   ÖSSZEG ÉS ÁLLAPOT
    ========================================================= */
 
 .expenses__expenseAmount {
   display: flex;
-
   align-items: flex-end;
-
   flex-direction: column;
-
   gap: 5px;
 
   white-space: nowrap;
-}
 
-.expenses__expenseAmount > strong {
-  color: var(--text);
+  > strong {
+    @include tabular;
 
-  font-size: 1rem;
+    color: var(--text);
+
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
 }
 
 .expenses__status {
-  padding: 3px 8px;
-
-  border-radius: 20px;
-
-  font-size: 0.68rem;
-
-  font-weight: 750;
+  @include chip;
 }
 
 .expenses__status--paid {
   background: var(--success-soft);
-
   color: var(--success);
 }
 
 .expenses__status--pending {
   background: var(--warning-soft);
-
   color: var(--warning);
 }
 
 /* =========================================================
-   ACTIONS
+   MŰVELETEK
    ========================================================= */
 
 .expenses__expenseActions {
   display: flex;
-
   align-items: center;
-
   gap: 7px;
 }
 
-.expenses__expenseActions button {
-  min-height: 36px;
+.expenses__payButton {
+  @include button-accent(36px);
 
   padding: 0 11px;
 
-  border-radius: 9px;
-
-  font-family: inherit;
-
-  font-size: 0.75rem;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease,
-    opacity 0.18s ease;
+  font-size: 1.1rem;
 }
 
-/* =========================================================
-   RENDEZETLEN GOMB
-   ========================================================= */
-
-.expenses__payButton {
-  background: var(--accent);
-
-  border: 1px solid var(--accent);
-
-  color: var(--primary);
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.expenses__payButton:hover {
-  background: var(--accent-hover);
-
-  border-color: var(--accent-hover);
-
-  transform: translateY(-1px);
-}
-
-.expenses__payButton:active {
-  transform: scale(0.98);
-}
-
-/* =========================================================
-   RENDEZVE - INAKTÍV
-   ========================================================= */
-
+/* Rendezve - inaktív. */
 .expenses__payButton--disabled {
   background: var(--surface-soft);
+  color: var(--text-muted);
 
   border-color: var(--border);
-
-  color: var(--text-muted);
 
   opacity: 0.65;
-
   cursor: not-allowed;
 
-  transform: none !important;
+  &:hover,
+  &:active {
+    background: var(--surface-soft);
+    color: var(--text-muted);
+
+    border-color: var(--border);
+
+    transform: none;
+  }
 }
-
-.expenses__payButton--disabled:hover {
-  background: var(--surface-soft);
-
-  border-color: var(--border);
-
-  color: var(--text-muted);
-
-  transform: none !important;
-}
-
-/* =========================================================
-   TÖRLÉS
-   ========================================================= */
 
 .expenses__deleteButton {
-  background: var(--danger-soft);
+  @include button-danger(36px);
 
-  border: 1px solid rgba(177, 82, 82, 0.25);
+  padding: 0 11px;
 
-  color: var(--danger);
-}
-
-.expenses__deleteButton:hover {
-  background: var(--danger);
-
-  border-color: var(--danger);
-
-  color: #ffffff;
-
-  transform: translateY(-1px);
-}
-
-.expenses__deleteButton:active {
-  transform: scale(0.98);
+  font-size: 1.1rem;
 }
 
 /* =========================================================
-   EMPTY
+   ÜRES ÁLLAPOT
    ========================================================= */
 
 .expenses__empty {
   min-height: 220px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   flex-direction: column;
-
   gap: 8px;
-
-  text-align: center;
-}
-
-.expenses__empty span {
-  font-size: 2.5rem;
-}
-
-.expenses__empty h3 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: 1.1rem;
-}
-
-.expenses__empty p {
-  margin: 0;
 
   color: var(--text-muted);
 
-  font-size: 0.85rem;
+  text-align: center;
+
+  h3 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 1.5rem;
+  }
+
+  p {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 1.15rem;
+  }
 }
 
 /* =========================================================
-   MONTH CLOSE
+   HÓNAP LEZÁRÁSA
    ========================================================= */
 
 .expenses__closingCard {
+  @include card;
+
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 20px;
 
-  margin-top: 18px;
+  margin-top: 16px;
 
-  padding: 20px;
+  border-color: var(--danger);
 
-  background: var(--surface);
+  h2 {
+    margin: 5px 0;
 
-  border: 1px solid rgba(177, 82, 82, 0.3);
+    color: var(--text);
 
-  border-radius: 18px;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
 
-  box-shadow: var(--shadow-md);
-}
+  p {
+    margin: 0;
 
-.expenses__closingCard h2 {
-  margin: 5px 0;
+    color: var(--text-muted);
 
-  color: var(--text);
-
-  font-size: 1.3rem;
-}
-
-.expenses__closingCard p {
-  margin: 0;
-
-  color: var(--text-muted);
-
-  font-size: 0.83rem;
-
-  line-height: 1.45;
+    font-size: 1.15rem;
+    line-height: 1.45;
+  }
 }
 
 .expenses__closingBalance {
+  @include tabular;
+
   display: block;
 
   margin-top: 10px;
 
   color: var(--text);
 
-  font-size: 0.95rem;
-
-  font-weight: 750;
+  font-size: 1.35rem;
+  font-weight: 600;
 }
 
 .expenses__closingWarning {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 
   margin-top: 8px;
 
   color: var(--warning);
 
-  font-size: 0.8rem;
+  font-size: 1.15rem;
 }
 
 .expenses__closeButton {
-  min-height: 46px;
-
-  flex: 0 0 auto;
-
-  padding: 0 17px;
+  @include button-base(46px);
 
   background: var(--danger);
+  color: #fff;
 
-  border: 1px solid var(--danger);
+  border-color: var(--danger);
 
-  border-radius: 11px;
+  font-size: 1.25rem;
 
-  color: #ffffff;
-
-  font-family: inherit;
-
-  font-size: 0.88rem;
-
-  font-weight: 750;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.18s ease,
-    background-color 0.18s ease;
-}
-
-.expenses__closeButton:hover {
-  background: #c45f5f;
-
-  transform: translateY(-1px);
-}
-
-.expenses__closeButton:active {
-  transform: scale(0.98);
-}
-
-.expenses__closeButton:disabled {
-  opacity: 0.6;
-
-  cursor: not-allowed;
-
-  transform: none;
+  &:hover:not(:disabled) {
+    background: #b3524f;
+    border-color: #b3524f;
+  }
 }
 
 /* =========================================================
@@ -1005,7 +693,7 @@
 }
 
 /* =========================================================
-   MOBILE
+   MOBIL
    ========================================================= */
 
 @media (max-width: 650px) {
@@ -1015,21 +703,17 @@
 
   .expenses__header {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
   .expenses__period {
     width: 100%;
 
-    box-sizing: border-box;
-
     align-items: flex-start;
   }
 
   .expenses__periodCard {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -1044,7 +728,6 @@
 
   .expenses__listHeader {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -1068,7 +751,6 @@
 
   .expenses__closingCard {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -1078,13 +760,12 @@
 
   .expenses__closedNotice {
     align-items: flex-start;
-
     flex-direction: column;
   }
 }
 
 /* =========================================================
-   SMALL MOBILE
+   KIS MOBIL
    ========================================================= */
 
 @media (max-width: 420px) {
@@ -1093,147 +774,26 @@
   }
 
   .expenses__card,
-  .expenses__listCard,
-  .expenses__balanceCard {
+  .expenses__listCard {
     padding: 15px;
   }
 
   .expenses__expenseActions {
     width: 100%;
+
+    button {
+      flex: 1;
+    }
   }
+}
 
-  .expenses__expenseActions button {
-    flex: 1;
+@media (prefers-reduced-motion: reduce) {
+  .expenses__newExpenseButton,
+  .expenses__filterButton,
+  .expenses__payButton,
+  .expenses__deleteButton,
+  .expenses__closeButton,
+  .expenses__formCloseButton {
+    transition: none;
   }
-}
-
-/* =========================================================
-   NEW EXPENSE TRIGGER
-   ========================================================= */
-
-.expenses__newExpenseTrigger {
-  width: 100%;
-
-  display: flex;
-
-  justify-content: flex-start;
-
-  margin-bottom: 18px;
-}
-
-.expenses__newExpenseButton {
-  min-height: 46px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-
-  padding: 0 17px;
-
-  background: var(--accent);
-
-  border: 1px solid var(--accent);
-
-  border-radius: 11px;
-
-  color: var(--primary);
-
-  font-family: inherit;
-
-  font-size: 0.85rem;
-
-  font-weight: 750;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.18s ease,
-    background-color 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.expenses__newExpenseButton:hover {
-  background: var(--accent-hover);
-
-  border-color: var(--accent-hover);
-
-  transform: translateY(-1px);
-}
-
-.expenses__newExpenseButton:active {
-  transform: scale(0.98);
-}
-
-.expenses__newExpenseButton span {
-  font-size: 1.1rem;
-
-  line-height: 1;
-}
-
-/* =========================================================
-   FORM TITLE / CLOSE BUTTON
-   ========================================================= */
-
-.expenses__formTitleRow {
-  display: flex;
-
-  align-items: flex-start;
-
-  justify-content: space-between;
-
-  gap: 15px;
-}
-
-.expenses__formTitleRow > div {
-  min-width: 0;
-}
-
-.expenses__formCloseButton {
-  width: 32px;
-  height: 32px;
-
-  flex: 0 0 32px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  background: var(--surface-soft);
-
-  border: 1px solid var(--border);
-
-  border-radius: 8px;
-
-  color: var(--text-muted);
-
-  font-family: inherit;
-
-  font-size: 1.35rem;
-
-  line-height: 1;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    color 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.expenses__formCloseButton:hover {
-  background: var(--danger-soft);
-
-  border-color: rgba(177, 82, 82, 0.25);
-
-  color: var(--danger);
-}
-
-.expenses__formCloseButton:active {
-  transform: scale(0.96);
 }
