@@ -20,12 +20,6 @@ import { PERMISSIONS } from "./config/permissions";
 import useAuthListener from "./customHooks/useAuthListener";
 
 function App() {
-  /*
-   * Amíg a Firebase nem mondta meg, van-e bejelentkezett
-   * felhasználó, egyetlen védett útvonalat sem renderelünk -
-   * különben a ProtectedRoute kidobná a bejelentkezésre azt,
-   * aki valójában be van jelentkezve.
-   */
 
   const authChecked = useAuthListener();
 
@@ -139,6 +133,7 @@ function App() {
             <Route path="/expenses" element={<Expenses />} />
           </Route>
 
+
           {/* ===============================================
               HIBABEJELENTÉS
              =============================================== */}
@@ -152,6 +147,8 @@ function App() {
           {/* ===============================================
               ASZTALOK / RENDELÉSFELVÉTEL
              =============================================== */}
+
+
 
           <Route
             element={<ProtectedRoute permission={PERMISSIONS.TABLES_USE} />}
