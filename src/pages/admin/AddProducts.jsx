@@ -18,6 +18,8 @@ import useFetchDocument from "../../customHooks/useFetchDocument.js";
 
 import CloudinaryUpload from "../../components/CloudinaryUpload";
 
+import Icon from "../../components/Icon";
+
 const categories = [
   { id: 1, name: "Kávé" },
   { id: 2, name: "Italok" },
@@ -325,7 +327,8 @@ const AddProducts = () => {
             onClick={() => navigate("/products")}
             disabled={loading}
           >
-            ← Vissza
+            <Icon name="arrowLeft" size={16} />
+            Vissza
           </button>
         </header>
 
@@ -345,7 +348,9 @@ const AddProducts = () => {
 
             <div className="addProduct__box">
               <div className="addProduct__boxHeader">
-                <div className="addProduct__boxIcon">☕</div>
+                <div className="addProduct__boxIcon">
+                  <Icon name="coffee" size={20} />
+                </div>
 
                 <div>
                   <h2>Termék adatai</h2>
@@ -475,7 +480,9 @@ const AddProducts = () => {
 
             <div className="addProduct__box addProduct__box--description">
               <div className="addProduct__boxHeader">
-                <div className="addProduct__boxIcon">📝</div>
+                <div className="addProduct__boxIcon">
+                  <Icon name="fileText" size={20} />
+                </div>
 
                 <div>
                   <h2>Leírás</h2>
@@ -503,7 +510,9 @@ const AddProducts = () => {
 
             <div className="addProduct__box">
               <div className="addProduct__boxHeader">
-                <div className="addProduct__boxIcon">🖼️</div>
+                <div className="addProduct__boxIcon">
+                  <Icon name="image" size={20} />
+                </div>
 
                 <div>
                   <h2>Termékkép</h2>
@@ -522,7 +531,9 @@ const AddProducts = () => {
                   />
                 ) : (
                   <div className="addProduct__imagePlaceholder">
-                    <span>☕</span>
+                    <span>
+                      <Icon name="coffee" size={34} />
+                    </span>
 
                     <p>Még nincs kiválasztott kép</p>
                   </div>
@@ -535,7 +546,9 @@ const AddProducts = () => {
 
               {imageUploaded && (
                 <div className="addProduct__imageUploaded">
-                  <span>✓</span>
+                  <span>
+                    <Icon name="check" size={16} />
+                  </span>
                   Kép sikeresen feltöltve
                 </div>
               )}
@@ -574,7 +587,7 @@ const AddProducts = () => {
                 </>
               ) : (
                 <>
-                  <span aria-hidden="true">{isEditMode ? "✓" : "＋"}</span>
+                  <Icon name={isEditMode ? "check" : "plus"} size={16} />
 
                   {detectForm(id, "Hozzáad", "Módosít")}
                 </>

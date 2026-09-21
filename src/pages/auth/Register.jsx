@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 import RequirePermission from "../../components/RequirePermission";
 import { PERMISSIONS, ROLE_OPTIONS } from "../../config/permissions";
 
+import Icon from "../../components/Icon";
+
 const initialState = {
   name: "",
   email: "",
@@ -200,7 +202,8 @@ const Register = () => {
               onClick={() => navigate("/users")}
               disabled={loading}
             >
-              ← Vissza
+              <Icon name="arrowLeft" size={16} />
+              Vissza
             </button>
           </RequirePermission>
         </header>
@@ -213,7 +216,9 @@ const Register = () => {
           <div className="register__grid">
             <div className="register__box">
               <div className="register__boxHeader">
-                <div className="register__boxIcon">👤</div>
+                <div className="register__boxIcon">
+                  <Icon name="user" size={20} />
+                </div>
                 <div>
                   <h2>Személyes adatok</h2>
                   <p>A felhasználó alapadatai</p>
@@ -264,7 +269,9 @@ const Register = () => {
 
             <div className="register__box">
               <div className="register__boxHeader">
-                <div className="register__boxIcon">🔐</div>
+                <div className="register__boxIcon">
+                  <Icon name="lock" size={20} />
+                </div>
                 <div>
                   <h2>Bejelentkezési adatok</h2>
                   <p>Hozzáférés a rendszerhez</p>
@@ -316,7 +323,7 @@ const Register = () => {
                         }
                         disabled={loading}
                       >
-                        {showPassword ? "◉" : "◌"}
+                        <Icon name={showPassword ? "eyeOff" : "eye"} size={18} />
                       </button>
                     </div>
                   </div>
@@ -349,7 +356,7 @@ const Register = () => {
                         }
                         disabled={loading}
                       >
-                        {showPasswordConfirm ? "◉" : "◌"}
+                        <Icon name={showPasswordConfirm ? "eyeOff" : "eye"} size={18} />
                       </button>
                     </div>
                   </div>
@@ -358,7 +365,9 @@ const Register = () => {
 
               {isEditMode && (
                 <div className="register__editInfo">
-                  <span>🔒</span>
+                  <span>
+                    <Icon name="info" size={17} />
+                  </span>
                   <p>
                     A jelszó módosítását a felhasználó a „Jelszó visszaállítása”
                     funkción keresztül végezheti el.
@@ -369,7 +378,9 @@ const Register = () => {
 
             <div className="register__box">
               <div className="register__boxHeader">
-                <div className="register__boxIcon">🛡️</div>
+                <div className="register__boxIcon">
+                  <Icon name="shield" size={20} />
+                </div>
                 <div>
                   <h2>Jogosultságok</h2>
                   <p>Hozzáférési szint és azonosítók</p>
@@ -461,7 +472,7 @@ const Register = () => {
                 </>
               ) : (
                 <>
-                  <span aria-hidden="true">{isEditMode ? "✓" : "＋"}</span>
+                  <Icon name={isEditMode ? "check" : "plus"} size={16} />
                   {detectForm(id, "Regisztráció", "Módosít")}
                 </>
               )}

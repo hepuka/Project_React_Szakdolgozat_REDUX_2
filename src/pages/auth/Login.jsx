@@ -15,6 +15,8 @@ import { getHomePath } from "../../config/permissions";
 
 import { loadUserProfile } from "../../services/loadUserProfile";
 
+import Icon from "../../components/Icon";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -118,8 +120,8 @@ const Login = () => {
 
       <section className="login__card">
         <div className="login__brand">
-          <div className="login__logo" aria-hidden="true">
-            ☕
+          <div className="login__logo">
+            <Icon name="coffee" size={24} />
           </div>
 
           <div>
@@ -140,8 +142,8 @@ const Login = () => {
             <label htmlFor="email">E-mail cím</label>
 
             <div className="login__inputWrapper">
-              <span className="login__inputIcon" aria-hidden="true">
-                ✉
+              <span className="login__inputIcon">
+                <Icon name="mail" size={18} />
               </span>
 
               <input
@@ -166,8 +168,8 @@ const Login = () => {
             </div>
 
             <div className="login__inputWrapper">
-              <span className="login__inputIcon" aria-hidden="true">
-                🔒
+              <span className="login__inputIcon">
+                <Icon name="lock" size={18} />
               </span>
 
               <input
@@ -189,7 +191,7 @@ const Login = () => {
                 }
                 disabled={loading}
               >
-                {showPassword ? "◉" : "◌"}
+                <Icon name={showPassword ? "eyeOff" : "eye"} size={18} />
               </button>
             </div>
           </div>

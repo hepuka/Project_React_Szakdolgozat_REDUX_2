@@ -298,3 +298,18 @@ textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* =========================================================
+   BETÖLTÉSJELZŐ
+   =========================================================
+
+   Egyetlen közös animáció a gombok töltéskarikájához.
+   A méretet és a színt a styles/_mixins.scss spinner
+   mixinje adja.
+   ========================================================= */
+
+@keyframes uiSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}

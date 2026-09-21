@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 
 import Notiflix from "notiflix";
 
+import Icon from "./Icon";
+
 import {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_UPLOAD_PRESET,
@@ -115,7 +117,8 @@ const CloudinaryUpload = ({ onUpload }) => {
       onClick={openWidget}
       className="addProduct__uploadButton"
     >
-      ☁ Kép feltöltése
+      <Icon name="upload" size={17} />
+      Kép feltöltése
     </button>
   );
 };

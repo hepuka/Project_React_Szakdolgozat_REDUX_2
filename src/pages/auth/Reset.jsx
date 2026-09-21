@@ -5,6 +5,8 @@ import { auth } from "../../firebase/config";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 
+import Icon from "../../components/Icon";
+
 const Reset = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,8 +50,8 @@ const Reset = () => {
 
       <section className="login__card login__card--reset">
         <div className="login__brand">
-          <div className="login__logo" aria-hidden="true">
-            ☕
+          <div className="login__logo">
+            <Icon name="coffee" size={24} />
           </div>
 
           <div>
@@ -73,8 +75,8 @@ const Reset = () => {
             <label htmlFor="reset-email">Regisztrált e-mail cím</label>
 
             <div className="login__inputWrapper">
-              <span className="login__inputIcon" aria-hidden="true">
-                ✉
+              <span className="login__inputIcon">
+                <Icon name="mail" size={18} />
               </span>
 
               <input

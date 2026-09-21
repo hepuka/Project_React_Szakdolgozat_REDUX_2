@@ -376,6 +376,99 @@
 }
 
 /* =========================================================
+   ŰRLAPOS OLDALAK
+   =========================================================
+
+   A /register, /add-product és a hasonló szerkesztő
+   oldalak ugyanazt a vázat használják: doboz + fejléc +
+   mezők + műveletsor.
+   ========================================================= */
+
+@mixin form-box-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+
+  border-bottom: 1px solid var(--border-soft);
+
+  h2 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 3px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 1.1rem;
+  }
+}
+
+@mixin form-field($height: 46px) {
+  margin-bottom: 17px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    @include field-label;
+  }
+
+  input,
+  select {
+    @include field-input($height);
+  }
+
+  select {
+    cursor: pointer;
+  }
+}
+
+@mixin form-textarea {
+  @include field-input(auto);
+
+  padding: 13px;
+
+  resize: vertical;
+
+  line-height: 1.55;
+}
+
+@mixin form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+/* Betöltést jelző karika. A @keyframes uiSpinner az
+   index.scss-ben van, ezért itt nem ismétlődik. */
+@mixin spinner($size: 16px) {
+  width: $size;
+  height: $size;
+
+  flex: 0 0 $size;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+
+  animation: uiSpinner 0.7s linear infinite;
+}
+
+/* =========================================================
    SZÁMOK
    =========================================================
 
