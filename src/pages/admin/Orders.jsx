@@ -3,6 +3,7 @@ import "./Orders.scss";
 import Layout from "../../components/Layout";
 import useFetchCollection from "../../customHooks/useFetchCollection";
 import { useNavigate } from "react-router-dom";
+import Icon from "../../components/Icon";
 
 const MONTHS = [
   { value: "01", label: "Január" },
@@ -171,7 +172,9 @@ const Orders = () => {
           </div>
 
           <div className="orders__count">
-            <div className="orders__countIcon">🧾</div>
+            <div className="orders__countIcon">
+              <Icon name="receipt" size={18} />
+            </div>
 
             <div>
               <strong>{filteredOrders.length}</strong>
@@ -189,7 +192,9 @@ const Orders = () => {
 
           <div className="orders__filters">
             <div className="orders__filterTitle">
-              <span className="orders__filterIcon">🔎</span>
+              <span className="orders__filterIcon">
+                <Icon name="search" size={19} />
+              </span>
 
               <div>
                 <strong>Rendelések szűrése</strong>
@@ -286,7 +291,9 @@ const Orders = () => {
 
           {filteredOrders.length === 0 ? (
             <div className="orders__empty">
-              <div className="orders__emptyIcon">🧾</div>
+              <div className="orders__emptyIcon">
+                <Icon name="receipt" size={30} />
+              </div>
 
               <h2>Nincs rendelés a kiválasztott időszakban</h2>
 

@@ -2,9 +2,7 @@ import { useRef, useState } from "react";
 import "./Contact.scss";
 import Layout from "../../components/Layout";
 
-import { FaPhoneAlt, FaEnvelope, FaTwitter } from "react-icons/fa";
-
-import { GoLocation } from "react-icons/go";
+import Icon from "../../components/Icon";
 
 import Notiflix from "notiflix";
 import emailjs from "@emailjs/browser";
@@ -61,7 +59,9 @@ const Contact = () => {
         <div className="contact__content">
           <section className="contact__card contact__details">
             <div className="contact__cardHeader">
-              <div className="contact__cardIcon">💬</div>
+              <div className="contact__cardIcon">
+                <Icon name="message" size={22} />
+              </div>
 
               <div>
                 <h2>Lépjen kapcsolatba velünk</h2>
@@ -76,7 +76,7 @@ const Contact = () => {
             <div className="contact__infoList">
               <a href="tel:+36301111222" className="contact__infoItem">
                 <div className="contact__infoIcon">
-                  <FaPhoneAlt />
+                  <Icon name="phone" size={18} />
                 </div>
 
                 <div>
@@ -91,7 +91,7 @@ const Contact = () => {
                 className="contact__infoItem"
               >
                 <div className="contact__infoIcon">
-                  <FaEnvelope />
+                  <Icon name="mail" size={18} />
                 </div>
 
                 <div>
@@ -103,7 +103,7 @@ const Contact = () => {
 
               <div className="contact__infoItem">
                 <div className="contact__infoIcon">
-                  <GoLocation />
+                  <Icon name="mapPin" size={18} />
                 </div>
 
                 <div>
@@ -120,7 +120,7 @@ const Contact = () => {
                 className="contact__infoItem"
               >
                 <div className="contact__infoIcon">
-                  <FaTwitter />
+                  <Icon name="link" size={18} />
                 </div>
 
                 <div>
@@ -132,7 +132,9 @@ const Contact = () => {
             </div>
 
             <div className="contact__supportBox">
-              <span className="contact__supportIcon">☕</span>
+              <span className="contact__supportIcon">
+                <Icon name="coffee" size={17} />
+              </span>
 
               <div>
                 <strong>KunPao's Coffee Support</strong>
@@ -147,7 +149,9 @@ const Contact = () => {
 
           <section className="contact__card contact__formCard">
             <div className="contact__cardHeader">
-              <div className="contact__cardIcon">✉</div>
+              <div className="contact__cardIcon">
+                <Icon name="mail" size={22} />
+              </div>
 
               <div>
                 <h2>Üzenet küldése</h2>
@@ -223,7 +227,7 @@ const Contact = () => {
                   </>
                 ) : (
                   <>
-                    <span aria-hidden="true">✈</span>
+                    <Icon name="send" size={17} />
                     Üzenet elküldése
                   </>
                 )}

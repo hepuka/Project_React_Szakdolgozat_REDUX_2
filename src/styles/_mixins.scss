@@ -1,0 +1,388 @@
+/* =========================================================
+   ESPRESSO - KÖZÖS ÉPÍTŐELEMEK
+   =========================================================
+
+   Itt nincs egyetlen kiírt CSS szabály sem, csak mixinek -
+   ezért az importálása egyetlen bájtot sem ad a lefordított
+   csomaghoz, csak ott, ahol ténylegesen meghívjuk.
+
+   Használat egy oldal stíluslapjában:
+
+     @use "../../styles/mixins" as *;
+
+     .users__card { @include card; }
+   ========================================================= */
+
+/* =========================================================
+   OLDALKERET
+   ========================================================= */
+
+@mixin page {
+  width: 100%;
+  min-height: 100%;
+
+  padding: 26px 28px 36px;
+
+  box-sizing: border-box;
+
+  color: var(--text);
+}
+
+@mixin page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  margin-bottom: 22px;
+}
+
+@mixin eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--text-muted);
+
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+@mixin page-title {
+  margin: 0;
+
+  color: var(--text);
+
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 3.4vw, 3.4rem);
+  line-height: 1.12;
+  font-weight: 600;
+
+  letter-spacing: -0.02em;
+}
+
+@mixin page-subtitle {
+  margin: 8px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 1.3rem;
+}
+
+/* =========================================================
+   KÁRTYA
+   ========================================================= */
+
+@mixin card($padding: 20px) {
+  padding: $padding;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  box-sizing: border-box;
+}
+
+@mixin card-hover {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-2px);
+
+    border-color: #dbcec3;
+
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@mixin section-header {
+  span {
+    display: block;
+
+    color: var(--text-muted);
+
+    font-size: 1.05rem;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  h2 {
+    margin: 4px 0 0;
+
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 3px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 1.2rem;
+  }
+}
+
+/* =========================================================
+   GOMBOK
+   ========================================================= */
+
+@mixin button-base($height: 40px) {
+  min-height: $height;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  flex-shrink: 0;
+
+  padding: 0 16px;
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+/* Elsődleges művelet: sötét alap, világos szöveg. */
+@mixin button-primary($height: 40px) {
+  @include button-base($height);
+
+  background: var(--primary);
+  color: #fffdf9;
+
+  &:hover:not(:disabled) {
+    background: var(--primary-light);
+  }
+}
+
+/* Másodlagos művelet: kerettel, felület nélkül. */
+@mixin button-ghost($height: 40px) {
+  @include button-base($height);
+
+  background: var(--surface);
+  color: var(--text);
+
+  border-color: var(--border);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+}
+
+/* Kiemelt művelet: borostyán. */
+@mixin button-accent($height: 40px) {
+  @include button-base($height);
+
+  background: var(--accent);
+  color: #2a1d18;
+
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+  }
+}
+
+/* Törlés: halvány piros, hoverre tömör. */
+@mixin button-danger($height: 40px) {
+  @include button-base($height);
+
+  background: var(--danger-soft);
+  color: var(--danger);
+
+  border-color: #f3dad8;
+
+  &:hover:not(:disabled) {
+    background: var(--danger);
+    color: #fff;
+
+    border-color: var(--danger);
+  }
+}
+
+/* Csak ikont tartalmazó, négyzetes gomb. */
+@mixin icon-button($size: 36px) {
+  width: $size;
+  height: $size;
+  min-height: $size;
+
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   ŰRLAPMEZŐK
+   ========================================================= */
+
+@mixin field-label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--text);
+
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+@mixin field-input($height: 42px) {
+  width: 100%;
+  height: $height;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  background: var(--input-background);
+  color: var(--text);
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+
+  font-family: inherit;
+  font-size: 1.35rem;
+
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  &:disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+}
+
+/* =========================================================
+   CÍMKÉK ÉS JELÖLÉSEK
+   ========================================================= */
+
+@mixin chip($background: var(--surface-hover), $color: var(--text-soft)) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 10px;
+
+  background: $background;
+  color: $color;
+
+  border-radius: 999px;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+/* Négyzetes ikontartó - kártyafejlécekben, összesítőkben. */
+@mixin icon-tile($size: 40px, $background: var(--surface-hover)) {
+  width: $size;
+  height: $size;
+
+  flex: 0 0 $size;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: $background;
+  color: var(--primary-light);
+
+  border-radius: var(--radius-md);
+}
+
+/* =========================================================
+   ÜRES ÁLLAPOT
+   ========================================================= */
+
+@mixin empty-state {
+  min-height: 320px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+
+  background: var(--surface);
+
+  border: 1.5px dashed #dccfc2;
+  border-radius: var(--radius-xl);
+
+  text-align: center;
+
+  h2 {
+    margin: 0;
+
+    font-size: 1.8rem;
+  }
+
+  p {
+    max-width: 400px;
+
+    margin: 8px 0 20px;
+
+    color: var(--text-muted);
+
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
+}
+
+/* =========================================================
+   SZÁMOK
+   =========================================================
+
+   Pénzösszegeknél és készleteknél azonos szélességű
+   számjegyek, hogy a számok egymás alá rendeződjenek.
+   ========================================================= */
+
+@mixin tabular {
+  font-variant-numeric: tabular-nums;
+}

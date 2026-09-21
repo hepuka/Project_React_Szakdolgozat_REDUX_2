@@ -11,6 +11,7 @@ import RequirePermission from "../../components/RequirePermission";
 import { PERMISSIONS } from "../../config/permissions";
 import { useSelector } from "react-redux";
 import { selectProducts } from "../../Redux/slice/productSlice";
+import Icon from "../../components/Icon";
 
 const FALLBACK_IMAGES = {
   espresso:
@@ -58,23 +59,23 @@ const getStockStatus = (stock, minStock) => {
   if (currentStock <= 0) {
     return {
       label: "Elfogyott",
-      className: "products__stock--empty",
-      icon: "🔴",
+      className: "products__stockStatus--empty",
+      icon: "alert",
     };
   }
 
   if (currentStock <= minimumStock) {
     return {
       label: "Kritikus készlethiány",
-      className: "products__stock--low",
-      icon: "🟡",
+      className: "products__stockStatus--low",
+      icon: "alert",
     };
   }
 
   return {
     label: "Készleten",
-    className: "products__stock--available",
-    icon: "🟢",
+    className: "products__stockStatus--available",
+    icon: "check",
   };
 };
 
@@ -216,7 +217,7 @@ const Products = () => {
 
           <RequirePermission permission={PERMISSIONS.PRODUCTS_CREATE}>
             <Link to="/add-product/ADD" className="products__addButton">
-              <span aria-hidden="true">＋</span>
+              <Icon name="plus" size={17} />
               Új termék
             </Link>
           </RequirePermission>
@@ -228,7 +229,9 @@ const Products = () => {
 
         <div className="products__toolbar">
           <div className="products__count">
-            <div className="products__countIcon">☕</div>
+            <div className="products__countIcon">
+              <Icon name="coffee" size={16} />
+            </div>
 
             <div>
               <strong>{filteredProducts.length}</strong>
@@ -261,7 +264,9 @@ const Products = () => {
             onClick={() => setSelectedCategory("Összes")}
             aria-pressed={selectedCategory === "Összes"}
           >
-            <div className="products__categoryIcon">☕</div>
+            <div className="products__categoryIcon">
+              <Icon name="coffee" size={13} />
+            </div>
 
             <span>Összes</span>
           </button>
@@ -280,7 +285,9 @@ const Products = () => {
               onClick={() => setSelectedCategory(category)}
               aria-pressed={selectedCategory === category}
             >
-              <div className="products__categoryIcon">☕</div>
+              <div className="products__categoryIcon">
+              <Icon name="coffee" size={13} />
+            </div>
 
               <span>{category}</span>
             </button>
@@ -293,7 +300,9 @@ const Products = () => {
 
         {filteredProducts.length === 0 ? (
           <div className="products__empty">
-            <div className="products__emptyIcon">☕</div>
+            <div className="products__emptyIcon">
+              <Icon name="coffee" size={30} />
+            </div>
 
             <h2>Nem található termék</h2>
 
@@ -387,7 +396,7 @@ const Products = () => {
                       <div
                         className={`products__stockStatus ${stockStatus.className}`}
                       >
-                        <span>{stockStatus.icon}</span>
+                        <Icon name={stockStatus.icon} size={15} />
 
                         <strong>{stockStatus.label}</strong>
                       </div>
@@ -431,7 +440,7 @@ const Products = () => {
                           to={`/product-order/${item.id}`}
                           className="products__orderButton"
                         >
-                          <span aria-hidden="true">↗</span>
+                          <Icon name="download" size={15} />
                           Rendelés
                         </Link>
                       )}
@@ -444,7 +453,7 @@ const Products = () => {
                         to={`/add-product/${item.id}`}
                         className="products__editButton"
                       >
-                        <span aria-hidden="true">✎</span>
+                        <Icon name="edit" size={15} />
                         Módosít
                       </Link>
 
@@ -457,7 +466,7 @@ const Products = () => {
                         className="products__deleteButton"
                         onClick={() => confirmDelete(item.id, item.imageURL)}
                       >
-                        <span aria-hidden="true">⌫</span>
+                        <Icon name="trash" size={15} />
                         Töröl
                       </button>
                     </div>

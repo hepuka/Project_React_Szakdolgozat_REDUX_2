@@ -4,6 +4,7 @@ import useFetchCollection from "../../customHooks/useFetchCollection";
 import { Link } from "react-router-dom";
 import { confirmDelete } from "../../services/confirmDelete.js";
 import RequirePermission from "../../components/RequirePermission";
+import Icon from "../../components/Icon";
 import { PERMISSIONS } from "../../config/permissions";
 
 const formatLastLogin = (value) => {
@@ -56,14 +57,16 @@ const Users = () => {
 
           <RequirePermission permission={PERMISSIONS.USERS_CREATE}>
             <Link to="/register/ADD" className="users__addButton">
-              <span aria-hidden="true">＋</span>
+              <Icon name="plus" size={16} />
               Új felhasználó
             </Link>
           </RequirePermission>
         </header>
 
         <div className="users__summary">
-          <div className="users__summaryIcon">👥</div>
+          <div className="users__summaryIcon">
+            <Icon name="users" size={18} />
+          </div>
 
           <div>
             <strong>{data.length}</strong>
@@ -135,7 +138,7 @@ const Users = () => {
                       to={`/register/${item.id}`}
                       className="users__editButton"
                     >
-                      <span aria-hidden="true">✎</span>
+                      <Icon name="edit" size={15} />
                       Módosít
                     </Link>
 
@@ -144,7 +147,7 @@ const Users = () => {
                       className="users__deleteButton"
                       onClick={() => confirmDelete(item.id)}
                     >
-                      <span aria-hidden="true">⌫</span>
+                      <Icon name="trash" size={15} />
                       Töröl
                     </button>
                   </div>
@@ -154,7 +157,9 @@ const Users = () => {
           </div>
         ) : (
           <div className="users__empty">
-            <div className="users__emptyIcon">👥</div>
+            <div className="users__emptyIcon">
+              <Icon name="users" size={28} />
+            </div>
 
             <h2>Még nincs felhasználó</h2>
 
@@ -162,7 +167,7 @@ const Users = () => {
 
             <RequirePermission permission={PERMISSIONS.USERS_CREATE}>
               <Link to="/register/ADD" className="users__addButton">
-                <span aria-hidden="true">＋</span>
+                <Icon name="plus" size={16} />
                 Új felhasználó
               </Link>
             </RequirePermission>

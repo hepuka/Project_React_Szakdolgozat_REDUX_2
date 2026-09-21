@@ -1,481 +1,261 @@
+@use "../../styles/mixins" as *;
+
+/* =========================================================
+   KAPCSOLAT / HIBABEJELENTÉS
+   ========================================================= */
+
 .contact {
-  width: 100%;
-  min-height: 100%;
-
-  padding: 28px 30px 40px;
-
-  box-sizing: border-box;
-
-  color: #2c1e1a;
+  @include page;
 
   overflow-y: auto;
 
   scrollbar-width: thin;
-  scrollbar-color: #d5c8be transparent;
+  scrollbar-color: var(--border) transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
   }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
   &::-webkit-scrollbar-thumb {
-    background: #d5c8be;
-    border-radius: 20px;
+    background: var(--border);
+    border-radius: 999px;
   }
 }
 
 /* =========================================================
-   HEADER
+   FEJLÉC
    ========================================================= */
 
 .contact__header {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .contact__eyebrow {
-  display: block;
-
-  margin-bottom: 6px;
-
-  color: #765238;
-
-  font-size: 1.05rem;
-  font-weight: 700;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.14em;
+  @include eyebrow;
 }
 
 .contact__header h1 {
-  margin: 0;
-
-  color: #2c1e1a;
-
-  font-size: clamp(2.8rem, 4vw, 4rem);
-
-  line-height: 1.1;
-
-  font-weight: 750;
-
-  letter-spacing: -0.045em;
+  @include page-title;
 }
 
 .contact__header p {
+  @include page-subtitle;
+
   max-width: 850px;
-
-  margin: 9px 0 0;
-
-  color: #8b7b72;
-
-  font-size: 1.3rem;
 
   line-height: 1.6;
 }
 
 /* =========================================================
-   CONTENT
+   TARTALOM
    ========================================================= */
 
 .contact__content {
-  display: grid;
+  width: 100%;
 
+  display: grid;
   grid-template-columns: minmax(300px, 0.9fr) minmax(400px, 1.1fr);
 
-  gap: 18px;
-
-  width: 100%;
+  gap: 16px;
 }
 
 /* =========================================================
-   CARDS
+   KÁRTYÁK
    ========================================================= */
 
 .contact__card {
+  @include card(24px);
+
   min-width: 0;
-
-  padding: 24px;
-
-  box-sizing: border-box;
-
-  background: rgba(255, 253, 249, 0.97);
-
-  border: 1px solid #e7ded6;
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 10px 28px rgba(54, 35, 25, 0.06),
-    0 2px 8px rgba(54, 35, 25, 0.03);
 }
 
 .contact__cardHeader {
   display: flex;
-
   align-items: flex-start;
-
   gap: 13px;
 
+  margin-bottom: 18px;
   padding-bottom: 18px;
 
-  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border-soft);
 
-  border-bottom: 1px solid #eee7e1;
+  h2 {
+    margin: 0;
+
+    color: var(--text);
+
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 5px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
 }
 
 .contact__cardIcon {
-  width: 44px;
-  height: 44px;
-
-  flex: 0 0 44px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #f3e8de;
-
-  color: #765238;
-
-  border-radius: 12px;
-
-  font-size: 1.75rem;
-}
-
-.contact__cardHeader h2 {
-  margin: 0;
-
-  color: #2c1e1a;
-
-  font-size: 1.65rem;
-
-  font-weight: 700;
-}
-
-.contact__cardHeader p {
-  margin: 5px 0 0;
-
-  color: #8b7b72;
-
-  font-size: 1.1rem;
-
-  line-height: 1.5;
+  @include icon-tile(44px, var(--accent-soft));
 }
 
 /* =========================================================
-   CONTACT INFO
+   ELÉRHETŐSÉGEK
    ========================================================= */
 
 .contact__infoList {
   display: flex;
-
   flex-direction: column;
-
   gap: 8px;
 }
 
 .contact__infoItem {
   display: flex;
-
   align-items: center;
-
   gap: 13px;
 
   padding: 12px;
 
-  background: #faf7f3;
-
-  border: 1px solid #eee6df;
-
-  border-radius: 12px;
-
+  background: var(--surface-soft);
   color: inherit;
+
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
 
   text-decoration: none;
 
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
 
-.contact__infoItem:hover {
-  background: #f5eee8;
+  &:hover {
+    background: var(--surface-hover);
+    border-color: var(--border);
 
-  border-color: #ddd0c6;
+    transform: translateX(2px);
+  }
 
-  transform: translateX(2px);
+  > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  span {
+    color: var(--text-muted);
+
+    font-size: 1.05rem;
+  }
+
+  strong {
+    overflow: hidden;
+
+    color: var(--text-soft);
+
+    font-size: 1.25rem;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .contact__infoIcon {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #f0dfc7;
-
-  color: #765238;
-
-  border-radius: 10px;
-
-  font-size: 1.35rem;
-}
-
-.contact__infoItem > div:last-child {
-  min-width: 0;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 2px;
-}
-
-.contact__infoItem span {
-  color: #9a8c83;
-
-  font-size: 0.95rem;
-}
-
-.contact__infoItem strong {
-  overflow: hidden;
-
-  color: #3c302b;
-
-  font-size: 1.15rem;
-
-  font-weight: 650;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
+  @include icon-tile(38px, var(--accent-soft));
 }
 
 /* =========================================================
-   SUPPORT BOX
+   TÁMOGATÁS DOBOZ
    ========================================================= */
 
 .contact__supportBox {
   display: flex;
-
   align-items: flex-start;
-
   gap: 11px;
 
   margin-top: 18px;
-
   padding: 15px;
 
-  background: #f5eee8;
+  background: var(--surface-soft);
 
-  border: 1px solid #e9ddd4;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
 
-  border-radius: 13px;
+  strong {
+    display: block;
+
+    color: var(--text-soft);
+
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 4px 0 0;
+
+    color: var(--text-muted);
+
+    font-size: 1.1rem;
+    line-height: 1.45;
+  }
 }
 
 .contact__supportIcon {
-  width: 34px;
-  height: 34px;
+  @include icon-tile(34px, var(--primary));
 
-  flex: 0 0 34px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #765238;
-
-  color: #fff;
-
-  border-radius: 10px;
-
-  font-size: 1.35rem;
-}
-
-.contact__supportBox strong {
-  display: block;
-
-  color: #3c302b;
-
-  font-size: 1.15rem;
-}
-
-.contact__supportBox p {
-  margin: 4px 0 0;
-
-  color: #8b7b72;
-
-  font-size: 1rem;
-
-  line-height: 1.45;
+  color: var(--accent);
 }
 
 /* =========================================================
-   FORM
+   ŰRLAP
    ========================================================= */
 
 .contact__form {
   width: 100%;
 
   display: flex;
-
   flex-direction: column;
-
   gap: 16px;
 }
 
 .contact__field {
   width: 100%;
-}
 
-.contact__field label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  color: #3c302b;
-
-  font-size: 1.2rem;
-
-  font-weight: 650;
-}
-
-.contact__field input,
-.contact__field textarea {
-  width: 100%;
-
-  box-sizing: border-box;
-
-  border: 1px solid #ded6d0;
-
-  border-radius: 11px;
-
-  outline: none;
-
-  background: #faf8f5;
-
-  color: #2c1e1a;
-
-  font-family: inherit;
-
-  font-size: 1.3rem;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
-
-  &:focus {
-    background: #fff;
-
-    border-color: #765238;
-
-    box-shadow: 0 0 0 4px rgba(118, 82, 56, 0.1);
+  label {
+    @include field-label;
   }
 
-  &:disabled {
-    cursor: not-allowed;
-
-    opacity: 0.6;
+  input {
+    @include field-input(46px);
   }
 
-  &::placeholder {
-    color: #b0a39b;
+  textarea {
+    @include field-input(auto);
+
+    min-height: 170px;
+
+    padding: 13px;
+
+    resize: vertical;
+
+    line-height: 1.55;
   }
-}
-
-.contact__field input {
-  height: 46px;
-
-  padding: 0 13px;
-}
-
-.contact__field textarea {
-  min-height: 170px;
-
-  padding: 13px;
-
-  resize: vertical;
-
-  line-height: 1.55;
 }
 
 .contact__submitButton {
+  @include button-primary(50px);
+
   width: 100%;
-
-  min-height: 50px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 9px;
 
   margin-top: 2px;
 
-  padding: 0 20px;
-
-  background: #2c1e1a;
-
-  color: #fff;
-
-  border: 1px solid #2c1e1a;
-
-  border-radius: 12px;
-
-  font-family: inherit;
-
-  font-size: 1.3rem;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  box-shadow: 0 8px 20px rgba(44, 30, 26, 0.15);
-
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background: #765238;
-
-    border-color: #765238;
-
-    transform: translateY(-1px);
-
-    box-shadow: 0 11px 24px rgba(44, 30, 26, 0.2);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-
-    box-shadow: 0 6px 15px rgba(44, 30, 26, 0.15);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-
-    opacity: 0.75;
-  }
-
-  span:first-child {
-    font-size: 1.45rem;
-  }
+  font-size: 1.35rem;
 }
 
 .contact__spinner {
@@ -483,9 +263,7 @@
   height: 17px;
 
   border: 2px solid rgba(255, 255, 255, 0.35);
-
   border-top-color: #fff;
-
   border-radius: 50%;
 
   animation: contactSpinner 0.7s linear infinite;
@@ -498,7 +276,7 @@
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESZPONZÍV
    ========================================================= */
 
 @media (max-width: 950px) {
@@ -512,18 +290,8 @@
     padding: 22px 12px 30px;
   }
 
-  .contact__header h1 {
-    font-size: 2.8rem;
-  }
-
-  .contact__header p {
-    font-size: 1.2rem;
-  }
-
   .contact__card {
     padding: 18px;
-
-    border-radius: 16px;
   }
 }
 
@@ -538,17 +306,10 @@
 
   .contact__cardHeader {
     gap: 10px;
-  }
 
-  .contact__cardIcon {
-    width: 40px;
-    height: 40px;
-
-    flex-basis: 40px;
-  }
-
-  .contact__cardHeader h2 {
-    font-size: 1.45rem;
+    h2 {
+      font-size: 1.55rem;
+    }
   }
 
   .contact__infoItem {

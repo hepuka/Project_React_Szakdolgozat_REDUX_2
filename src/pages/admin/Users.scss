@@ -1,149 +1,55 @@
+@use "../../styles/mixins" as *;
+
+/* =========================================================
+   FELHASZNÁLÓK
+   ========================================================= */
+
 .users {
-  width: 100%;
-  min-height: 100%;
-
-  padding: 28px 30px 40px;
-
-  box-sizing: border-box;
-  color: #2c1e1a;
+  @include page;
 }
 
 /* =========================================================
-   HEADER
+   FEJLÉC
    ========================================================= */
 
 .users__header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-
-  margin-bottom: 24px;
+  @include page-header;
 }
 
 .users__eyebrow {
-  display: block;
-
-  margin-bottom: 6px;
-
-  color: #765238;
-
-  font-size: 1.05rem;
-  font-weight: 700;
-
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  @include eyebrow;
 }
 
 .users__header h1 {
-  margin: 0;
-
-  color: #2c1e1a;
-
-  font-size: clamp(2.8rem, 4vw, 4rem);
-  line-height: 1.1;
-  font-weight: 750;
-
-  letter-spacing: -0.045em;
+  @include page-title;
 }
 
 .users__header p {
-  margin: 9px 0 0;
-
-  color: #8b7b72;
-
-  font-size: 1.3rem;
+  @include page-subtitle;
 }
-
-/* =========================================================
-   ADD BUTTON
-   ========================================================= */
 
 .users__addButton {
-  min-height: 46px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  flex-shrink: 0;
-
-  padding: 0 17px;
-
-  background: #2c1e1a;
-  color: #fffdf9;
-
-  border: none;
-  border-radius: 12px;
-
-  font-family: inherit;
-  font-size: 1.25rem;
-  font-weight: 700;
-
-  text-decoration: none;
-
-  box-shadow: 0 8px 18px rgba(44, 30, 26, 0.14);
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:hover {
-    background: #765238;
-    color: #fff;
-
-    transform: translateY(-1px);
-
-    box-shadow: 0 11px 24px rgba(44, 30, 26, 0.2);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  span {
-    font-size: 1.7rem;
-    line-height: 1;
-  }
+  @include button-primary(44px);
 }
 
 /* =========================================================
-   SUMMARY
+   ÖSSZESÍTŐ
    ========================================================= */
 
 .users__summary {
+  @include card(12px 16px);
+
   width: fit-content;
 
   display: flex;
   align-items: center;
   gap: 12px;
 
-  margin-bottom: 22px;
-  padding: 11px 15px;
-
-  background: #fffdf9;
-
-  border: 1px solid #e7ded6;
-  border-radius: 14px;
-
-  box-shadow: 0 5px 16px rgba(54, 35, 25, 0.05);
+  margin-bottom: 20px;
 }
 
 .users__summaryIcon {
-  width: 34px;
-  height: 34px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #f3e8de;
-
-  border-radius: 10px;
-
-  font-size: 1.55rem;
+  @include icon-tile(36px, var(--accent-soft));
 }
 
 .users__summary div:last-child {
@@ -153,95 +59,73 @@
 }
 
 .users__summary strong {
-  color: #2c1e1a;
-  font-size: 1.55rem;
+  @include tabular;
+
+  color: var(--text);
+  font-size: 1.6rem;
 }
 
 .users__summary span {
-  color: #8b7b72;
-  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-size: 1.15rem;
 }
 
 /* =========================================================
-   CARD LIST
+   KÁRTYARÁCS
    ========================================================= */
 
 .users__cardList {
-  display: grid;
+  width: 100%;
 
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 
-  gap: 18px;
-
-  width: 100%;
+  gap: 16px;
 }
 
 /* =========================================================
-   USER CARD
+   FELHASZNÁLÓI KÁRTYA
    ========================================================= */
 
 .users__card {
+  @include card;
+  @include card-hover;
+
   min-width: 0;
 
   display: flex;
   flex-direction: column;
-
-  padding: 20px;
-
-  background: rgba(255, 253, 249, 0.96);
-
-  border: 1px solid #e7ded6;
-  border-radius: 18px;
-
-  box-shadow:
-    0 10px 28px rgba(54, 35, 25, 0.06),
-    0 2px 8px rgba(54, 35, 25, 0.03);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-
-    border-color: #d8c8bc;
-
-    box-shadow:
-      0 16px 36px rgba(54, 35, 25, 0.09),
-      0 3px 10px rgba(54, 35, 25, 0.04);
-  }
 }
 
 .users__cardHeader {
+  min-width: 0;
+
   display: flex;
   align-items: center;
   gap: 12px;
 
-  min-width: 0;
+  padding-bottom: 16px;
 
-  padding-bottom: 17px;
-
-  border-bottom: 1px solid #eee7e1;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .users__avatar {
-  width: 45px;
-  height: 45px;
+  width: 46px;
+  height: 46px;
 
-  flex: 0 0 45px;
+  flex: 0 0 46px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #f0dfc7;
-  color: #765238;
+  background: var(--primary-light);
+  color: #fffdf9;
 
-  border-radius: 13px;
+  border-radius: 50%;
 
-  font-size: 1.6rem;
-  font-weight: 750;
+  font-size: 1.7rem;
+  font-weight: 600;
 }
 
 .users__identity {
@@ -258,224 +142,186 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  color: #2c1e1a;
-
-  font-size: 1.45rem;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .users__identity span {
   display: block;
 
-  margin-top: 3px;
+  margin-top: 2px;
 
-  color: #9a8c83;
+  color: var(--text-muted);
 
-  font-size: 1.05rem;
-}
-
-.users__role {
-  flex-shrink: 0;
-
-  padding: 5px 9px;
-
-  border-radius: 20px;
-
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.users__role--admin {
-  background: #f0dfc7;
-  color: #765238;
-}
-
-.users__role--default {
-  background: #eee9e4;
-  color: #766b64;
+  font-size: 1.1rem;
 }
 
 /* =========================================================
-   DETAILS
+   SZEREPKÖR ÉS ÁLLAPOT
+   ========================================================= */
+
+.users__badges {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-left: auto;
+}
+
+.users__role {
+  @include chip;
+
+  flex-shrink: 0;
+}
+
+.users__role--admin {
+  background: var(--primary);
+  color: var(--accent);
+}
+
+.users__role--manager {
+  background: var(--accent-soft);
+  color: var(--warning);
+}
+
+.users__role--leader {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.users__role--default {
+  background: var(--surface-hover);
+  color: var(--primary-light);
+}
+
+.users__online {
+  @include chip(var(--success-soft), var(--success));
+}
+
+.users__onlineDot {
+  width: 7px;
+  height: 7px;
+
+  display: block;
+
+  background: var(--success);
+
+  border-radius: 50%;
+
+  animation: usersOnlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes usersOnlinePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* =========================================================
+   ADATSOROK
    ========================================================= */
 
 .users__details {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 
   padding: 16px 0;
-
-  gap: 11px;
 }
 
 .users__row {
   min-width: 0;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 15px;
 }
 
 .users__label {
   flex-shrink: 0;
 
-  color: #9a8c83;
+  color: var(--text-muted);
 
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 
 .users__value {
+  @include tabular;
+
   min-width: 0;
 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  color: #3c302b;
+  color: var(--text-soft);
 
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 600;
   text-align: right;
 }
 
 .users__value--email {
   max-width: 68%;
+
+  font-variant-numeric: normal;
 }
 
 /* =========================================================
-   ACTIONS
+   MŰVELETEK
    ========================================================= */
 
 .users__buttons {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
 
-  gap: 9px;
+  gap: 8px;
 
   margin-top: auto;
-}
 
-.users__editButton,
-.users__deleteButton {
-  min-height: 40px;
+  padding-top: 14px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  border-radius: 10px;
-
-  font-family: inherit;
-  font-size: 1.15rem;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  text-decoration: none;
-
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  span {
-    font-size: 1.25rem;
-  }
+  border-top: 1px solid var(--border-soft);
 }
 
 .users__editButton {
-  background: #f0c14b;
-  color: #2c1e1a;
+  @include button-ghost(38px);
 
-  border: 1px solid #e0b23c;
-
-  &:hover {
-    background: #e8b83e;
-    color: #2c1e1a;
-  }
+  font-size: 1.2rem;
 }
 
 .users__deleteButton {
-  background: #fff4f2;
-  color: #a24f4f;
+  @include button-danger(38px);
 
-  border: 1px solid #e7c7c3;
-
-  &:hover {
-    background: #b15252;
-    color: #fff;
-    border-color: #b15252;
-  }
+  font-size: 1.2rem;
 }
 
 /* =========================================================
-   EMPTY STATE
+   ÜRES ÁLLAPOT
    ========================================================= */
 
 .users__empty {
-  min-height: 330px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
-  padding: 40px;
-
-  background: #fffdf9;
-
-  border: 1px dashed #d8c8bc;
-  border-radius: 20px;
-
-  text-align: center;
+  @include empty-state;
 }
 
 .users__emptyIcon {
-  width: 64px;
-  height: 64px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include icon-tile(64px, var(--accent-soft));
 
   margin-bottom: 16px;
-
-  background: #f3e8de;
-
-  border-radius: 18px;
-
-  font-size: 2.4rem;
-}
-
-.users__empty h2 {
-  margin: 0;
-
-  color: #2c1e1a;
-
-  font-size: 1.8rem;
-}
-
-.users__empty p {
-  max-width: 400px;
-
-  margin: 8px 0 20px;
-
-  color: #8b7b72;
-
-  font-size: 1.2rem;
-  line-height: 1.5;
 }
 
 /* =========================================================
-   RESPONSIVE
+   TABLET
    ========================================================= */
 
 @media (max-width: 800px) {
@@ -497,35 +343,36 @@
   }
 }
 
+/* =========================================================
+   MOBIL
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .users__badges {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 500px) {
   .users {
     padding: 18px 6px 25px;
   }
 
   .users__header h1 {
-    font-size: 2.8rem;
-  }
-
-  .users__header p {
-    font-size: 1.2rem;
+    font-size: 2.6rem;
   }
 
   .users__summary {
     width: 100%;
-    box-sizing: border-box;
   }
 
   .users__card {
-    padding: 17px;
-    border-radius: 16px;
+    padding: 16px;
   }
 
   .users__cardHeader {
     align-items: flex-start;
-  }
-
-  .users__role {
-    font-size: 0.85rem;
   }
 
   .users__row {
@@ -548,77 +395,9 @@
   .users__card,
   .users__addButton,
   .users__editButton,
-  .users__deleteButton {
+  .users__deleteButton,
+  .users__onlineDot {
     transition: none;
-  }
-}
-
-.users__badges {
-  display: flex;
-
-  align-items: center;
-  justify-content: flex-end;
-
-  flex-wrap: wrap;
-
-  gap: 6px;
-
-  margin-left: auto;
-}
-
-.users__online {
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  padding: 5px 9px;
-
-  background: #e7f5ea;
-
-  color: #2f7a3d;
-
-  border: 1px solid #c9e6ce;
-
-  border-radius: 20px;
-
-  font-size: 0.9rem;
-
-  font-weight: 700;
-
-  white-space: nowrap;
-}
-
-.users__onlineDot {
-  width: 7px;
-  height: 7px;
-
-  display: block;
-
-  background: #3fa650;
-
-  border-radius: 50%;
-
-  box-shadow: 0 0 0 3px rgba(63, 166, 80, 0.12);
-
-  animation: usersOnlinePulse 2s ease-in-out infinite;
-}
-
-@keyframes usersOnlinePulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.45;
-  }
-}
-
-@media (max-width: 600px) {
-  .users__badges {
-    align-items: flex-end;
-    flex-direction: column;
+    animation: none;
   }
 }

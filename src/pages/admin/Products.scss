@@ -1,295 +1,108 @@
+@use "../../styles/mixins" as *;
+
+/* =========================================================
+   TERMÉKEK
+   ========================================================= */
+
 .products {
-  width: 100%;
+  @include page;
+
   min-width: 0;
   min-height: 0;
-
-  padding: 26px 28px 36px;
-
-  box-sizing: border-box;
-
-  color: var(--text);
 
   overflow-y: auto;
 
   scrollbar-width: thin;
-  scrollbar-color: #d5c8be transparent;
+  scrollbar-color: var(--border) transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d5c8be;
-    border-radius: 20px;
+    background: var(--border);
+    border-radius: 999px;
   }
 }
 
 /* =========================================================
-   HEADER
+   FEJLÉC
    ========================================================= */
 
 .products__header {
-  display: flex;
+  @include page-header;
 
   align-items: center;
-  justify-content: space-between;
-
-  gap: 20px;
-
-  margin-bottom: 18px;
 }
 
 .products__eyebrow {
-  display: block;
-
-  margin-bottom: 5px;
-
-  color: var(--primary-light);
-
-  font-size: 0.95rem;
-
-  font-weight: 750;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.13em;
+  @include eyebrow;
 }
 
 .products__header h1 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: clamp(2.8rem, 4vw, 4rem);
-
-  line-height: 1.05;
-
-  font-weight: 750;
-
-  letter-spacing: -0.045em;
+  @include page-title;
 }
 
 .products__header p {
-  margin: 7px 0 0;
-
-  color: var(--text-muted);
-
-  font-size: 1.15rem;
+  @include page-subtitle;
 }
-
-/* =========================================================
-   HEADER / ÚJ TERMÉK GOMB
-   ========================================================= */
 
 .products__addButton {
-  min-height: 44px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-
-  padding: 0 16px;
-
-  background: var(--accent);
-
-  border: 1px solid #dfb33d;
-
-  border-radius: 12px;
-
-  color: var(--primary);
-
-  font-family: inherit;
-
-  font-size: 0.9rem;
-
-  font-weight: 700;
-
-  text-decoration: none;
-
-  cursor: pointer;
-
-  box-shadow: var(--shadow-sm);
-
-  transition:
-    transform 0.18s ease,
-    background-color 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.products__addButton:hover {
-  background: var(--accent-hover);
-
-  transform: translateY(-1px);
-
-  box-shadow: var(--shadow-md);
-}
-
-.products__addButton:active {
-  transform: scale(0.98);
+  @include button-accent(44px);
 }
 
 /* =========================================================
-   TOOLBAR
+   ESZKÖZSÁV
    ========================================================= */
 
 .products__toolbar {
   width: 100%;
 
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
   gap: 20px;
 
   margin-bottom: 14px;
 }
 
-/* =========================================================
-   TERMÉKSZÁMLÁLÓ
-   ========================================================= */
-
-/*
- * Az új JSX-ben products__count szerepel.
- */
-
 .products__count {
+  @include card(8px 14px);
+
   min-width: 145px;
   min-height: 48px;
 
   display: flex;
-
   align-items: center;
-
-  gap: 9px;
-
-  padding: 7px 13px;
-
-  box-sizing: border-box;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 14px;
-
-  box-shadow: var(--shadow-sm);
+  gap: 10px;
 }
 
 .products__countIcon {
-  width: 30px;
-  height: 30px;
-
-  flex: 0 0 30px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #f3e8de;
-
-  border-radius: 9px;
-
-  font-size: 0.95rem;
+  @include icon-tile(30px, var(--accent-soft));
 }
 
 .products__count > div:last-child {
   display: flex;
-
   align-items: baseline;
-
   gap: 6px;
 }
 
 .products__count strong {
+  @include tabular;
+
   color: var(--text);
 
-  font-size: 1.25rem;
-
+  font-size: 1.4rem;
   line-height: 1;
 }
 
 .products__count span {
   color: var(--text-muted);
 
-  font-size: 0.82rem;
+  font-size: 1.1rem;
 
   white-space: nowrap;
 }
-
-/*
- * Régebbi JSX esetére megtartjuk a summary osztályt is.
- */
-
-.products__summary {
-  min-width: 145px;
-  min-height: 48px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-direction: row;
-
-  gap: 9px;
-
-  padding: 7px 13px;
-
-  box-sizing: border-box;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 14px;
-
-  box-shadow: var(--shadow-sm);
-}
-
-.products__summary::before {
-  content: "☕";
-
-  width: 30px;
-  height: 30px;
-
-  flex: 0 0 30px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #f3e8de;
-
-  border-radius: 9px;
-
-  font-size: 0.95rem;
-}
-
-.products__summary strong {
-  color: var(--text);
-
-  font-size: 1.25rem;
-
-  line-height: 1;
-}
-
-.products__summary span {
-  color: var(--text-muted);
-
-  font-size: 0.82rem;
-
-  white-space: nowrap;
-}
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
 
 .products__toolbar .search {
   margin-left: auto;
@@ -300,473 +113,261 @@
 }
 
 /* =========================================================
-   CATEGORY BAR
+   KATEGÓRIASÁV
    ========================================================= */
 
 .products__categoryBar {
   width: 100%;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   flex-wrap: wrap;
-
   gap: 8px;
 
   margin-bottom: 22px;
 }
 
 .products__categoryButton {
-  min-height: 42px;
-
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
+  @include button-ghost(42px);
 
   gap: 7px;
 
-  padding: 0 13px;
-
-  box-sizing: border-box;
-
   background: var(--surface-soft);
 
-  border: 1px solid var(--border);
-
-  border-radius: 11px;
-
-  color: var(--text);
-
-  font-family: inherit;
-
-  font-size: 0.85rem;
-
-  font-weight: 650;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.products__categoryButton:hover {
-  background: var(--surface-hover);
-
-  border-color: #d4c4b9;
-
-  transform: translateY(-1px);
-}
-
-.products__categoryButton:active {
-  transform: scale(0.98);
+  font-size: 1.15rem;
 }
 
 .products__categoryButton--active {
   background: var(--accent);
-
-  border-color: #dfb33d;
-
   color: var(--primary);
 
-  box-shadow: 0 5px 12px rgba(118, 82, 56, 0.12);
-}
+  border-color: var(--accent);
 
-.products__categoryButton--active:hover {
-  background: var(--accent-hover);
-
-  color: var(--primary);
+  &:hover:not(:disabled) {
+    background: var(--accent-hover);
+    color: var(--primary);
+  }
 }
 
 .products__categoryIcon {
-  width: 23px;
-  height: 23px;
+  @include icon-tile(23px, var(--accent-soft));
 
-  flex: 0 0 23px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #f3e8de;
-
-  border-radius: 8px;
-
-  color: var(--primary-light);
-
-  font-size: 0.78rem;
+  border-radius: var(--radius-sm);
 }
 
 .products__categoryButton--active .products__categoryIcon {
-  background: rgba(255, 255, 255, 0.42);
-
+  background: rgba(255, 255, 255, 0.45);
   color: var(--primary);
 }
 
 /* =========================================================
-   CARD LIST
+   KÁRTYARÁCS
    ========================================================= */
 
 .products__cardlist {
   width: 100%;
 
   display: grid;
-
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-
-  gap: 18px;
-
   align-items: stretch;
+
+  gap: 16px;
 }
 
 /* =========================================================
-   PRODUCT CARD
+   TERMÉKKÁRTYA
    ========================================================= */
 
 .products__card {
+  @include card(0);
+  @include card-hover;
+
   position: relative;
 
   min-width: 0;
 
   display: flex;
-
   flex-direction: column;
 
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 20px;
-
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
 
   overflow: hidden;
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
 }
 
-.products__card:hover {
-  transform: translateY(-2px);
-
-  box-shadow: var(--shadow-md);
-}
-
-/*
- * Kritikus készletű termék.
- */
-
+/* Kritikus készlet: borostyán keret. */
 .products__card--critical {
-  border-color: #e0b05a;
-}
-
-/*
- * Elfogyott termék.
- */
-
-.products__card--empty {
-  opacity: 0.78;
+  border-color: var(--accent);
 }
 
 /* =========================================================
-   IMAGE
+   KÉP
    ========================================================= */
 
 .products__image {
   position: relative;
 
   width: 100%;
-
   height: 190px;
 
   background: var(--surface-soft);
 
   overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+  }
 }
-
-.products__image img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-
-  display: block;
-}
-
-.products__imagePlaceholder {
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  font-size: 4rem;
-
-  color: var(--text-muted);
-}
-
-/* =========================================================
-   CATEGORY TAG
-   ========================================================= */
 
 .products__category {
   position: absolute;
-
   left: 12px;
   bottom: 12px;
 
-  padding: 6px 10px;
-
-  background: rgba(44, 30, 26, 0.82);
-
-  color: #ffffff;
-
-  border-radius: 20px;
-
-  font-size: 0.8rem;
-
-  font-weight: 650;
+  @include chip(var(--primary), #fffdf9);
 }
 
 /* =========================================================
-   DETAILS
+   ADATOK
    ========================================================= */
 
 .products__details {
   display: flex;
-
   flex-direction: column;
-
   gap: 12px;
 
   padding: 18px 18px 12px;
 }
 
-/*
- * Régebbi JSX
- */
-
-.products__mainInfo {
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 15px;
-}
-
-.products__mainInfo h2 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: 1.4rem;
-}
-
-.products__mainInfo span {
-  display: block;
-
-  margin-top: 4px;
-
-  color: var(--primary-light);
-
-  font-size: 1rem;
-
-  font-weight: 750;
-}
-
-/*
- * Az új JSX-ben használt titleRow
- */
-
 .products__titleRow {
   display: flex;
-
   align-items: flex-start;
   justify-content: space-between;
-
   gap: 15px;
-}
 
-.products__titleRow h2 {
-  margin: 0;
+  h2 {
+    margin: 0;
 
-  color: var(--text);
+    color: var(--text);
 
-  font-size: 1.4rem;
-
-  line-height: 1.25;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    line-height: 1.25;
+    font-weight: 600;
+  }
 }
 
 .products__price {
+  @include tabular;
+
   flex: 0 0 auto;
 
   color: var(--primary-light);
 
-  font-size: 1rem;
-
-  font-weight: 750;
+  font-size: 1.35rem;
+  font-weight: 600;
 
   white-space: nowrap;
 }
 
-/* =========================================================
-   META
-   ========================================================= */
-
 .products__meta {
   display: flex;
-
   align-items: center;
-
   gap: 15px;
-}
 
-.products__meta span {
-  display: flex;
+  span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 
-  align-items: center;
+    color: var(--text);
 
-  gap: 5px;
+    font-size: 1.15rem;
+  }
 
-  color: var(--text);
+  small {
+    color: var(--text-muted);
 
-  font-size: 0.9rem;
-}
-
-.products__meta small {
-  color: var(--text-muted);
-
-  font-size: 0.78rem;
-}
-
-/* =========================================================
-   ROW
-   ========================================================= */
-
-.products__rows {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 12px;
-
-  font-size: 0.9rem;
-}
-
-.products__rows span {
-  color: var(--text-muted);
-}
-
-.products__rows strong {
-  color: var(--text);
+    font-size: 1rem;
+  }
 }
 
 /* =========================================================
-   STOCK
+   KÉSZLET
    ========================================================= */
 
 .products__stock {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 10px;
 
   padding: 10px 12px;
 
-  background: var(--success-soft);
+  background: var(--surface-soft);
 
   border: 1px solid var(--border-soft);
-
-  border-radius: 12px;
+  border-radius: var(--radius-md);
 }
 
-.products__stock > div {
+.products__stockStatus {
   display: flex;
-
   align-items: center;
-
   gap: 6px;
+
+  strong {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
 }
 
-.products__stock strong {
+.products__stockStatus--available {
   color: var(--success);
-
-  font-size: 0.88rem;
 }
 
-.products__stock small {
-  color: var(--text-muted);
-
-  font-size: 0.72rem;
-}
-
-/*
- * Kritikus készlet.
- */
-
-.products__stock--critical {
-  background: var(--warning-soft);
-
-  border-color: #e5cf9f;
-}
-
-.products__stock--critical strong {
+.products__stockStatus--low {
   color: var(--warning);
 }
 
-/*
- * Elfogyott.
- */
-
-.products__stock--empty {
-  background: var(--danger-soft);
-
-  border-color: #e2b6b0;
-}
-
-.products__stock--empty strong {
+.products__stockStatus--empty {
   color: var(--danger);
 }
 
-/*
- * Normál készlet.
- */
+.products__stockInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
 
-.products__stock--available {
-  background: var(--success-soft);
-}
+  span {
+    color: var(--text-muted);
 
-.products__stock--available strong {
-  color: var(--success);
+    font-size: 1rem;
+  }
+
+  strong {
+    @include tabular;
+
+    color: var(--text);
+
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
 }
 
 /* =========================================================
-   DESCRIPTION
+   LEÍRÁS
    ========================================================= */
 
 .products__description {
   display: -webkit-box;
 
   -webkit-box-orient: vertical;
-
   -webkit-line-clamp: 3;
-
   line-clamp: 3;
 
   overflow: hidden;
@@ -775,243 +376,79 @@
 
   color: var(--text-muted);
 
-  font-size: 0.88rem;
-
+  font-size: 1.15rem;
   line-height: 1.5;
 }
 
 /* =========================================================
-   BUTTONS
+   MŰVELETEK
    ========================================================= */
 
 .products__buttons {
   display: flex;
-
   align-items: center;
-
-  justify-content: stretch;
-
   gap: 10px;
 
+  margin-top: auto;
+
   padding: 0 18px 18px;
+
+  > * {
+    flex: 1 1 0;
+
+    min-width: 0;
+  }
 }
 
-/*
- * Közös gombstílus.
- */
-
-.products__buttons a,
-.products__buttons button {
-  min-height: 40px;
-
-  flex: 1 1 0;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 6px;
-
-  padding: 0 12px;
-
-  box-sizing: border-box;
-
-  border-radius: 10px;
-
-  font-family: inherit;
-
-  font-size: 0.9rem;
-
-  font-weight: 700;
-
-  text-decoration: none;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.18s ease,
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
-}
-
-.products__buttons a:hover,
-.products__buttons button:hover {
-  transform: translateY(-1px);
-}
-
-.products__buttons a:active,
-.products__buttons button:active {
-  transform: scale(0.98);
-}
-
-/* =========================================================
-   RENDELÉS - PIROS
-   ========================================================= */
-
+/* Rendelés: csak kritikus készletnél. */
 .products__orderButton {
+  @include button-base(40px);
+
   background: var(--danger);
-
-  border: 1px solid var(--danger);
-
-  color: #ffffff;
-}
-
-.products__orderButton:hover {
-  background: #c45f5f;
-
-  border-color: #c45f5f;
-
-  color: #ffffff;
-}
-
-/* =========================================================
-   MÓDOSÍT - SÁRGA
-   ========================================================= */
-
-.products__editButton {
-  background: var(--accent);
-
-  border: 1px solid #dfb33d;
-
-  color: var(--primary);
-}
-
-.products__editButton:hover {
-  background: var(--accent-hover);
-
-  border-color: #dfb33d;
-
-  color: var(--primary);
-}
-
-/*
- * Régebbi JSX esetére update név is.
- */
-
-.products__updateButton {
-  background: var(--accent);
-
-  border: 1px solid #dfb33d;
-
-  color: var(--primary);
-}
-
-.products__updateButton:hover {
-  background: var(--accent-hover);
-
-  border-color: #dfb33d;
-
-  color: var(--primary);
-}
-
-/* =========================================================
-   TÖRÖL - VILÁGOS PIROS
-   ========================================================= */
-
-.products__deleteButton {
-  background: var(--danger-soft);
-
-  border: 1px solid #dfb6af;
-
-  color: var(--danger);
-}
-
-.products__deleteButton:hover {
-  background: #fbe8e5;
+  color: #fff;
 
   border-color: var(--danger);
 
-  color: var(--danger);
+  &:hover:not(:disabled) {
+    background: #b3524f;
+    border-color: #b3524f;
+  }
+}
+
+.products__editButton {
+  @include button-accent(40px);
+}
+
+.products__deleteButton {
+  @include button-danger(40px);
 }
 
 /* =========================================================
-   EMPTY
+   ÜRES ÁLLAPOT
    ========================================================= */
 
 .products__empty {
+  @include empty-state;
+
   grid-column: 1 / -1;
 
   min-height: 300px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-direction: column;
-
-  text-align: center;
-}
-
-.products__empty > span {
-  font-size: 3rem;
 }
 
 .products__emptyIcon {
-  font-size: 3rem;
+  @include icon-tile(64px, var(--accent-soft));
+
+  margin-bottom: 16px;
 }
-
-.products__empty h2 {
-  margin: 12px 0 5px;
-
-  color: var(--text);
-}
-
-.products__empty p {
-  margin: 0;
-
-  color: var(--text-muted);
-
-  font-size: 0.95rem;
-}
-
-/* =========================================================
-   RESET BUTTON
-   ========================================================= */
 
 .products__resetButton {
-  min-height: 40px;
-
-  margin-top: 15px;
-
-  padding: 0 16px;
+  @include button-ghost(40px);
 
   background: var(--surface-soft);
-
-  border: 1px solid var(--border);
-
-  border-radius: 10px;
-
-  color: var(--text);
-
-  font-family: inherit;
-
-  font-size: 0.9rem;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    transform 0.18s ease;
-}
-
-.products__resetButton:hover {
-  background: var(--surface-hover);
-
-  transform: translateY(-1px);
-}
-
-.products__resetButton:active {
-  transform: scale(0.98);
 }
 
 /* =========================================================
-   MOBILE
+   MOBIL
    ========================================================= */
 
 @media (max-width: 700px) {
@@ -1021,7 +458,6 @@
 
   .products__header {
     align-items: flex-start;
-
     flex-direction: column;
   }
 
@@ -1031,23 +467,19 @@
 
   .products__toolbar {
     align-items: stretch;
-
     flex-direction: column;
-
     gap: 10px;
   }
 
-  .products__count,
-  .products__summary {
+  .products__count {
     width: 100%;
   }
 
   .products__categoryBar {
     justify-content: flex-start;
+    flex-wrap: nowrap;
 
     overflow-x: auto;
-
-    flex-wrap: nowrap;
 
     padding-bottom: 4px;
 
@@ -1070,16 +502,15 @@
 
   .products__buttons {
     flex-wrap: wrap;
-  }
 
-  .products__buttons a,
-  .products__buttons button {
-    flex: 1 1 calc(33.333% - 7px);
+    > * {
+      flex: 1 1 calc(33.333% - 7px);
+    }
   }
 }
 
 /* =========================================================
-   SMALL MOBILE
+   KIS MOBIL
    ========================================================= */
 
 @media (max-width: 450px) {
@@ -1088,7 +519,7 @@
   }
 
   .products__header h1 {
-    font-size: 2.5rem;
+    font-size: 2.6rem;
   }
 
   .products__categoryButton {
@@ -1096,32 +527,34 @@
 
     padding: 0 11px;
 
-    font-size: 0.82rem;
+    font-size: 1.1rem;
   }
 
   .products__buttons {
     gap: 8px;
-  }
 
-  .products__buttons a,
-  .products__buttons button {
-    min-height: 42px;
+    > * {
+      min-height: 42px;
 
-    padding: 0 8px;
+      padding: 0 8px;
 
-    font-size: 0.82rem;
+      font-size: 1.1rem;
+    }
   }
 }
 
 /* =========================================================
-   REDUCED MOTION
+   MOZGÁSCSÖKKENTÉS
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .products__card,
   .products__categoryButton,
-  .products__buttons a,
-  .products__buttons button {
+  .products__addButton,
+  .products__orderButton,
+  .products__editButton,
+  .products__deleteButton,
+  .products__resetButton {
     transition: none;
   }
 }
