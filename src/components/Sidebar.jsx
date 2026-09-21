@@ -18,6 +18,8 @@ import {
   PERMISSIONS,
 } from "../config/permissions";
 
+import Icon from "./Icon";
+
 const activeLinkClass = ({ isActive }) =>
   isActive ? "sidebar__button sidebar__button_active" : "sidebar__button";
 
@@ -77,7 +79,9 @@ const Sidebar = () => {
       <div className="sidebar__container">
         <div className="sidebar__header">
           <div className="sidebar__brand">
-            <div className="sidebar__brandLogo">☕</div>
+            <div className="sidebar__brandLogo">
+              <Icon name="coffee" size={22} />
+            </div>
             <div>
               <div className="sidebar__brandName">KunPao's Coffee</div>
               <div className="sidebar__brandSubtitle">Management</div>
@@ -96,14 +100,18 @@ const Sidebar = () => {
         <nav className="sidebar__buttons" aria-label="Főmenü">
           {menuItems.map(({ path, icon, label }) => (
             <NavLink key={path} to={path} className={activeLinkClass}>
-              <span className="sidebar__icon">{icon}</span>
+              <span className="sidebar__icon">
+                <Icon name={icon} />
+              </span>
               <span>{label}</span>
             </NavLink>
           ))}
         </nav>
 
         <button type="button" onClick={logoutUser} className="sidebar__logout">
-          <span className="sidebar__icon">↪</span>
+          <span className="sidebar__icon">
+            <Icon name="logout" />
+          </span>
           <span>Kilépés</span>
         </button>
       </div>

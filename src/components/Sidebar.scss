@@ -1,6 +1,17 @@
 .sidebar {
-  flex: 0 0 300px;
-  min-width: 260px;
+  /*
+   * Az oldalsav mindket temaban sotet marad, ezert sajat helyi
+   * valtozokat hasznal a globalis felulet-tokenek helyett.
+   * Az akcentus viszont a kozos keszletbol jon.
+   */
+
+  --rail-bg: #2a1d18;
+  --rail-text: #f6eee8;
+  --rail-muted: #a89286;
+  --rail-hover: rgba(255, 255, 255, 0.07);
+
+  flex: 0 0 272px;
+  min-width: 240px;
   height: calc(100vh - 40px);
 
   display: flex;
@@ -19,10 +30,10 @@
   padding: 22px 16px 16px;
   box-sizing: border-box;
 
-  background: #2c1e1a;
+  background: var(--rail-bg);
 
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
 
   box-shadow:
     0 20px 50px rgba(44, 30, 26, 0.18),
@@ -47,12 +58,14 @@
   width: 42px;
   height: 42px;
 
+  border-radius: var(--radius-md);
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #f0dfc7;
-  color: #2c1e1a;
+  background: var(--accent);
+  color: #2a1d18;
 
   border-radius: 12px;
 
@@ -60,7 +73,7 @@
 }
 
 .sidebar__brandName {
-  color: #fffdf9;
+  color: var(--rail-text);
 
   font-size: 1.4rem;
   font-weight: 700;
@@ -70,7 +83,7 @@
 .sidebar__brandSubtitle {
   margin-top: 2px;
 
-  color: #bca99c;
+  color: var(--rail-muted);
 
   font-size: 1rem;
 }
@@ -99,7 +112,7 @@
   align-items: center;
   justify-content: center;
 
-  background: #765238;
+  background: var(--primary-light);
   color: #fff;
 
   border-radius: 50%;
@@ -117,7 +130,7 @@
 }
 
 .sidebar__userInfo span {
-  color: #a9978c;
+  color: var(--rail-muted);
 
   font-size: 1rem;
 }
@@ -129,7 +142,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  color: #fffdf9;
+  color: var(--rail-text);
 
   font-size: 1.25rem;
 }
@@ -168,7 +181,7 @@
 
   box-sizing: border-box;
 
-  color: #d8cbc2;
+  color: var(--rail-muted);
 
   background: transparent;
 
@@ -190,7 +203,7 @@
 
   &:hover {
     background: rgba(255, 255, 255, 0.07);
-    color: #fffdf9;
+    color: var(--rail-text);
   }
 
   &:active {
@@ -199,29 +212,36 @@
 }
 
 .sidebar__button_active {
-  background: #f0c14b;
-  color: #2c1e1a;
+  background: var(--accent);
+  color: #2a1d18;
 
   border-color: rgba(255, 255, 255, 0.12);
 
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 
   &:hover {
-    background: #f4ca61;
-    color: #2c1e1a;
+    background: var(--accent-hover);
+    color: #2a1d18;
   }
 }
 
 .sidebar__icon {
-  width: 25px;
-  flex: 0 0 25px;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 1.45rem;
-  text-align: center;
+  /*
+   * Az ikonok a szoveg szinet veszik fel (currentColor),
+   * ezert a hover es az aktiv allapot automatikusan hat rajuk.
+   */
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .sidebar__logout {

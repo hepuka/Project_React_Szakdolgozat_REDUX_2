@@ -158,70 +158,70 @@ export const MENU_ITEMS = [
   {
     label: "Rendelés / Fizetés",
     path: "/tables",
-    icon: "🛎️",
+    icon: "bell",
     permission: PERMISSIONS.TABLES_USE,
   },
 
   {
     label: "Főoldal",
     path: "/main",
-    icon: "⌂",
+    icon: "home",
     permission: PERMISSIONS.MAIN_READ,
   },
 
   {
     label: "Felhasználók",
     path: "/users",
-    icon: "👥",
+    icon: "users",
     permission: PERMISSIONS.USERS_READ,
   },
 
   {
     label: "Új felhasználó",
     path: "/register/ADD",
-    icon: "＋",
+    icon: "userPlus",
     permission: PERMISSIONS.USERS_CREATE,
   },
 
   {
     label: "Termékek",
     path: "/products",
-    icon: "☕",
+    icon: "coffee",
     permission: PERMISSIONS.PRODUCTS_READ,
   },
 
   {
     label: "Új termék",
     path: "/add-product/ADD",
-    icon: "＋",
+    icon: "plus",
     permission: PERMISSIONS.PRODUCTS_CREATE,
   },
 
   {
     label: "Összes rendelés",
     path: "/orders",
-    icon: "🧾",
+    icon: "receipt",
     permission: PERMISSIONS.ORDERS_READ,
   },
 
   {
     label: "Munkabér és egyéb kiadások",
     path: "/expenses",
-    icon: "💰",
+    icon: "wallet",
     permission: PERMISSIONS.EXPENSES_READ,
   },
 
   {
     label: "Üzleti összesítő",
     path: "/business",
-    icon: "📊",
+    icon: "chart",
     permission: PERMISSIONS.BUSINESS_READ,
   },
 
   {
     label: "Hibabejelentés",
     path: "/contact",
-    icon: "💬",
+    icon: "chat",
     permission: PERMISSIONS.CONTACT_READ,
   },
 ];
