@@ -16,6 +16,8 @@ import { collection, onSnapshot } from "firebase/firestore";
 
 import { db } from "../firebase/config";
 
+import { TABLE_COUNT, TABLE_ORDERS } from "../config/tables";
+
 import useFetchCollection from "./useFetchCollection";
 import useFetchDocument from "./useFetchDocument";
 
@@ -27,6 +29,7 @@ import { ROLES } from "../config/permissions";
 
 import {
   calculatePeriodFinancials,
+  formatCurrency,
   getDocumentDate,
   getPeriodId,
   getPreviousPeriod,
@@ -67,7 +70,7 @@ const useDashboardData = () => {
   const [selectedPeriod] = useState(currentPeriod);
 
   const [tables, setTables] = useState(
-    Array.from({ length: 10 }, (_, index) => ({
+    Array.from({ length: TABLE_COUNT }, (_, index) => ({
       number: index + 1,
       orders: [],
     })),
@@ -438,40 +441,40 @@ const useDashboardData = () => {
   // =======================================================
 
   useEffect(() => {
-    const unsubscribers = [];
+    /*
+     * Egyetlen figyelő a közös tableOrders kollekción.
+     * Korábban tíz külön figyelő futott, asztalonként egy.
+     */
+    const unsubscribe = onSnapshot(
+      collection(db, TABLE_ORDERS),
+      (snapshot) => {
+        const grouped = Array.from({ length: TABLE_COUNT }, (_, index) => ({
+          number: index + 1,
+          orders: [],
+        }));
 
-    for (let tableNumber = 1; tableNumber <= 10; tableNumber += 1) {
-      const ordersRef = collection(db, `tableorders_${tableNumber}`);
-
-      const unsubscribe = onSnapshot(
-        ordersRef,
-        (snapshot) => {
-          const tableOrders = snapshot.docs.map((item) => ({
+        snapshot.docs.forEach((item) => {
+          const order = {
             id: item.id,
             ...item.data(),
-          }));
+          };
 
-          setTables((currentTables) =>
-            currentTables.map((table) =>
-              table.number === tableNumber
-                ? {
-                    ...table,
-                    orders: tableOrders,
-                  }
-                : table,
-            ),
-          );
-        },
-        (error) => {
-          console.error(`Table ${tableNumber} listener error:`, error);
-        },
-      );
+          const index = Number(order?.tableNumber) - 1;
 
-      unsubscribers.push(unsubscribe);
-    }
+          if (index >= 0 && index < grouped.length) {
+            grouped[index].orders.push(order);
+          }
+        });
+
+        setTables(grouped);
+      },
+      (error) => {
+        console.error("Table orders listener error:", error);
+      },
+    );
 
     return () => {
-      unsubscribers.forEach((unsubscribe) => unsubscribe());
+      unsubscribe();
     };
   }, []);
 

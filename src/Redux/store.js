@@ -1,42 +1,32 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+
 import authReducer from "./slice/authSlice";
 import productReducer from "./slice/productSlice";
-import userReducer from "./slice/userSlice";
-import filterReducer from "./slice/filterSlice";
-import orderReducer from "./slice/orderSlice";
-import tableReducer from "./slice/tableSlice";
-import storage from "redux-persist/lib/storage";
-import { persistReducer } from "redux-persist";
 
 /*
- * Csak az asztalonkénti tételszámláló marad a localStorage-ban.
+ * Két szelet maradt.
  *
- * Az auth állapotot szándékosan NEM perzisztáljuk: korábban a
- * szerepkör és a PIN kód is a böngésző tárolójában végezte. A
- * munkamenetet oldalfrissítés után a useAuthListener állítja
- * vissza a Firebase saját munkamenetéből.
+ * - auth:    a bejelentkezett felhasználó neve, szerepköre,
+ *            azonosítója. A munkamenetet oldalfrissítés után
+ *            a useAuthListener állítja vissza a Firebase saját
+ *            munkamenetéből, nem a böngésző tárolójából.
+ *
+ * - product: a valós idejű terméklista, a kiválasztott
+ *            kategória és termék.
+ *
+ * Ami kikerült: a filterSlice (a szűrt lista most származtatott
+ * érték), a tableSlice (az asztalok foglaltsága a Firestore-ból
+ * jön), valamint a sosem használt orderSlice és userSlice.
+ * A böngésző tárolójába semmit nem mentünk.
  */
-
-const persistConfig = {
-  key: "root",
-  version: 1,
-  storage,
-  whitelist: ["table"],
-};
 
 const reducer = combineReducers({
   auth: authReducer,
   product: productReducer,
-  user: userReducer,
-  filter: filterReducer,
-  orders: orderReducer,
-  table: tableReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, reducer);
-
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

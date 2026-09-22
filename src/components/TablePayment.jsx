@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import "./TablePayment.scss";
 
 import { useNavigate } from "react-router-dom";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import {
   selectCurrentUserId,
@@ -23,10 +23,11 @@ import {
   doc,
   getDoc,
   query,
+  where,
   getDocs,
 } from "firebase/firestore";
 
-import { SET_ZERO } from "../Redux/slice/tableSlice";
+import { TABLE_ORDERS } from "../config/tables";
 
 const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
   const currentUserId = useSelector(selectCurrentUserId);
@@ -38,8 +39,6 @@ const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
-  const dispatch = useDispatch();
 
   const total = Number(getTotal() || 0);
 
@@ -123,20 +122,20 @@ const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
 
       await addDoc(collection(db, "kunpaosorders"), orderConfig);
 
-      const tableOrdersRef = collection(db, `tableorders_${id}`);
+      /*
+       * Az asztal tételeinek törlése a közös kollekcióból.
+       */
+      const tableOrdersQuery = query(
+        collection(db, TABLE_ORDERS),
+        where("tableNumber", "==", Number(id)),
+      );
 
-      const snapshot = await getDocs(query(tableOrdersRef));
+      const snapshot = await getDocs(tableOrdersQuery);
 
       await Promise.all(
         snapshot.docs.map((order) =>
-          deleteDoc(doc(db, `tableorders_${id}`, order.id)),
+          deleteDoc(doc(db, TABLE_ORDERS, order.id)),
         ),
-      );
-
-      dispatch(
-        SET_ZERO({
-          id: Number(id),
-        }),
       );
 
       setPin("");

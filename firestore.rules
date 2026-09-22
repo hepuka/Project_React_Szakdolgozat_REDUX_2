@@ -88,24 +88,15 @@ service cloud.firestore {
     }
 
     // -----------------------------------------------------
-    // ASZTALONKÉNTI RENDELÉSI TÉTELEK
+    // ASZTALI RENDELÉSI TÉTELEK
     //
-    // Az 5. fázis után ezek egyetlen tableOrders kollekcióvá
-    // olvadnak össze; az új nevet előre felvettük.
+    // Egyetlen kollekció; azt, hogy a tétel melyik asztalhoz
+    // tartozik, a tableNumber mező mondja meg. Korábban
+    // asztalonként külön kollekció volt (tableorders_1 ...
+    // tableorders_10), azoknak a szabályai kikerültek.
     // -----------------------------------------------------
 
-    match /tableOrders/{itemId}    { allow read, write: if signedIn(); }
-
-    match /tableorders_1/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_2/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_3/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_4/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_5/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_6/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_7/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_8/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_9/{itemId}  { allow read, write: if signedIn(); }
-    match /tableorders_10/{itemId} { allow read, write: if signedIn(); }
+    match /tableOrders/{itemId} { allow read, write: if signedIn(); }
 
     // -----------------------------------------------------
     // PÉNZÜGYEK

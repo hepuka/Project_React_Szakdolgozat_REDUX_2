@@ -20,7 +20,6 @@ import { PERMISSIONS } from "./config/permissions";
 import useAuthListener from "./customHooks/useAuthListener";
 
 function App() {
-
   const authChecked = useAuthListener();
 
   if (!authChecked) {
@@ -57,7 +56,9 @@ function App() {
               FŐOLDAL
              =============================================== */}
 
-          <Route element={<ProtectedRoute permission={PERMISSIONS.MAIN_READ} />}>
+          <Route
+            element={<ProtectedRoute permission={PERMISSIONS.MAIN_READ} />}
+          >
             <Route path="/main" element={<Admin />} />
           </Route>
 
@@ -94,13 +95,17 @@ function App() {
           </Route>
 
           <Route
-            element={<ProtectedRoute permission={PERMISSIONS.PRODUCTS_CREATE} />}
+            element={
+              <ProtectedRoute permission={PERMISSIONS.PRODUCTS_CREATE} />
+            }
           >
             <Route path="/add-product/ADD" element={<AddProducts />} />
           </Route>
 
           <Route
-            element={<ProtectedRoute permission={PERMISSIONS.PRODUCTS_UPDATE} />}
+            element={
+              <ProtectedRoute permission={PERMISSIONS.PRODUCTS_UPDATE} />
+            }
           >
             <Route path="/add-product/:id" element={<AddProducts />} />
             <Route path="/product-order/:id" element={<ProductOrder />} />
@@ -133,7 +138,6 @@ function App() {
             <Route path="/expenses" element={<Expenses />} />
           </Route>
 
-
           {/* ===============================================
               HIBABEJELENTÉS
              =============================================== */}
@@ -147,8 +151,6 @@ function App() {
           {/* ===============================================
               ASZTALOK / RENDELÉSFELVÉTEL
              =============================================== */}
-
-
 
           <Route
             element={<ProtectedRoute permission={PERMISSIONS.TABLES_USE} />}

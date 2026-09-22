@@ -2,13 +2,9 @@ import { useEffect, useState } from "react";
 
 import "./TableDetails.scss";
 
-import { useSelector } from "react-redux";
+import { TABLE_COUNT } from "../config/tables";
 
-import { selectTableOrders } from "../Redux/slice/tableSlice";
-
-const TableDetails = ({ selectedTable, sendTableId }) => {
-  const orderNumbers = useSelector(selectTableOrders);
-
+const TableDetails = ({ selectedTable, sendTableId, tableCounts }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -67,12 +63,12 @@ const TableDetails = ({ selectedTable, sendTableId }) => {
       </div>
 
       <div className="tableDetails__buttons">
-        {Array(10)
+        {Array(TABLE_COUNT)
           .fill(null)
           .map((_, i) => {
             const tableNumber = i + 1;
 
-            const productCount = Number(orderNumbers?.[i] || 0);
+            const productCount = Number(tableCounts?.[i] || 0);
 
             const isSelected = selectedTable === tableNumber;
 

@@ -1,29 +1,25 @@
+@use "../../styles/mixins" as *;
+
 /* =========================================================
    MAIN
    ========================================================= */
 
 .admin {
-  width: 100%;
+  @include page;
+
   min-width: 0;
-  min-height: 100%;
-
-  padding: 26px 28px 36px;
-
-  box-sizing: border-box;
-
-  color: var(--text);
 
   overflow-y: auto;
 
   scrollbar-width: thin;
-  scrollbar-color: #d5c8be transparent;
+  scrollbar-color: var(--border) transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d5c8be;
+    background: var(--border);
     border-radius: 20px;
   }
 }
@@ -43,39 +39,15 @@
 }
 
 .admin__eyebrow {
-  display: block;
-
-  margin-bottom: 5px;
-
-  color: var(--primary-light);
-
-  font-size: 0.8rem;
-  font-weight: 750;
-
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
+  @include eyebrow;
 }
 
 .admin__header h1 {
-  margin: 0;
-
-  color: var(--text);
-
-  font-size: clamp(2.8rem, 4vw, 4rem);
-
-  line-height: 1.05;
-
-  font-weight: 750;
-
-  letter-spacing: -0.045em;
+  @include page-title;
 }
 
 .admin__date {
-  margin: 8px 0 0;
-
-  color: var(--text-muted);
-
-  font-size: 1rem;
+  @include page-subtitle;
 }
 
 .admin__headerActions {
@@ -86,20 +58,12 @@
 }
 
 .admin__liveStatus {
+  @include card(10px 14px);
+
   display: flex;
   align-items: center;
 
   gap: 9px;
-
-  padding: 10px 14px;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 13px;
-
-  box-shadow: var(--shadow-sm);
 }
 
 .admin__liveDot {
@@ -112,7 +76,7 @@
 
   border-radius: 50%;
 
-  box-shadow: 0 0 0 4px rgba(63, 116, 72, 0.1);
+  box-shadow: 0 0 0 4px var(--success-soft);
 }
 
 .admin__liveStatus div {
@@ -125,43 +89,19 @@
 .admin__liveStatus small {
   color: var(--text-muted);
 
-  font-size: 0.68rem;
+  font-size: 1.05rem;
 }
 
 .admin__liveStatus strong {
   color: var(--text);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 }
 
 .admin__headerLogo {
-  width: 52px;
-  height: 52px;
+  @include icon-tile(52px, var(--primary));
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 7px;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 14px;
-
-  box-shadow: var(--shadow-sm);
-
-  box-sizing: border-box;
-}
-
-.admin__headerLogo img {
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: contain;
+  color: var(--accent);
 }
 
 /* =========================================================
@@ -179,27 +119,10 @@
 }
 
 .admin__statCard {
+  @include card(18px);
+  @include card-hover;
+
   min-width: 0;
-
-  padding: 18px;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  box-shadow: var(--shadow-sm);
-
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.admin__statCard:hover {
-  transform: translateY(-1px);
-
-  box-shadow: var(--shadow-md);
 }
 
 .admin__statCard--money {
@@ -214,52 +137,47 @@
 }
 
 .admin__statIcon {
-  width: 34px;
-  height: 34px;
+  @include icon-tile(34px, var(--accent-soft));
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: var(--surface-soft);
-
-  border: 1px solid var(--border-soft);
-
-  border-radius: 9px;
-
-  font-size: 1rem;
+  border-radius: var(--radius-sm);
 }
 
 .admin__statCaption {
   color: var(--text-muted);
 
-  font-size: 0.76rem;
+  font-size: 1.15rem;
 
   font-weight: 700;
 }
 
 .admin__statValue {
+  @include tabular;
+
   display: block;
 
   margin-top: 15px;
 
   color: var(--text);
 
-  font-size: 1.85rem;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 600;
 
   line-height: 1;
 
-  letter-spacing: -0.035em;
+  letter-spacing: -0.02em;
 }
 
 .admin__statMeta {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 
   margin-top: 8px;
 
   color: var(--text-muted);
 
-  font-size: 0.72rem;
+  font-size: 1.15rem;
 }
 
 /* =========================================================
@@ -279,19 +197,9 @@
    ========================================================= */
 
 .admin__panel {
+  @include card;
+
   min-width: 0;
-
-  padding: 20px;
-
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: 18px;
-
-  box-shadow: var(--shadow-md);
-
-  box-sizing: border-box;
 
   overflow: hidden;
 }
@@ -319,17 +227,9 @@
 }
 
 .admin__panelEyebrow {
-  display: block;
+  @include eyebrow;
 
-  color: var(--primary-light);
-
-  font-size: 0.7rem;
-
-  font-weight: 750;
-
-  letter-spacing: 0.11em;
-
-  text-transform: uppercase;
+  margin-bottom: 0;
 }
 
 .admin__panelHeader h2 {
@@ -337,33 +237,21 @@
 
   color: var(--text);
 
-  font-size: 1.12rem;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
 
   line-height: 1.25;
 }
 
 .admin__panelBadge {
-  padding: 5px 9px;
-
-  background: var(--surface-soft);
-
-  border: 1px solid var(--border-soft);
-
-  border-radius: 20px;
-
-  color: var(--text-muted);
-
-  font-size: 0.67rem;
-
-  font-weight: 700;
-
-  white-space: nowrap;
+  @include chip(var(--surface-soft), var(--text-muted));
 }
 
 .admin__panelLink {
   color: var(--primary-light);
 
-  font-size: 0.74rem;
+  font-size: 1.15rem;
 
   font-weight: 700;
 
@@ -413,7 +301,7 @@
 
   font-family: inherit;
 
-  font-size: 0.69rem;
+  font-size: 1.05rem;
 
   font-weight: 700;
 
@@ -502,7 +390,7 @@
 
   color: var(--text);
 
-  font-size: 0.69rem;
+  font-size: 1.05rem;
 
   font-weight: 700;
 }
@@ -512,7 +400,7 @@
 
   color: var(--text-muted);
 
-  font-size: 0.62rem;
+  font-size: 1rem;
 }
 
 /* =========================================================
@@ -540,13 +428,13 @@
 .admin__tableSummaryItem strong {
   color: var(--text);
 
-  font-size: 1rem;
+  font-size: 1.4rem;
 }
 
 .admin__tableSummaryItem small {
   color: var(--text-muted);
 
-  font-size: 0.7rem;
+  font-size: 1.05rem;
 }
 
 .admin__greenDot,
@@ -605,19 +493,19 @@
 }
 
 .admin__tableMini strong {
-  font-size: 0.95rem;
+  font-size: 1.25rem;
 }
 
 .admin__tableMini span {
   margin-top: 1px;
 
-  font-size: 0.58rem;
+  font-size: 1rem;
 }
 
 .admin__tableMini small {
   margin-top: 3px;
 
-  font-size: 0.55rem;
+  font-size: 1rem;
 
   font-weight: 700;
 }
@@ -625,7 +513,7 @@
 .admin__tableMini--free {
   background: var(--success-soft);
 
-  border: 1px solid rgba(63, 116, 72, 0.2);
+  border: 1px solid var(--success);
 
   color: var(--success);
 }
@@ -633,7 +521,7 @@
 .admin__tableMini--busy {
   background: var(--warning-soft);
 
-  border: 1px solid rgba(138, 100, 30, 0.22);
+  border: 1px solid var(--warning);
 
   color: var(--warning);
 }
@@ -715,7 +603,7 @@
 
   color: var(--text);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 
   text-overflow: ellipsis;
 
@@ -725,13 +613,13 @@
 .admin__stockRow > div small {
   color: var(--text-muted);
 
-  font-size: 0.65rem;
+  font-size: 1.05rem;
 }
 
 .admin__stockValue {
   color: var(--text);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 
   white-space: nowrap;
 }
@@ -800,13 +688,13 @@
 
   background: var(--warning-soft);
 
-  border: 1px solid rgba(138, 100, 30, 0.18);
+  border: 1px solid var(--warning);
 
   border-radius: 10px;
 
   color: var(--warning);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 
   font-weight: 750;
 }
@@ -826,7 +714,7 @@
 
   color: var(--text);
 
-  font-size: 0.8rem;
+  font-size: 1.25rem;
 
   text-overflow: ellipsis;
 
@@ -836,7 +724,7 @@
 .admin__activeOrderInfo span {
   color: var(--text-muted);
 
-  font-size: 0.65rem;
+  font-size: 1.05rem;
 }
 
 .admin__activeOrderAmount {
@@ -854,13 +742,13 @@
 .admin__activeOrderAmount strong {
   color: var(--text);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 }
 
 .admin__activeOrderAmount small {
   color: var(--text-muted);
 
-  font-size: 0.62rem;
+  font-size: 1rem;
 }
 
 /* =========================================================
@@ -887,13 +775,13 @@
 .admin__statusTop span {
   color: var(--text);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 }
 
 .admin__statusTop strong {
   color: var(--text);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 }
 
 .admin__statusTrack {
@@ -946,7 +834,7 @@
 .admin__popularRank {
   color: var(--text-muted);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 
   font-weight: 700;
 
@@ -990,7 +878,7 @@
 
   color: var(--text);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 
   text-overflow: ellipsis;
 
@@ -1000,7 +888,7 @@
 .admin__popularTitle span {
   color: var(--text-muted);
 
-  font-size: 0.68rem;
+  font-size: 1.05rem;
 
   white-space: nowrap;
 }
@@ -1055,13 +943,13 @@
 .admin__financeRows span {
   color: var(--text-muted);
 
-  font-size: 0.72rem;
+  font-size: 1.15rem;
 }
 
 .admin__financeRows strong {
   color: var(--text);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 
   white-space: nowrap;
 }
@@ -1096,13 +984,13 @@
 .admin__financeBalance span {
   color: var(--text-muted);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 }
 
 .admin__financeBalance strong {
   color: var(--success);
 
-  font-size: 1.15rem;
+  font-size: 1.4rem;
 
   white-space: nowrap;
 }
@@ -1163,7 +1051,7 @@
 
   background: var(--warning-soft);
 
-  border: 1px solid rgba(138, 100, 30, 0.18);
+  border: 1px solid var(--warning);
 
   border-radius: 8px;
 
@@ -1187,7 +1075,7 @@
 
   color: var(--text);
 
-  font-size: 0.77rem;
+  font-size: 1.15rem;
 
   text-overflow: ellipsis;
 
@@ -1199,7 +1087,7 @@
 
   color: var(--text-muted);
 
-  font-size: 0.63rem;
+  font-size: 1.05rem;
 
   text-overflow: ellipsis;
 
@@ -1209,7 +1097,7 @@
 .admin__expenseAmount {
   color: var(--danger);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 
   white-space: nowrap;
 }
@@ -1235,8 +1123,8 @@
   text-align: center;
 }
 
-.admin__emptySmall span {
-  font-size: 1.7rem;
+.admin__emptySmall svg {
+  color: var(--success);
 }
 
 .admin__emptySmall p {
@@ -1246,7 +1134,7 @@
 
   color: var(--text-muted);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 
   line-height: 1.45;
 }
@@ -1289,7 +1177,7 @@
 
   color: var(--text);
 
-  font-size: 1.4rem;
+  font-size: 1.6rem;
 }
 
 .admin__adminSectionHeader p {
@@ -1297,7 +1185,7 @@
 
   color: var(--text-muted);
 
-  font-size: 0.8rem;
+  font-size: 1.25rem;
 
   line-height: 1.45;
 }
@@ -1322,7 +1210,7 @@
 
   color: var(--primary);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 
   font-weight: 750;
 
@@ -1354,17 +1242,15 @@
 }
 
 .admin__adminPanel {
-  min-width: 0;
+  @include card(17px);
 
-  padding: 17px;
+  min-width: 0;
 
   background: var(--surface-soft);
 
-  border: 1px solid var(--border-soft);
+  border-color: var(--border-soft);
 
-  border-radius: 15px;
-
-  box-sizing: border-box;
+  box-shadow: none;
 }
 
 /* =========================================================
@@ -1421,21 +1307,21 @@
 
   border-radius: 50%;
 
-  box-shadow: 0 0 0 4px rgba(63, 116, 72, 0.1);
+  box-shadow: 0 0 0 4px var(--success-soft);
 }
 
 .admin__userStatusMain strong,
 .admin__userStatusOffline strong {
   color: var(--text);
 
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .admin__userStatusMain span,
 .admin__userStatusOffline span {
   color: var(--text-muted);
 
-  font-size: 0.68rem;
+  font-size: 1.05rem;
 }
 
 .admin__userRoleMiniList {
@@ -1466,13 +1352,13 @@
 .admin__userRoleMiniList span {
   color: var(--text-muted);
 
-  font-size: 0.62rem;
+  font-size: 1rem;
 }
 
 .admin__userRoleMiniList strong {
   color: var(--text);
 
-  font-size: 0.72rem;
+  font-size: 1.15rem;
 }
 
 /* =========================================================
@@ -1525,7 +1411,7 @@
 
   color: var(--primary-light);
 
-  font-size: 0.72rem;
+  font-size: 1.15rem;
 
   font-weight: 800;
 }
@@ -1533,13 +1419,13 @@
 .admin__permissionRow span {
   color: var(--text);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 }
 
 .admin__permissionRow strong {
   color: var(--text);
 
-  font-size: 0.78rem;
+  font-size: 1.15rem;
 }
 
 /* =========================================================
@@ -1592,7 +1478,7 @@
 
   color: var(--primary-light);
 
-  font-size: 0.72rem;
+  font-size: 1.15rem;
 
   font-weight: 800;
 }
@@ -1612,7 +1498,7 @@
 
   color: var(--text);
 
-  font-size: 0.7rem;
+  font-size: 1.05rem;
 
   text-overflow: ellipsis;
 
@@ -1622,7 +1508,7 @@
 .admin__recentLoginInfo span {
   color: var(--text-muted);
 
-  font-size: 0.62rem;
+  font-size: 1rem;
 }
 
 .admin__recentLoginTime {
@@ -1638,13 +1524,13 @@
 .admin__recentLoginTime strong {
   color: var(--text);
 
-  font-size: 0.66rem;
+  font-size: 1.05rem;
 }
 
 .admin__recentLoginTime span {
   color: var(--text-muted);
 
-  font-size: 0.6rem;
+  font-size: 1rem;
 }
 
 /* =========================================================
@@ -1696,7 +1582,7 @@
 
   color: var(--text);
 
-  font-size: 0.7rem;
+  font-size: 1.05rem;
 
   text-overflow: ellipsis;
 
@@ -1706,7 +1592,7 @@
 .admin__systemRow strong {
   color: var(--text-muted);
 
-  font-size: 0.64rem;
+  font-size: 1.05rem;
 
   white-space: nowrap;
 }
@@ -1759,7 +1645,7 @@
 
   border-radius: 9px;
 
-  font-size: 0.9rem;
+  font-size: 1.25rem;
 }
 
 .admin__adminAlert--danger .admin__adminAlertIcon {
@@ -1787,13 +1673,13 @@
 .admin__adminAlertInfo strong {
   color: var(--text);
 
-  font-size: 0.76rem;
+  font-size: 1.15rem;
 }
 
 .admin__adminAlertInfo span {
   color: var(--text-muted);
 
-  font-size: 0.64rem;
+  font-size: 1.05rem;
 
   line-height: 1.35;
 }
@@ -1801,7 +1687,7 @@
 .admin__adminAlertValue {
   color: var(--text);
 
-  font-size: 0.75rem;
+  font-size: 1.15rem;
 
   white-space: nowrap;
 }
@@ -1817,15 +1703,15 @@
 
   background: var(--success-soft);
 
-  border: 1px solid rgba(63, 116, 72, 0.18);
+  border: 1px solid var(--success);
 
   border-radius: 11px;
 }
 
-.admin__adminNoAlerts > span {
-  color: var(--success);
+.admin__adminNoAlerts > svg {
+  flex: 0 0 auto;
 
-  font-size: 1.2rem;
+  color: var(--success);
 }
 
 .admin__adminNoAlerts div {
@@ -1839,7 +1725,7 @@
 .admin__adminNoAlerts strong {
   color: var(--success);
 
-  font-size: 0.76rem;
+  font-size: 1.15rem;
 }
 
 .admin__adminNoAlerts p {
@@ -1847,7 +1733,7 @@
 
   color: var(--text-muted);
 
-  font-size: 0.64rem;
+  font-size: 1.05rem;
 
   line-height: 1.35;
 }
@@ -1888,17 +1774,32 @@
 .admin__footerSummary span {
   color: var(--text-muted);
 
-  font-size: 0.72rem;
+  font-size: 1.15rem;
 }
 
 .admin__footerSummary strong {
   color: var(--text);
 
-  font-size: 0.8rem;
+  font-size: 1.25rem;
 }
 
 .admin__systemOnline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
   color: var(--success) !important;
+}
+
+.admin__systemOnlineDot {
+  width: 8px;
+  height: 8px;
+
+  flex: 0 0 8px;
+
+  background: var(--success);
+
+  border-radius: 50%;
 }
 
 /* =========================================================

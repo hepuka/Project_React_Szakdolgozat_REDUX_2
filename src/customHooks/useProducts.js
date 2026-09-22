@@ -2,13 +2,20 @@ import { useEffect } from "react";
 
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 
-import { db } from "../firebase/config";
-
 import { useDispatch } from "react-redux";
+
+import { db } from "../firebase/config";
 
 import { STORE_PRODUCTS, CLEAR_PRODUCTS } from "../Redux/slice/productSlice";
 
-import { SYNC_PRODUCTS } from "../Redux/slice/filterSlice";
+/* =========================================================
+   VALÓS IDEJŰ TERMÉKLISTA
+   =========================================================
+
+   Egyetlen dispatch. A kategóriára szűrt listát korábban
+   ugyanitt egy második dispatch tartotta szinkronban; most
+   származtatott érték, ezért nem tud elcsúszni.
+   ========================================================= */
 
 const useProducts = () => {
   const dispatch = useDispatch();
@@ -26,24 +33,8 @@ const useProducts = () => {
           ...document.data(),
         }));
 
-        /*
-         * 1. Teljes realtime terméklista
-         */
         dispatch(
           STORE_PRODUCTS({
-            products,
-          }),
-        );
-
-        /*
-         * 2. A filterSlice aktuális
-         * szűrt listájának frissítése
-         *
-         * A SYNC_PRODUCTS a jelenlegi
-         * selectedCategory alapján dolgozik.
-         */
-        dispatch(
-          SYNC_PRODUCTS({
             products,
           }),
         );

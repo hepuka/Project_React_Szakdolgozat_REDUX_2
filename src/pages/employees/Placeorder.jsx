@@ -9,11 +9,13 @@ import TableProductSelector from "../../components/TableProductSelector";
 import TableOrders from "../../components/TableOrders";
 import TablePayment from "../../components/TablePayment";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 
 import { db } from "../../firebase/config";
+
+import { TABLE_COUNT, TABLE_ORDERS } from "../../config/tables";
 
 const Placeorder = () => {
   const userName = useSelector(selectUserName);
@@ -24,10 +26,15 @@ const Placeorder = () => {
   // Az asztal, amely vizuálisan legyen sárgával kijelölve
   const [highlightedTable, setHighlightedTable] = useState(0);
 
-  const [tableOrders, setTableOrders] = useState([]);
+  /*
+   * Minden asztal tételei egyetlen kollekcióból, egyetlen
+   * figyelővel. Korábban asztalonként külön kollekció és
+   * külön figyelő volt.
+   */
+  const [allTableOrders, setAllTableOrders] = useState([]);
 
   useEffect(() => {
-    const ordersRef = collection(db, `tableorders_${selectedTable}`);
+    const ordersRef = collection(db, TABLE_ORDERS);
 
     const ordersQuery = query(ordersRef, orderBy("createdAt"));
 
@@ -42,19 +49,48 @@ const Placeorder = () => {
           ...item.data(),
         }));
 
-        setTableOrders(allData);
+        setAllTableOrders(allData);
       },
       (error) => {
         console.error("Table orders listener error:", error);
 
-        setTableOrders([]);
+        setAllTableOrders([]);
       },
     );
 
     return () => {
       unsubscribe();
     };
-  }, [selectedTable]);
+  }, []);
+
+  /*
+   * A kiválasztott asztal tételei.
+   */
+  const tableOrders = useMemo(() => {
+    return allTableOrders.filter(
+      (order) => Number(order?.tableNumber) === Number(selectedTable),
+    );
+  }, [allTableOrders, selectedTable]);
+
+  /*
+   * Asztalonkénti tételszám a foglaltság jelzéséhez.
+   * Ez korábban a Reduxban, a localStorage-ban élt, és el
+   * tudott csúszni az adatbázistól; most közvetlenül a
+   * Firestore adataiból számoljuk.
+   */
+  const tableCounts = useMemo(() => {
+    const counts = Array(TABLE_COUNT).fill(0);
+
+    allTableOrders.forEach((order) => {
+      const index = Number(order?.tableNumber) - 1;
+
+      if (index >= 0 && index < counts.length) {
+        counts[index] += 1;
+      }
+    });
+
+    return counts;
+  }, [allTableOrders]);
 
   const sendTableId = (id) => {
     // Tényleges aktív asztal
@@ -95,11 +131,11 @@ const Placeorder = () => {
           <TableDetails
             selectedTable={highlightedTable}
             sendTableId={sendTableId}
+            tableCounts={tableCounts}
           />
 
           <TableProductSelector
             selectedTable={selectedTable}
-            tableOrdersLength={tableOrders.length}
             onOrderAdded={clearTableHighlight}
           />
 

@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./TableProductSelector.scss";
 
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-  FILTER_BY_CATEGORY,
+  ALL_CATEGORIES,
+  CLEAR_SELECTEDPRODUCT,
+  SET_CATEGORY,
+  SET_SELECTEDPRODUCT,
   selectFilteredProducts,
+  selectProducts,
   selectSelectedCategory,
   selectSelectedProduct,
-  SET_SELECTEDPRODUCT,
-  CLEAR_SELECTEDPRODUCT,
-} from "../Redux/slice/filterSlice";
-
-import { selectProducts } from "../Redux/slice/productSlice";
+} from "../Redux/slice/productSlice";
 
 import Notiflix from "notiflix";
 
@@ -20,13 +20,9 @@ import { collection, doc, runTransaction, Timestamp } from "firebase/firestore";
 
 import { db } from "../firebase/config";
 
-import { SET_TABLESORDERS } from "../Redux/slice/tableSlice";
+import { TABLE_ORDERS } from "../config/tables";
 
-const TableProductSelector = ({
-  selectedTable,
-  tableOrdersLength,
-  onOrderAdded,
-}) => {
+const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
   const dispatch = useDispatch();
 
   /*
@@ -57,16 +53,6 @@ const TableProductSelector = ({
    */
   const [count, setCount] = useState(1);
 
-  /*
-   * Az "Összes" kategóriát csak egyszer állítjuk be
-   * az első terméklista betöltésekor.
-   *
-   * Nem szabad minden products-frissítésnél lefuttatni,
-   * mert akkor a realtime készletfrissítés visszaállítaná
-   * a felhasználó kategóriaválasztását.
-   */
-  const initializedProductsRef = useRef(false);
-
   // =========================================================
   // AKTUÁLIS TERMÉK A REALTIME REDUX LISTÁBÓL
   // =========================================================
@@ -84,23 +70,6 @@ const TableProductSelector = ({
    * az aktuális stock jelenik meg.
    */
   const stock = Number(liveProduct?.stock || 0);
-
-  // =========================================================
-  // OLDAL ELSŐ BETÖLTÉSE
-  // =========================================================
-
-  useEffect(() => {
-    if (!initializedProductsRef.current && products.length > 0) {
-      dispatch(
-        FILTER_BY_CATEGORY({
-          products,
-          category: "Összes",
-        }),
-      );
-
-      initializedProductsRef.current = true;
-    }
-  }, [products, dispatch]);
 
   // =========================================================
   // MENNYISÉG RESET
@@ -123,12 +92,7 @@ const TableProductSelector = ({
   // =========================================================
 
   const filterProducts = (category) => {
-    dispatch(
-      FILTER_BY_CATEGORY({
-        products,
-        category,
-      }),
-    );
+    dispatch(SET_CATEGORY(category));
   };
 
   // =========================================================
@@ -144,11 +108,7 @@ const TableProductSelector = ({
       return;
     }
 
-    dispatch(
-      SET_SELECTEDPRODUCT({
-        selectedproduct: product,
-      }),
-    );
+    dispatch(SET_SELECTEDPRODUCT(product));
   };
 
   // =========================================================
@@ -176,29 +136,11 @@ const TableProductSelector = ({
   };
 
   // =========================================================
-  // ASZTAL TÉTELSZÁM FRISSÍTÉSE
-  // =========================================================
-
-  const refreshTableCounter = () => {
-    dispatch(
-      SET_TABLESORDERS({
-        id: selectedTable,
-        length: tableOrdersLength,
-      }),
-    );
-  };
-
-  // =========================================================
   // ÖSSZES TERMÉK MEGJELENÍTÉSE
   // =========================================================
 
   const showAllProducts = () => {
-    dispatch(
-      FILTER_BY_CATEGORY({
-        products,
-        category: "Összes",
-      }),
-    );
+    dispatch(SET_CATEGORY(ALL_CATEGORIES));
   };
 
   // =========================================================
@@ -251,7 +193,7 @@ const TableProductSelector = ({
       /*
        * ÚJ RENDELÉSI TÉTEL
        */
-      const tableOrderRef = doc(collection(db, `tableorders_${selectedTable}`));
+      const tableOrderRef = doc(collection(db, TABLE_ORDERS));
 
       /*
        * ATOMIKUS FIRESTORE TRANZAKCIÓ
@@ -339,8 +281,6 @@ const TableProductSelector = ({
 
       setCount(1);
 
-      refreshTableCounter();
-
       /*
        * Az összes termék jelenjen meg
        */
@@ -388,11 +328,11 @@ const TableProductSelector = ({
           <button
             type="button"
             className={`tableProductSelector__category ${
-              selectedCategory === "Összes"
+              selectedCategory === ALL_CATEGORIES
                 ? "tableProductSelector__category--active"
                 : ""
             }`}
-            onClick={() => filterProducts("Összes")}
+            onClick={() => filterProducts(ALL_CATEGORIES)}
           >
             <span>☕</span>
             Összes

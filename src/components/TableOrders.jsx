@@ -2,82 +2,46 @@ import "./TableOrders.scss";
 
 import Notiflix from "notiflix";
 
-import {
-  collection,
-  doc,
-  query,
-  getDocs,
-  where,
-  runTransaction,
-} from "firebase/firestore";
+import { doc, runTransaction } from "firebase/firestore";
 
 import { db } from "../firebase/config";
 
-import { SET_DELETETABLESORDERS } from "../Redux/slice/tableSlice";
-
-import { useDispatch } from "react-redux";
+import { TABLE_ORDERS } from "../config/tables";
 
 const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
-  const dispatch = useDispatch();
-
-  // =========================================================
-  // REDUX - ASZTAL TÉTELSZÁM FRISSÍTÉSE
-  // =========================================================
-
-  const decrElement = () => {
-    dispatch(
-      SET_DELETETABLESORDERS({
-        id: selectedTable,
-      }),
-    );
-  };
-
   // =========================================================
   // RENDELÉSI TÉTEL TÖRLÉSE + KÉSZLET VISSZAADÁSA
+  //
+  // A tétel dokumentumazonosítóját a lista már ismeri
+  // (documentId), ezért nem kell külön rákeresni.
   // =========================================================
 
-  const deleteOrder = async (productId) => {
-    const ordersRef = collection(db, `tableorders_${selectedTable}`);
+  const deleteOrder = async (order) => {
+    const orderDocumentId = order?.documentId;
 
-    const ordersQuery = query(ordersRef, where("id", "==", productId));
-
-    const querySnapshot = await getDocs(ordersQuery);
-
-    if (querySnapshot.empty) {
+    if (!orderDocumentId) {
       throw new Error("A rendelési tétel nem található.");
     }
-
-    const orderDocument = querySnapshot.docs[0];
-
-    const orderDocumentId = orderDocument.id;
-
-    const orderData = orderDocument.data();
 
     // =======================================================
     // A korábbi rendeléseknél lehet, hogy még nincs productId.
     // =======================================================
 
-    if (!orderData.productId) {
+    if (!order.productId) {
       throw new Error(
         "A rendelési tételhez nem tartozik termékazonosító. A készletet nem lehet automatikusan visszaállítani.",
       );
     }
 
-    const productIdFromOrder = orderData.productId;
-
-    const amount = Number(orderData.amount || 0);
+    const amount = Number(order.amount || 0);
 
     if (amount <= 0) {
       throw new Error("A rendelési mennyiség érvénytelen.");
     }
 
-    const productRef = doc(db, "kunpaosproducts", productIdFromOrder);
+    const productRef = doc(db, "kunpaosproducts", order.productId);
 
-    const tableOrderRef = doc(
-      db,
-      `tableorders_${selectedTable}`,
-      orderDocumentId,
-    );
+    const tableOrderRef = doc(db, TABLE_ORDERS, orderDocumentId);
 
     // =======================================================
     // FIRESTORE TRANZAKCIÓ
@@ -127,9 +91,7 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
 
       async () => {
         try {
-          await deleteOrder(product.id);
-
-          decrElement();
+          await deleteOrder(product);
 
           getTotal();
 
