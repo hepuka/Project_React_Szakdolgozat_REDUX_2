@@ -1,70 +1,110 @@
-# Getting Started with Create React App
+# KunPao's Coffee – Management
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Kávézói rendelés-, készlet- és pénzügykezelő webalkalmazás.
+Szakdolgozati projekt.
 
-## Available Scripts
+A rendszer egy kávézó napi működését fedi le: asztali rendelésfelvétel
+és fizetés, termék- és készletnyilvántartás, felhasználók és
+jogosultságok kezelése, valamint havi pénzügyi zárás.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Technológiák
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Réteg | Megoldás |
+| --- | --- |
+| Felület | React 18, React Router 6 |
+| Állapotkezelés | Redux Toolkit |
+| Stílus | SCSS, CSS-változókra épülő designtokenek |
+| Adatbázis, hitelesítés | Firebase (Authentication, Cloud Firestore) |
+| Képfeltöltés | Cloudinary |
+| Építőeszköz | Vite |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Indítás
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install
+npm run dev
+```
 
-### `npm run build`
+Az alkalmazás a <http://localhost:3000> címen érhető el.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Parancs | Mit csinál |
+| --- | --- |
+| `npm run dev` | Fejlesztői szerver |
+| `npm run build` | Éles build a `dist` mappába |
+| `npm run preview` | Az éles build kipróbálása helyben |
+| `npm run lint` | ESLint ellenőrzés |
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Szerepkörök és jogosultságok
 
-### `npm run eject`
+Négy szerepkör van: **Admin**, **Manager**, **Leader** és **Alap**
+(alkalmazott). Azt, hogy melyik szerepkör mit tehet, egyetlen fájl
+írja le: `src/config/permissions.js`.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Itt van a `PERMISSIONS` lista (mi az a művelet), a `ROLE_PERMISSIONS`
+mátrix (ki végezheti el), valamint a menüpontok és a bejelentkezés
+utáni kezdőoldal is szerepkörönként. Új jogosultság felvételéhez
+csak ezt a fájlt kell bővíteni — az útvonalvédelem
+(`ProtectedRoute`), a gombok megjelenítése (`RequirePermission`) és
+az oldalsáv menüje mind ebből dolgozik.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Mappaszerkezet
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+src/
+  components/      újrahasznosítható komponensek (Layout, Sidebar, Icon,
+                   asztali rendelés részei)
+  config/          jogosultságok, pénzügyi és asztalkonstansok, Cloudinary
+  customHooks/     Firestore-figyelők és az irányítópult adatrétege
+  firebase/        Firebase inicializálás
+  pages/
+    admin/         adminisztrációs oldalak
+      dashboard/   a főoldal panelei
+    auth/          bejelentkezés, regisztráció, jelszó-visszaállítás
+    employees/     rendelésfelvétel és fizetés
+  Redux/slice/     auth és product szeletek
+  services/        pénzügyi számítások, felhasználókezelés, segédfüggvények
+  styles/          közös SCSS mixinek
+  index.scss       designtokenek, világos és sötét téma, alapstílusok
+```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Firestore-kollekciók
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+| Kollekció | Tartalom |
+| --- | --- |
+| `users` | felhasználói adatlapok (a dokumentum azonosítója az auth UID) |
+| `kunpaosproducts` | termékek és készletszintek |
+| `kunpaosorders` | lezárt, kifizetett rendelések |
+| `tableOrders` | az asztalokon éppen nyitott tételek (`tableNumber` mező) |
+| `businessExpenses` | rezsi és egyéb kiadások |
+| `stockPurchases` | beszerzések |
+| `financePeriods` | havi pénzügyi időszakok, zárás és záró pénzkészlet |
+| `finance/settings` | kezdőtőke |
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Biztonság
 
-### Analyzing the Bundle Size
+- A bejelentkezés **mindig** a Firebase Authenticationnel kezdődik, és
+  csak sikeres hitelesítés után olvasunk bármit az adatbázisból.
+- A böngésző tárolójába semmilyen felhasználói adat nem kerül. A
+  munkamenetet oldalfrissítés után a `useAuthListener` állítja vissza
+  a Firebase saját munkamenetéből.
+- A fizetéshez kért PIN kódot minden alkalommal az adatbázisból
+  olvassuk ki, nem tároljuk a kliensen.
+- A hozzáférést a `firestore.rules` szabályozza. **A fájl módosítása
+  önmagában nem elég: a Firebase konzolban publikálni kell.**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+A `src/firebase/config.js` fájlban szereplő Firebase-kulcsok nyilvános
+kliensazonosítók, nem titkos kulcsok — a Firebase dokumentációja
+szerint a védelmet a biztonsági szabályok adják, nem a kulcsok
+rejtése.
