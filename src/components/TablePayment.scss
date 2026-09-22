@@ -1,110 +1,145 @@
+@use "../styles/mixins" as *;
+
+/* =========================================================
+   PULT - FIZETÉS
+   ========================================================= */
+
 .placeorder__tablepayment {
-  padding: 18px;
+  min-height: 0;
 
   display: flex;
-
   flex-direction: column;
+
+  padding: 16px 18px;
 
   box-sizing: border-box;
 }
 
+/* =========================================================
+   FEJLÉC
+   ========================================================= */
+
 .tablePayment__header {
   display: flex;
-
   align-items: flex-end;
-
   justify-content: space-between;
-
   gap: 10px;
 
-  padding-bottom: 11px;
+  flex: 0 0 auto;
 
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
 
-  border-bottom: 1px solid var(--border-soft);
-}
+  border-bottom: 1px solid var(--pult-border-soft);
 
-.tablePayment__header span {
-  color: var(--text-muted);
+  span {
+    @include eyebrow;
 
-  font-size: 0.82rem;
+    margin-bottom: 0;
 
-  font-weight: 700;
+    color: var(--pult-text-muted);
+  }
 
-  text-transform: uppercase;
+  h2 {
+    margin: 3px 0 0;
 
-  letter-spacing: 0.1em;
-}
+    color: var(--pult-text);
 
-.tablePayment__header h2 {
-  margin: 3px 0 0;
-
-  color: var(--text);
-
-  font-size: 1.3rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
 }
 
 .tablePayment__table {
-  padding: 5px 8px;
+  @include tabular;
 
-  background: #f3e8de;
+  padding: 5px 9px;
 
-  color: #765238;
+  background: var(--pult-accent-soft);
+  color: var(--pult-accent);
 
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 
-  font-size: 0.85rem;
+  font-size: 1.15rem;
+  font-weight: 600;
 
-  font-weight: 750;
+  white-space: nowrap;
 }
+
+/* =========================================================
+   ÖSSZESÍTŐ SOROK
+   ========================================================= */
 
 .tablePayment__details {
-  display: flex;
+  flex: 1 1 auto;
 
+  min-height: 0;
+
+  display: flex;
   flex-direction: column;
+  gap: 5px;
 
-  gap: 6px;
-}
+  overflow-y: auto;
 
-.tablePayment__details > div {
-  display: flex;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pult-border) transparent;
 
-  align-items: center;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
 
-  justify-content: space-between;
+  &::-webkit-scrollbar-thumb {
+    background: var(--pult-border);
+    border-radius: 999px;
+  }
 
-  color: var(--text-muted);
+  > div {
+    flex: 0 0 auto;
 
-  font-size: 0.9rem;
-}
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-.tablePayment__details strong {
-  color: var(--text);
+    color: var(--pult-text-muted);
+
+    font-size: 1.15rem;
+  }
+
+  strong {
+    @include tabular;
+
+    color: var(--pult-text);
+  }
 }
 
 .tablePayment__total {
   margin-top: 5px;
-
   padding-top: 9px;
 
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--pult-border);
 
-  font-weight: 700;
+  font-weight: 600;
+
+  span {
+    color: var(--pult-text);
+  }
+
+  strong {
+    color: var(--pult-accent);
+
+    font-size: 1.55rem;
+  }
 }
 
-.tablePayment__total span {
-  color: var(--text);
-}
-
-.tablePayment__total strong {
-  color: #765238;
-
-  font-size: 1.4rem;
-}
+/* =========================================================
+   PIN ÉS FIZETÉS GOMB
+   ========================================================= */
 
 .tablePayment__form {
-  display: grid;
+  flex: 0 0 auto;
 
+  display: grid;
   grid-template-columns:
     minmax(80px, 0.75fr)
     minmax(130px, 1.25fr);
@@ -112,50 +147,52 @@
   gap: 9px;
 
   margin-top: auto;
-
-  padding-top: 12px;
+  padding-top: 10px;
 }
 
 .tablePayment__pin {
   display: flex;
-
   flex-direction: column;
-
   gap: 4px;
-}
 
-.tablePayment__pin label {
-  color: var(--text-muted);
+  label {
+    color: var(--pult-text-muted);
 
-  font-size: 0.82rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
 
-  font-weight: 650;
-}
+  input {
+    @include tabular;
 
-.tablePayment__pin input {
-  width: 100%;
-  height: 40px;
+    width: 100%;
+    height: 40px;
 
-  box-sizing: border-box;
+    box-sizing: border-box;
 
-  background: var(--input-background);
+    background: var(--pult-bg);
+    color: var(--pult-text);
 
-  color: var(--text);
+    border: 1px solid var(--pult-border);
+    border-radius: var(--radius-sm);
 
-  border: 1px solid var(--border);
+    outline: none;
 
-  border-radius: 9px;
+    font-family: inherit;
+    font-size: 1.3rem;
 
-  outline: none;
+    text-align: center;
+    letter-spacing: 0.18em;
 
-  text-align: center;
+    transition: border-color var(--transition-fast);
 
-  letter-spacing: 0.18em;
+    &::placeholder {
+      color: var(--pult-text-muted);
+    }
 
-  &:focus {
-    border-color: #765238;
-
-    box-shadow: 0 0 0 3px rgba(118, 82, 56, 0.1);
+    &:focus {
+      border-color: var(--pult-accent);
+    }
   }
 }
 
@@ -163,66 +200,63 @@
   min-height: 40px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 7px;
 
-  background: #2c1e1a;
+  align-self: flex-end;
 
-  color: #fffdf9;
+  background: var(--pult-accent);
+  color: #2a1d18;
 
   border: none;
-
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 
   font-family: inherit;
-
-  font-size: 0.95rem;
-
-  font-weight: 750;
+  font-size: 1.25rem;
+  font-weight: 600;
 
   cursor: pointer;
 
   transition:
-    background-color 0.18s ease,
-    transform 0.18s ease;
-}
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
 
-.tablePayment__form > button:hover:not(:disabled) {
-  background: #765238;
+  &:hover:not(:disabled) {
+    background: var(--pult-accent-hover);
+  }
 
-  transform: translateY(-1px);
-}
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
 
-.tablePayment__form > button:disabled {
-  opacity: 0.45;
+  &:disabled {
+    background: var(--pult-surface-hover);
+    color: var(--pult-text-muted);
 
-  cursor: not-allowed;
+    cursor: not-allowed;
+  }
 }
 
 .tablePayment__spinner {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
 
-  border: 2px solid rgba(255, 255, 255, 0.35);
+  flex: 0 0 14px;
 
-  border-top-color: #fff;
-
+  border: 2px solid rgba(42, 29, 24, 0.3);
+  border-top-color: #2a1d18;
   border-radius: 50%;
 
-  animation: tablePaymentSpinner 0.7s linear infinite;
-}
-
-@keyframes tablePaymentSpinner {
-  to {
-    transform: rotate(360deg);
-  }
+  animation: uiSpinner 0.7s linear infinite;
 }
 
 @media (max-width: 760px) {
   .tablePayment__form {
     grid-template-columns: 1fr;
+  }
+
+  .tablePayment__form > button {
+    align-self: stretch;
   }
 }

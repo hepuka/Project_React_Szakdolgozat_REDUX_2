@@ -169,7 +169,7 @@
   width: 100%;
 
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   align-items: stretch;
 
   gap: 16px;
@@ -451,11 +451,13 @@
    MOBIL
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .products {
     padding: 20px 12px 28px;
   }
+}
 
+@media (max-width: 700px) {
   .products__header {
     align-items: flex-start;
     flex-direction: column;
@@ -494,10 +496,6 @@
     flex: 0 0 auto;
 
     white-space: nowrap;
-  }
-
-  .products__cardlist {
-    grid-template-columns: 1fr;
   }
 
   .products__buttons {

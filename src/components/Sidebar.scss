@@ -53,8 +53,6 @@
   width: 42px;
   height: 42px;
 
-  border-radius: var(--radius-md);
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,9 +60,7 @@
   background: var(--accent);
   color: #2a1d18;
 
-  border-radius: 12px;
-
-  font-size: 2rem;
+  border-radius: var(--radius-md);
 }
 
 .sidebar__brandName {
@@ -279,26 +275,50 @@
   }
 }
 
+/* =========================================================
+   VÍZSZINTES SÁV
+   =========================================================
+
+   1280 px alatt az oldalsáv a tartalom fölé kerül, fekvő
+   elrendezésben. A DOM sorrendje marad (fejléc, menü,
+   kilépés), a sorrendet a flexbox order tulajdonsága
+   rendezi át: felső sorban a márka, a felhasználó és a
+   kilépés, alatta a menü.
+   ========================================================= */
+
 @media only screen and (max-width: 1280px) {
   .sidebar {
     width: 100%;
     height: auto;
+
     min-width: 0;
+
     flex: none;
   }
 
   .sidebar__container {
     height: auto;
 
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 12px;
+
     padding: 12px 14px;
 
-    border-radius: 18px;
+    border-radius: var(--radius-lg);
   }
 
   .sidebar__header {
+    order: 1;
+
+    flex: 1 1 auto;
+    min-width: 0;
+
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
   }
 
   .sidebar__brand {
@@ -311,19 +331,57 @@
   }
 
   .sidebar__user {
-    margin: 0;
-    margin-left: auto;
+    min-width: 0;
 
+    margin: 0 0 0 auto;
     padding: 8px 10px;
   }
 
+  .sidebar__userInfo strong {
+    max-width: 150px;
+  }
+
+  /*
+   * A kilépés a felső sor végén marad. Korábban itt
+   * position: absolute volt, de a szülőn nem volt
+   * position: relative, ezért a gomb a felhasználó
+   * kártyájára csúszott.
+   */
+  .sidebar__logout {
+    order: 2;
+
+    width: auto;
+
+    flex: 0 0 auto;
+
+    min-height: 40px;
+
+    margin: 0;
+    padding: 0 14px;
+
+    font-size: 1.15rem;
+  }
+
+  .sidebar__logout .sidebar__icon {
+    width: auto;
+    flex: none;
+  }
+
+  /*
+   * A menü külön sorba kerül: a 100%-os alap miatt
+   * mindenképp tördel.
+   */
   .sidebar__buttons {
+    order: 3;
+
+    flex: 1 0 100%;
+
     flex-direction: row;
     align-items: center;
 
     gap: 6px;
 
-    padding: 10px 0 2px;
+    padding: 0 0 2px;
 
     overflow-x: auto;
     overflow-y: hidden;
@@ -338,32 +396,17 @@
 
     font-size: 1.15rem;
   }
-
-  .sidebar__logout {
-    position: absolute;
-    top: 20px;
-    right: 32px;
-
-    width: auto;
-    min-height: 38px;
-
-    margin: 0;
-    padding: 0 12px;
-
-    background: rgba(180, 82, 82, 0.14);
-
-    font-size: 1.1rem;
-  }
-
-  .sidebar__logout .sidebar__icon {
-    width: auto;
-    flex: none;
-  }
 }
 
 @media only screen and (max-width: 700px) {
   .sidebar__container {
+    gap: 10px;
+
     padding: 10px;
+  }
+
+  .sidebar__header {
+    gap: 10px;
   }
 
   .sidebar__brandSubtitle {
@@ -371,7 +414,7 @@
   }
 
   .sidebar__brandName {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
   .sidebar__userInfo {
@@ -379,16 +422,19 @@
   }
 
   .sidebar__user {
-    padding: 6px;
+    padding: 4px;
+
     background: transparent;
-    border: none;
+    border-color: transparent;
   }
 
+  /*
+   * Csak ikon: a felirat kevés helyen többet ér, ha elfér
+   * mellette a teljes menüsor.
+   */
   .sidebar__logout {
-    position: static;
-
-    min-width: 42px;
     width: 42px;
+    min-width: 42px;
 
     justify-content: center;
 
@@ -399,16 +445,11 @@
     display: none;
   }
 
-  .sidebar__buttons {
-    padding-top: 8px;
-  }
-
   .sidebar__button {
     min-height: 40px;
-    padding: 0 12px;
-  }
 
-  .sidebar__button .sidebar__icon {
-    display: none;
+    padding: 0 12px;
+
+    font-size: 1.1rem;
   }
 }

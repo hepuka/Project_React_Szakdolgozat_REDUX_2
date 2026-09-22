@@ -1,64 +1,73 @@
+@use "../styles/mixins" as *;
+
+/* =========================================================
+   PULT - AKTÍV RENDELÉS
+   ========================================================= */
+
 .placeorder__tableorders {
-  padding: 18px;
+  min-height: 0;
 
   display: flex;
-
   flex-direction: column;
 
-  box-sizing: border-box;
+  padding: 18px;
 
-  min-height: 0;
+  box-sizing: border-box;
 }
+
+/* =========================================================
+   FEJLÉC
+   ========================================================= */
 
 .tableOrders__header {
   display: flex;
-
   align-items: flex-end;
-
   justify-content: space-between;
-
   gap: 12px;
 
+  margin-bottom: 10px;
   padding-bottom: 12px;
 
-  margin-bottom: 10px;
+  border-bottom: 1px solid var(--pult-border-soft);
 
-  border-bottom: 1px solid var(--border-soft);
-}
+  span {
+    @include eyebrow;
 
-.tableOrders__header span {
-  color: var(--text-muted);
+    margin-bottom: 0;
 
-  font-size: 0.82rem;
+    color: var(--pult-text-muted);
+  }
 
-  font-weight: 700;
+  h2 {
+    margin: 3px 0 0;
 
-  text-transform: uppercase;
+    color: var(--pult-text);
 
-  letter-spacing: 0.1em;
-}
-
-.tableOrders__header h2 {
-  margin: 3px 0 0;
-
-  color: var(--text);
-
-  font-size: 1.35rem;
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
 }
 
 .tableOrders__count {
-  padding: 5px 9px;
+  @include tabular;
 
-  background: #f3e8de;
+  padding: 5px 10px;
 
-  color: #765238;
+  background: var(--pult-accent-soft);
+  color: var(--pult-accent);
 
-  border-radius: 20px;
+  border-radius: 999px;
 
-  font-size: 0.82rem;
+  font-size: 1.1rem;
+  font-weight: 600;
 
-  font-weight: 700;
+  white-space: nowrap;
 }
+
+/* =========================================================
+   TÉTELEK
+   ========================================================= */
 
 .tableOrders__list {
   flex: 1;
@@ -66,53 +75,43 @@
   min-height: 0;
 
   display: flex;
-
   flex-direction: column;
-
   gap: 8px;
 
   overflow-y: auto;
 
   scrollbar-width: thin;
+  scrollbar-color: var(--pult-border) transparent;
 
-  scrollbar-color: #d5c8be transparent;
-}
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
 
-.tableOrders__list::-webkit-scrollbar {
-  width: 5px;
-}
-
-.tableOrders__list::-webkit-scrollbar-thumb {
-  background: #d5c8be;
-
-  border-radius: 20px;
+  &::-webkit-scrollbar-thumb {
+    background: var(--pult-border);
+    border-radius: 999px;
+  }
 }
 
 .tableOrders__item {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 10px;
 
   padding: 10px;
 
-  background: var(--surface-soft);
+  background: var(--pult-surface-soft);
 
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
+  border: 1px solid var(--pult-border);
+  border-radius: var(--radius-md);
 }
 
 .tableOrders__itemMain {
   min-width: 0;
 
   display: flex;
-
   align-items: center;
-
   gap: 9px;
 }
 
@@ -123,141 +122,165 @@
   flex: 0 0 34px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  background: #f3e8de;
+  background: var(--pult-accent-soft);
+  color: var(--pult-accent);
 
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
 }
 
 .tableOrders__itemInfo {
   min-width: 0;
 
   display: flex;
-
   flex-direction: column;
-
   gap: 2px;
-}
 
-.tableOrders__itemInfo strong {
-  overflow: hidden;
+  strong {
+    overflow: hidden;
 
-  color: var(--text);
+    color: var(--pult-text);
 
-  font-size: 0.98rem;
+    font-size: 1.25rem;
+    font-weight: 600;
 
-  text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-  white-space: nowrap;
-}
+  span {
+    @include tabular;
 
-.tableOrders__itemInfo span {
-  color: var(--text-muted);
+    color: var(--pult-text-muted);
 
-  font-size: 0.8rem;
+    font-size: 1.1rem;
+  }
 }
 
 .tableOrders__itemRight {
   display: flex;
-
   align-items: center;
-
   gap: 8px;
+
+  > strong {
+    @include tabular;
+
+    color: var(--pult-accent);
+
+    font-size: 1.25rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+  }
+
+  button {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: var(--pult-danger-soft);
+    color: var(--pult-danger);
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
+
+    &:hover {
+      background: var(--pult-danger);
+      color: #1c1310;
+    }
+  }
 }
 
-.tableOrders__itemRight > strong {
-  color: #765238;
-
-  font-size: 0.92rem;
-
-  white-space: nowrap;
-}
-
-.tableOrders__itemRight button {
-  width: 27px;
-  height: 27px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #fff4f2;
-
-  color: #a24f4f;
-
-  border: 1px solid #e7c7c3;
-
-  border-radius: 8px;
-
-  font-family: inherit;
-
-  cursor: pointer;
-}
-
-.tableOrders__itemRight button:hover {
-  background: #b15252;
-
-  color: #fff;
-}
+/* =========================================================
+   RÉSZÖSSZEG
+   ========================================================= */
 
 .tableOrders__summary {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 10px;
 
   margin-top: 12px;
-
   padding-top: 12px;
 
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--pult-border);
+
+  span {
+    color: var(--pult-text-muted);
+
+    font-size: 1.15rem;
+  }
+
+  strong {
+    @include tabular;
+
+    color: var(--pult-text);
+
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
 }
 
-.tableOrders__summary span {
-  color: var(--text-muted);
-
-  font-size: 0.92rem;
-}
-
-.tableOrders__summary strong {
-  color: var(--text);
-
-  font-size: 1.2rem;
-}
+/* =========================================================
+   ÜRES RENDELÉS
+   ========================================================= */
 
 .tableOrders__empty {
   min-height: 180px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   flex-direction: column;
 
   text-align: center;
-}
 
-.tableOrders__empty > div {
-  width: 50px;
-  height: 50px;
+  > div {
+    width: 50px;
+    height: 50px;
 
-  display: flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  align-items: center;
-  justify-content: center;
+    margin-bottom: 10px;
 
-  background: #f3e8de;
+    background: var(--pult-surface-soft);
+    color: var(--pult-text-muted);
 
-  border-radius: 14px;
+    border-radius: var(--radius-lg);
+  }
 
-  font-size: 1.8rem;
+  h3 {
+    margin: 0;
+
+    color: var(--pult-text);
+
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 5px 0 0;
+
+    color: var(--pult-text-muted);
+
+    font-size: 1.15rem;
+  }
 }

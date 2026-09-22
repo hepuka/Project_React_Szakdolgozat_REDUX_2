@@ -438,11 +438,13 @@
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .orders {
     padding: 22px 12px 30px;
   }
+}
 
+@media (max-width: 640px) {
   .orders__header {
     align-items: flex-start;
     flex-direction: column;

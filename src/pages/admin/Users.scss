@@ -78,7 +78,11 @@
   width: 100%;
 
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  /*
+   * A min() miatt nagyon keskeny nézetben sem lóg ki a
+   * kártya: ott a 100% lesz a minimum, nem a 300 px.
+   */
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
 
   gap: 16px;
 }
@@ -324,11 +328,13 @@
    TABLET
    ========================================================= */
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .users {
     padding: 22px 12px 30px;
   }
+}
 
+@media (max-width: 640px) {
   .users__header {
     align-items: flex-start;
     flex-direction: column;
@@ -336,10 +342,6 @@
 
   .users__addButton {
     width: 100%;
-  }
-
-  .users__cardList {
-    grid-template-columns: 1fr;
   }
 }
 

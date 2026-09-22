@@ -1806,15 +1806,29 @@
    TABLET
    ========================================================= */
 
+/* =========================================================
+   TABLET
+   =========================================================
+
+   1280 px alatt az oldalsáv a tartalom fölé kerül, így a
+   panelek a teljes szélességet megkapják. A kétoszlopos
+   rács ezért sokáig tartható: csak 900 px alatt van
+   értelme egy oszlopra váltani.
+   ========================================================= */
+
 @media (max-width: 1100px) {
   .admin {
     padding: 22px 18px 30px;
   }
+}
 
+@media (max-width: 1000px) {
   .admin__stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
+@media (max-width: 900px) {
   .admin__mainGrid {
     grid-template-columns: 1fr;
   }

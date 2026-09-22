@@ -138,14 +138,21 @@
     overflow: auto;
   }
 
+  /*
+   * Nem fix magasság: a tartalom azt kapja, ami az
+   * oldalsáv fölött marad. A korábbi
+   * min-height: calc(100vh - 110px) akkor is görgetősávot
+   * csinált, ha a sáv két sorosra nőtt.
+   */
   .layout__main {
     order: 2;
 
     width: 100%;
 
-    height: auto;
+    flex: 1 1 auto;
 
-    min-height: calc(100vh - 110px);
+    height: auto;
+    min-height: 0;
 
     overflow: hidden;
   }
@@ -181,7 +188,7 @@
   }
 
   .layout__main {
-    min-height: calc(100vh - 86px);
+    min-height: 0;
   }
 
   .layout__main > .footer {

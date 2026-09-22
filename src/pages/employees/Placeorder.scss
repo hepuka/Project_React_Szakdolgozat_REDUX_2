@@ -1,24 +1,72 @@
+@use "../../styles/mixins" as *;
+
+/* =========================================================
+   PULT - RENDELÉS ÉS FIZETÉS
+   =========================================================
+
+   Ez az egyetlen oldal, amely mindig sötét, függetlenül a
+   választott témától. Indoka gyakorlati: a pultnál álló
+   kollégának egész műszakban ez a képernyő van előtte, és a
+   sötét felületen a sárga kiemelés messziről is látszik.
+
+   Ezért az oldal saját --pult-* tokenkészletet kap. A globális
+   tokeneket nem használja, így a világos téma nem világosítja
+   ki, és a sötét téma sem módosítja. Ugyanez a minta, mint az
+   oldalsáv --rail-* változóinál.
+   ========================================================= */
+
 .placeorder {
+  /* Felületek */
+  --pult-bg: #1c1310;
+  --pult-surface: #251a15;
+  --pult-surface-soft: #2e211b;
+  --pult-surface-hover: #382822;
+
+  /* Vonalak */
+  --pult-border: rgba(255, 255, 255, 0.09);
+  --pult-border-soft: rgba(255, 255, 255, 0.05);
+
+  /* Szöveg */
+  --pult-text: #f6eee8;
+  --pult-text-soft: #d6c5ba;
+  --pult-text-muted: #a08e83;
+
+  /* Kiemelés */
+  --pult-accent: #e0a83c;
+  --pult-accent-hover: #edb64a;
+  --pult-accent-soft: rgba(224, 168, 60, 0.14);
+
+  /* Állapotok */
+  --pult-success: #5fb96e;
+  --pult-success-soft: rgba(95, 185, 110, 0.14);
+
+  --pult-danger: #e0706c;
+  --pult-danger-soft: rgba(224, 112, 108, 0.14);
+
   width: 100%;
   height: 100%;
 
   min-width: 0;
   min-height: 0;
 
-  padding: 24px 28px 20px;
-
-  box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
 
-  color: var(--text);
+  padding: 22px 24px 20px;
+
+  box-sizing: border-box;
+
+  background: var(--pult-bg);
+  color: var(--pult-text);
+
+  border: 1px solid var(--pult-border);
+  border-radius: var(--radius-xl);
 
   overflow: hidden;
 }
 
 /* =========================================================
-   HEADER
+   FEJLÉC
    ========================================================= */
 
 .placeorder__header {
@@ -27,52 +75,36 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 20px;
 
   margin-bottom: 16px;
 }
 
 .placeorder__eyebrow {
-  display: block;
+  @include eyebrow;
 
-  margin-bottom: 4px;
-
-  color: var(--primary-light);
-
-  font-size: 0.95rem;
-  font-weight: 750;
-
-  text-transform: uppercase;
-  letter-spacing: 0.13em;
+  color: var(--pult-accent);
 }
 
 .placeorder__header h1 {
-  margin: 0;
+  @include page-title;
 
-  color: var(--text);
+  color: var(--pult-text);
 
-  font-size: clamp(2.6rem, 3.4vw, 3.8rem);
-
-  line-height: 1.05;
-
-  font-weight: 750;
-
-  letter-spacing: -0.045em;
+  font-size: clamp(2.4rem, 3vw, 3.2rem);
 }
 
 .placeorder__header p {
   margin: 6px 0 0;
 
-  color: var(--text-muted);
+  color: var(--pult-text-muted);
 
-  font-size: 1.15rem;
-
+  font-size: 1.2rem;
   line-height: 1.45;
 }
 
 /* =========================================================
-   HEADER STATUS
+   FEJLÉC - AKTÍV FELHASZNÁLÓ
    ========================================================= */
 
 .placeorder__headerStatus {
@@ -80,54 +112,51 @@
 
   display: flex;
   align-items: center;
-
   gap: 9px;
 
   padding: 10px 14px;
 
-  background: var(--surface);
+  background: var(--pult-surface);
 
-  border: 1px solid var(--border);
+  border: 1px solid var(--pult-border);
+  border-radius: var(--radius-md);
 
-  border-radius: 13px;
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
 
-  box-shadow: var(--shadow-sm);
+  strong {
+    color: var(--pult-text);
+
+    font-size: 1.25rem;
+  }
 }
 
 .placeorder__statusDot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 
-  flex: 0 0 10px;
+  flex: 0 0 9px;
 
-  background: #4ea55b;
+  background: var(--pult-success);
 
   border-radius: 50%;
 
-  box-shadow: 0 0 0 4px rgba(78, 165, 91, 0.1);
-}
-
-.placeorder__headerStatus div {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.placeorder__headerStatus strong {
-  color: var(--text);
-
-  font-size: 1rem;
+  box-shadow: 0 0 0 4px var(--pult-success-soft);
 }
 
 /* =========================================================
-   WORKSPACE
+   MUNKAFELÜLET
+   =========================================================
+
+   A fejléc után maradó teljes magasságot használja. Az alsó
+   sor szándékosan nem "auto": így egy belső komponens nem
+   tudja magasabbra nyomni a teljes rácsot.
    ========================================================= */
 
 .placeorder__workspace {
-  /*
-   * A header után maradó teljes magasságot használjuk.
-   */
-
   flex: 1 1 auto;
 
   width: 100%;
@@ -137,61 +166,58 @@
 
   display: grid;
 
+  /*
+   * A három hasáb együtt 918 px-et kér. 1280 px alatt az
+   * oldalsáv fölfelé kerül, ezért a tartalom a teljes
+   * szélességet megkapja - így a pultos elrendezés 940 px
+   * képernyőszélességig tartható, vagyis fekvő tableten is
+   * a teljes felület látszik.
+   */
   grid-template-columns:
-    minmax(220px, 0.72fr)
-    minmax(460px, 1.5fr)
-    minmax(300px, 0.9fr);
+    minmax(200px, 0.72fr)
+    minmax(420px, 1.5fr)
+    minmax(270px, 0.9fr);
 
   /*
-   * FONTOS:
-   *
-   * Az alsó sor nem "auto".
-   * Ez megakadályozza, hogy egy belső komponens
-   * miatt a teljes grid magasabbra nőjön.
-   *
-   * A két sor mindig a workspace teljes magasságán
-   * belül marad.
+   * A fizetés-sor magassága: a PIN mezőnek és a gombnak
+   * mindig el kell férnie, elvágás nélkül.
    */
-
   grid-template-rows:
     minmax(0, 1fr)
-    minmax(180px, 220px);
+    minmax(248px, 268px);
 
   grid-template-areas:
     "tables products orders"
     "payment products orders";
 
-  gap: 16px;
+  gap: 14px;
 
   overflow: hidden;
 }
 
 /* =========================================================
-   COMMON CARD
+   KÖZÖS KÁRTYA
    ========================================================= */
 
 .placeorder__card {
-  min-width: 0;
-  min-height: 0;
-
   width: 100%;
   height: 100%;
 
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: var(--radius-lg);
-
-  box-shadow: var(--shadow-md);
+  min-width: 0;
+  min-height: 0;
 
   box-sizing: border-box;
+
+  background: var(--pult-surface);
+
+  border: 1px solid var(--pult-border);
+  border-radius: var(--radius-lg);
 
   overflow: hidden;
 }
 
 /* =========================================================
-   ASZTALOK
+   A NÉGY PANEL HELYE A RÁCSBAN
    ========================================================= */
 
 .placeorder__workspace > .placeorder__tablenumber {
@@ -204,10 +230,6 @@
   height: 100%;
 }
 
-/* =========================================================
-   TERMÉKVÁLASZTÓ
-   ========================================================= */
-
 .placeorder__workspace > .tableProductSelector {
   grid-column: 2 !important;
   grid-row: 1 / 3 !important;
@@ -218,10 +240,6 @@
   height: 100%;
 }
 
-/* =========================================================
-   AKTÍV RENDELÉS
-   ========================================================= */
-
 .placeorder__workspace > .placeorder__tableorders {
   grid-column: 3 !important;
   grid-row: 1 / 3 !important;
@@ -231,10 +249,6 @@
 
   height: 100%;
 }
-
-/* =========================================================
-   FIZETÉS
-   ========================================================= */
 
 .placeorder__workspace > .placeorder__tablepayment {
   grid-column: 1 !important;
@@ -250,9 +264,9 @@
    TABLET
    ========================================================= */
 
-@media (max-width: 1180px) {
+@media (max-width: 940px) {
   .placeorder {
-    padding: 20px 18px 18px;
+    padding: 18px 16px 16px;
   }
 
   .placeorder__workspace {
@@ -264,7 +278,7 @@
       minmax(340px, auto)
       minmax(300px, auto)
       minmax(190px, auto)
-      minmax(190px, auto);
+      minmax(250px, auto);
 
     grid-template-areas:
       "tables products"
@@ -300,12 +314,12 @@
     grid-column: 1 / 3 !important;
     grid-row: 4 !important;
 
-    height: 190px;
+    height: 250px;
   }
 }
 
 /* =========================================================
-   MOBILE
+   MOBIL
    ========================================================= */
 
 @media (max-width: 760px) {
@@ -313,23 +327,21 @@
     height: auto;
     min-height: 100%;
 
-    padding: 18px 12px 24px;
+    padding: 16px 12px 20px;
 
     overflow-y: auto;
   }
 
   .placeorder__header {
     align-items: flex-start;
-
     flex-direction: column;
-
     gap: 12px;
 
     margin-bottom: 14px;
   }
 
   .placeorder__header h1 {
-    font-size: 2.6rem;
+    font-size: 2.4rem;
   }
 
   .placeorder__headerStatus {
@@ -338,9 +350,7 @@
 
   .placeorder__workspace {
     display: flex;
-
     flex-direction: column;
-
     gap: 12px;
 
     min-height: auto;
@@ -371,6 +381,6 @@
   }
 
   .placeorder__workspace > .placeorder__tablepayment {
-    min-height: 210px;
+    min-height: 250px;
   }
 }

@@ -1,87 +1,102 @@
-.placeorder__tablenumber {
-  padding: 18px;
+@use "../styles/mixins" as *;
 
+/* =========================================================
+   PULT - ASZTALTÉRKÉP
+   =========================================================
+
+   A színek a Placeorder.scss --pult-* változóiból jönnek,
+   ezért ez a panel is mindig sötét marad.
+   ========================================================= */
+
+.placeorder__tablenumber {
   display: flex;
   flex-direction: column;
+
+  padding: 18px;
 
   box-sizing: border-box;
 
   overflow-y: auto;
 
   scrollbar-width: thin;
-  scrollbar-color: #d5c8be transparent;
+  scrollbar-color: var(--pult-border) transparent;
 
   &::-webkit-scrollbar {
     width: 5px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d5c8be;
-    border-radius: 20px;
+    background: var(--pult-border);
+    border-radius: 999px;
   }
 }
 
+/* =========================================================
+   FEJLÉC ÉS ÓRA
+   ========================================================= */
+
 .tableDetails__header {
   display: flex;
-
   align-items: flex-start;
   justify-content: space-between;
-
   gap: 12px;
 
-  padding-bottom: 13px;
   margin-bottom: 12px;
+  padding-bottom: 13px;
 
-  border-bottom: 1px solid var(--border-soft);
-}
+  border-bottom: 1px solid var(--pult-border-soft);
 
-.tableDetails__header > div:first-child {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
 
-.tableDetails__header span {
-  color: var(--text-muted);
+  span {
+    @include eyebrow;
 
-  font-size: 0.82rem;
-  font-weight: 700;
+    margin-bottom: 0;
 
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
-}
+    color: var(--pult-text-muted);
+  }
 
-.tableDetails__header h2 {
-  margin: 0;
+  h2 {
+    margin: 0;
 
-  color: var(--text);
+    color: var(--pult-text);
 
-  font-size: 1.45rem;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
 }
 
 .tableDetails__clock {
+  min-width: max-content;
+
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-end;
-
   justify-content: center;
-
   gap: 2px;
 
-  min-width: max-content;
+  strong {
+    @include tabular;
+
+    color: var(--pult-accent);
+
+    font-size: 1.3rem;
+    font-weight: 600;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+  }
 }
 
-.tableDetails__clock strong {
-  color: #765238;
-
-  font-size: 1.1rem;
-
-  line-height: 1.2;
-
-  white-space: nowrap;
-}
+/* =========================================================
+   JELMAGYARÁZAT
+   ========================================================= */
 
 .tableDetails__legend {
   display: flex;
@@ -89,17 +104,15 @@
 
   margin-bottom: 14px;
 
-  font-size: 0.85rem;
+  color: var(--pult-text-muted);
 
-  color: var(--text-muted);
-}
+  font-size: 1.15rem;
 
-.tableDetails__legend span {
-  display: flex;
-
-  align-items: center;
-
-  gap: 5px;
+  span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 }
 
 .tableDetails__legendDot {
@@ -110,23 +123,25 @@
 }
 
 .tableDetails__legendDot--free {
-  background: #4ea55b;
+  background: var(--pult-success);
 }
 
 .tableDetails__legendDot--busy {
-  background: #d8a036;
+  background: var(--pult-accent);
 }
+
+/* =========================================================
+   ASZTALGOMBOK
+   ========================================================= */
 
 .tableDetails__buttons {
   flex: 1;
 
   display: grid;
-
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: flex-start;
 
   gap: 9px;
-
-  align-content: flex-start;
 }
 
 .tableDetails__table {
@@ -135,27 +150,70 @@
   min-height: 78px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   flex-direction: column;
 
   padding: 10px;
 
-  background: var(--surface-soft);
+  background: var(--pult-surface-soft);
+  color: var(--pult-text);
 
-  border: 1px solid var(--border);
+  border: 1px solid var(--pult-border);
+  border-radius: var(--radius-md);
 
-  border-radius: 13px;
+  font-family: inherit;
 
   cursor: pointer;
 
   transition:
-    transform 0.18s ease,
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
+    transform var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+
+  /* Asztal száma */
+  strong {
+    @include tabular;
+
+    font-size: 1.7rem;
+    font-weight: 600;
+
+    line-height: 1;
+  }
+
+  /* "asztal" felirat */
+  span {
+    color: var(--pult-text-muted);
+
+    font-size: 1.1rem;
+  }
+
+  /* Tételszám */
+  small {
+    @include tabular;
+
+    margin-top: 4px;
+    padding: 3px 8px;
+
+    background: var(--pult-accent-soft);
+    color: var(--pult-accent);
+
+    border-radius: 999px;
+
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+
+    background: var(--pult-surface-hover);
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 /* =========================================================
@@ -163,11 +221,11 @@
    ========================================================= */
 
 .tableDetails__table--free {
-  border-color: rgba(78, 165, 91, 0.25);
-}
+  border-color: rgba(95, 185, 110, 0.28);
 
-.tableDetails__table--free strong {
-  color: #4ea55b;
+  strong {
+    color: var(--pult-success);
+  }
 }
 
 /* =========================================================
@@ -175,100 +233,53 @@
    ========================================================= */
 
 .tableDetails__table--busy {
-  background: #fbf5ea;
+  background: var(--pult-accent-soft);
 
-  border-color: rgba(216, 160, 54, 0.35);
-}
+  border-color: rgba(224, 168, 60, 0.32);
 
-.tableDetails__table--busy strong {
-  color: #d8a036;
-}
-
-/* =========================================================
-   HOVER
-   ========================================================= */
-
-.tableDetails__table:hover {
-  transform: translateY(-1px);
-
-  background: var(--surface-hover);
-
-  border-color: #d4c4b9;
-}
-
-/* =========================================================
-   ASZTAL SZÁMA
-   ========================================================= */
-
-.tableDetails__table strong {
-  font-size: 1.45rem;
-
-  line-height: 1;
-}
-
-/* =========================================================
-   "ASZTAL" FELIRAT
-   ========================================================= */
-
-.tableDetails__table span {
-  color: var(--text-muted);
-
-  font-size: 0.8rem;
-
-  text-transform: none;
-
-  letter-spacing: 0;
-}
-
-/* =========================================================
-   TÉTELSZÁM
-   ========================================================= */
-
-.tableDetails__table small {
-  margin-top: 4px;
-
-  padding: 3px 7px;
-
-  background: #fff1d2;
-
-  color: #8a641e;
-
-  border-radius: 20px;
-
-  font-size: 0.72rem;
-
-  font-weight: 700;
+  strong {
+    color: var(--pult-accent);
+  }
 }
 
 /* =========================================================
    KIVÁLASZTOTT ASZTAL
+   =========================================================
+
+   Az egyetlen tömör sárga felület az oldalon: a pultnál
+   álló kolléga egy pillantásra látja, melyik asztalon
+   dolgozik éppen.
    ========================================================= */
 
 .tableDetails__table--selected {
-  background: #f0c14b;
+  background: var(--pult-accent);
 
-  border-color: #e0b13c;
+  border-color: var(--pult-accent);
 
-  box-shadow: 0 7px 18px rgba(118, 82, 56, 0.14);
+  &:hover {
+    background: var(--pult-accent-hover);
+    border-color: var(--pult-accent-hover);
+  }
+
+  strong,
+  span {
+    color: #2a1d18;
+  }
+
+  small {
+    background: rgba(42, 29, 24, 0.16);
+    color: #2a1d18;
+  }
 }
 
-.tableDetails__table--selected strong {
-  color: #2c1e1a;
-}
-
-.tableDetails__table--selected span {
-  color: #4f3625;
-}
-
-.tableDetails__table--selected small {
-  background: rgba(255, 255, 255, 0.45);
-
-  color: #4f3625;
-}
+/* =========================================================
+   NINCS AKTÍV ASZTAL
+   ========================================================= */
 
 .tableDetails__noActiveTable {
-  color: var(--danger) !important;
-  font-size: 1.25rem !important;
+  color: var(--pult-danger) !important;
+
+  font-size: 1.4rem !important;
 }
 
 @media (max-width: 500px) {

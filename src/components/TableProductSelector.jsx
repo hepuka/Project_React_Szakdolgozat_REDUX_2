@@ -22,6 +22,8 @@ import { db } from "../firebase/config";
 
 import { TABLE_ORDERS } from "../config/tables";
 
+import Icon from "./Icon";
+
 const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
   const dispatch = useDispatch();
 
@@ -334,7 +336,9 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
             }`}
             onClick={() => filterProducts(ALL_CATEGORIES)}
           >
-            <span>☕</span>
+            <span>
+              <Icon name="coffee" size={13} />
+            </span>
             Összes
           </button>
 
@@ -373,7 +377,7 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
         <div className="tableProductSelector__productList">
           {filteredProducts.length === 0 ? (
             <div className="tableProductSelector__empty">
-              <span>☕</span>
+              <Icon name="coffee" size={26} />
 
               <h3>Nincs megjeleníthető termék</h3>
 
@@ -410,7 +414,7 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
                     {item.imageURL ? (
                       <img src={item.imageURL} alt={item.name || "Termék"} />
                     ) : (
-                      <span>☕</span>
+                      <Icon name="coffee" size={20} />
                     )}
                   </div>
 
@@ -451,7 +455,9 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
 
         {!liveProduct ? (
           <div className="tableProductSelector__selectedEmpty">
-            <div>☕</div>
+            <div>
+              <Icon name="coffee" size={20} />
+            </div>
 
             <p>Válassz egy terméket a fenti listából.</p>
           </div>
@@ -468,7 +474,7 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
                   alt={liveProduct.name || "Termék"}
                 />
               ) : (
-                <span>☕</span>
+                <Icon name="coffee" size={30} />
               )}
             </div>
 
@@ -496,11 +502,20 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
                       : ""
                 }`}
               >
+                <Icon
+                  name={
+                    stock <= Number(liveProduct.minStock || 0)
+                      ? "alert"
+                      : "check"
+                  }
+                  size={13}
+                />
+
                 {stock <= 0
-                  ? "🔴 Elfogyott"
+                  ? "Elfogyott"
                   : stock <= Number(liveProduct.minStock || 0)
-                    ? `🟡 Alacsony készlet • ${stock} db`
-                    : `🟢 Készleten • ${stock} db`}
+                    ? `Alacsony készlet • ${stock} db`
+                    : `Készleten • ${stock} db`}
               </div>
             </div>
 
@@ -516,7 +531,7 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
                   disabled={count <= 1 || stock <= 0}
                   aria-label="Mennyiség csökkentése"
                 >
-                  −
+                  <Icon name="minus" size={16} />
                 </button>
 
                 <strong>{count}</strong>
@@ -527,7 +542,7 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
                   disabled={stock <= 0 || count >= stock}
                   aria-label="Mennyiség növelése"
                 >
-                  ＋
+                  <Icon name="plus" size={16} />
                 </button>
               </div>
 
@@ -547,7 +562,8 @@ const TableProductSelector = ({ selectedTable, onOrderAdded }) => {
                 disabled={selectedTable < 1 || stock <= 0}
                 onClick={addToOrder}
               >
-                ＋ Hozzáad a rendeléshez
+                <Icon name="plus" size={16} />
+                Hozzáad a rendeléshez
               </button>
             </div>
           </div>

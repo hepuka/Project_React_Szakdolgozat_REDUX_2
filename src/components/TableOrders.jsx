@@ -8,6 +8,8 @@ import { db } from "../firebase/config";
 
 import { TABLE_ORDERS } from "../config/tables";
 
+import Icon from "./Icon";
+
 const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
   // =========================================================
   // RENDELÉSI TÉTEL TÖRLÉSE + KÉSZLET VISSZAADÁSA
@@ -134,7 +136,9 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
       <div className="tableOrders__list">
         {tableOrders.length === 0 ? (
           <div className="tableOrders__empty">
-            <div>🧾</div>
+            <div>
+              <Icon name="receipt" size={22} />
+            </div>
 
             <h3>A rendelés üres</h3>
 
@@ -147,7 +151,9 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
               className="tableOrders__item"
             >
               <div className="tableOrders__itemMain">
-                <div className="tableOrders__itemIcon">☕</div>
+                <div className="tableOrders__itemIcon">
+                  <Icon name="coffee" size={17} />
+                </div>
 
                 <div className="tableOrders__itemInfo">
                   <strong>{item.name}</strong>
@@ -170,7 +176,7 @@ const TableOrders = ({ getTotal, selectedTable, tableOrders }) => {
                   aria-label={`${item.name} törlése`}
                   title="Tétel törlése"
                 >
-                  ×
+                  <Icon name="close" size={15} />
                 </button>
               </div>
             </article>

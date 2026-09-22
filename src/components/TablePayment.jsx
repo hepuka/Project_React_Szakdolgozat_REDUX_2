@@ -29,6 +29,8 @@ import {
 
 import { TABLE_ORDERS } from "../config/tables";
 
+import Icon from "./Icon";
+
 const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
   const currentUserId = useSelector(selectCurrentUserId);
 
@@ -208,7 +210,10 @@ const TablePayment = ({ getTotal, userName, tableOrders, id }) => {
               Feldolgozás...
             </>
           ) : (
-            <>✓ Fizetés lezárása</>
+            <>
+                <Icon name="check" size={16} />
+                Fizetés lezárása
+              </>
           )}
         </button>
       </form>

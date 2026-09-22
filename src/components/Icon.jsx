@@ -268,6 +268,8 @@ const ICONS = {
       <path d="m10 6-6 6 6 6" />
     </>
   ),
+
+  minus: <line x1="5" y1="12" x2="19" y2="12" />,
 };
 
 const Icon = ({ name, size = 20, strokeWidth = 1.8, className }) => {
